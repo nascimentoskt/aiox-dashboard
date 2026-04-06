@@ -695,8 +695,19 @@ body {
 }
 .fin-evo-bar {
   width: 100%; max-width: 48px; border-radius: 8px 8px 4px 4px;
-  background: var(--blue); transition: height 1s ease;
+  transition: height 1s ease;
   min-height: 8px;
+  overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
+  background: transparent;
+}
+.fin-evo-bar-receita {
+  width: 100%; background: #00C853; border-radius: 8px 8px 0 0;
+  transition: height 0.8s ease;
+}
+.fin-evo-bar-despesa {
+  width: 100%; background: #FF4444;
+  border-radius: 0 0 4px 4px;
+  transition: height 0.8s ease;
 }
 .fin-evo-bar-label {
   font-size: 10px; font-weight: 600; color: #8b8fa3;
@@ -1290,35 +1301,57 @@ body {
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             Evolucao Mensal
           </div>
+          <div style="display:flex;gap:16px;margin-bottom:12px;font-size:11px;font-weight:600;">
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#00C853;"></span> Receita</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#FF4444;"></span> Despesas</span>
+          </div>
           <div class="fin-evolution-chart">
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 28k</div>
-              <div class="fin-evo-bar" style="height:59%;background:rgba(0,136,255,0.4);"></div>
+              <div class="fin-evo-bar" style="height:59%;">
+                <div class="fin-evo-bar-receita" style="height:70%;"></div>
+                <div class="fin-evo-bar-despesa" style="height:30%;"></div>
+              </div>
               <div class="fin-evo-bar-label">Nov</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 32,5k</div>
-              <div class="fin-evo-bar" style="height:68%;background:rgba(0,136,255,0.5);"></div>
+              <div class="fin-evo-bar" style="height:68%;">
+                <div class="fin-evo-bar-receita" style="height:72%;"></div>
+                <div class="fin-evo-bar-despesa" style="height:28%;"></div>
+              </div>
               <div class="fin-evo-bar-label">Dez</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 35k</div>
-              <div class="fin-evo-bar" style="height:74%;background:rgba(0,136,255,0.6);"></div>
+              <div class="fin-evo-bar" style="height:74%;">
+                <div class="fin-evo-bar-receita" style="height:68%;"></div>
+                <div class="fin-evo-bar-despesa" style="height:32%;"></div>
+              </div>
               <div class="fin-evo-bar-label">Jan</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 38,2k</div>
-              <div class="fin-evo-bar" style="height:80%;background:rgba(0,136,255,0.7);"></div>
+              <div class="fin-evo-bar" style="height:80%;">
+                <div class="fin-evo-bar-receita" style="height:65%;"></div>
+                <div class="fin-evo-bar-despesa" style="height:35%;"></div>
+              </div>
               <div class="fin-evo-bar-label">Fev</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 42,3k</div>
-              <div class="fin-evo-bar" style="height:89%;background:rgba(0,136,255,0.85);"></div>
+              <div class="fin-evo-bar" style="height:89%;">
+                <div class="fin-evo-bar-receita" style="height:62%;"></div>
+                <div class="fin-evo-bar-despesa" style="height:38%;"></div>
+              </div>
               <div class="fin-evo-bar-label">Mar</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 47,5k</div>
-              <div class="fin-evo-bar" style="height:100%;background:var(--blue);"></div>
+              <div class="fin-evo-bar" style="height:100%;">
+                <div class="fin-evo-bar-receita" style="height:62%;"></div>
+                <div class="fin-evo-bar-despesa" style="height:38%;"></div>
+              </div>
               <div class="fin-evo-bar-label">Abr</div>
             </div>
           </div>
