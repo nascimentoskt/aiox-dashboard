@@ -1561,12 +1561,13 @@ body {
           <span class="accent-dot"></span>
           Financeiro
         </div>
-        <div class="section-badge">Dados parciais — faltam Luzzoo, Encanto, Black</div>
+        <div class="section-badge" id="fin-badge">Abr/2026 (parcial — faltam Moom, Mermaid, Luzzoo, Encanto, Black)</div>
       </div>
 
       <!-- Filtro de Periodo -->
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
-        <button class="fin-period-btn active" onclick="setFinPeriod('mar', this)">Mar/2026</button>
+        <button class="fin-period-btn active" onclick="setFinPeriod('abr', this)">Abr/2026</button>
+        <button class="fin-period-btn" onclick="setFinPeriod('mar', this)">Mar/2026</button>
         <button class="fin-period-btn" onclick="setFinPeriod('fev', this)">Fev/2026</button>
         <button class="fin-period-btn" onclick="setFinPeriod('jan', this)">Jan/2026</button>
         <button class="fin-period-btn" onclick="setFinPeriod('q1', this)">Q1 2026</button>
@@ -1579,33 +1580,33 @@ body {
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
-          <div class="fin-kpi-value" id="kpi-receita">R$ 48.564</div>
-          <div class="fin-kpi-label" id="kpi-receita-label">Receita Mensal (Mar)</div>
-          <span class="fin-kpi-trend down" id="kpi-receita-trend">&#9660; 27% vs Fev</span>
+          <div class="fin-kpi-value" id="kpi-receita">R$ 37.730</div>
+          <div class="fin-kpi-label" id="kpi-receita-label">Receita Abr/26</div>
+          <span class="fin-kpi-trend down" id="kpi-receita-trend">&#9660; 22% vs Mar (parcial)</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </div>
-          <div class="fin-kpi-value" id="kpi-despesas">—</div>
-          <div class="fin-kpi-label" id="kpi-despesas-label">Despesas (Mar)</div>
-          <span class="fin-kpi-trend" id="kpi-despesas-trend">Aguardando dados</span>
+          <div class="fin-kpi-value" id="kpi-despesas">R$ 8.500</div>
+          <div class="fin-kpi-label" id="kpi-despesas-label">Despesas Abr/26</div>
+          <span class="fin-kpi-trend" id="kpi-despesas-trend">Diego R$5k + Flavio R$3.5k</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
           </div>
-          <div class="fin-kpi-value" id="kpi-lucro">—</div>
-          <div class="fin-kpi-label" id="kpi-lucro-label">Lucro Liquido (Mar)</div>
-          <span class="fin-kpi-trend" id="kpi-lucro-trend">Aguardando despesas</span>
+          <div class="fin-kpi-value" id="kpi-lucro">R$ 29.230</div>
+          <div class="fin-kpi-label" id="kpi-lucro-label">Lucro Liquido Abr/26</div>
+          <span class="fin-kpi-trend up" id="kpi-lucro-trend">Parcial — faltam clientes</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
           </div>
-          <div class="fin-kpi-value" id="kpi-margem">—</div>
-          <div class="fin-kpi-label" id="kpi-margem-label">Margem (Mar)</div>
-          <span class="fin-kpi-trend" id="kpi-margem-trend">Aguardando despesas</span>
+          <div class="fin-kpi-value" id="kpi-margem">77,5%</div>
+          <div class="fin-kpi-label" id="kpi-margem-label">Margem Abr/26</div>
+          <span class="fin-kpi-trend" id="kpi-margem-trend">Parcial — faltam clientes</span>
         </div>
       </div>
 
@@ -1686,10 +1687,11 @@ body {
               </div>
               <div class="fin-evo-bar-label">Mar</div>
             </div>
-            <div class="fin-evo-bar-wrapper" style="opacity:.3">
-              <div class="fin-evo-bar-value">—</div>
-              <div class="fin-evo-bar" style="height:10%;">
-                <div class="fin-evo-bar-receita" style="height:100%;" data-tooltip="Aguardando dados"></div>
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 37,7k</div>
+              <div class="fin-evo-bar" style="height:43%;">
+                <div class="fin-evo-bar-receita" style="height:82%;" data-tooltip="Receita: R$ 37.730 (parcial)"></div>
+                <div class="fin-evo-bar-despesa" style="height:18%;" data-tooltip="Despesas: R$ 8.500"></div>
               </div>
               <div class="fin-evo-bar-label">Abr</div>
             </div>
@@ -1728,7 +1730,7 @@ body {
                 <tr>
                   <td><strong>1pra1</strong></td>
                   <td>3% do investimento</td>
-                  <td data-value="57349">R$ 57.349 <span style="font-size:10px;color:#8b8fa3;">(media)</span></td>
+                  <td data-value="52444">R$ 52.444 <span style="font-size:10px;color:#8b8fa3;">(media Jan-Abr)</span></td>
                   <td><span class="status-badge ativo">Ativo</span></td>
                 </tr>
                 <tr>
@@ -1806,6 +1808,27 @@ body {
                   <td>Marketing</td>
                   <td>Impulso</td>
                   <td data-value="1500">R$ 1.500</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Salario Diego</strong></td>
+                  <td>Folha</td>
+                  <td>Impulso</td>
+                  <td data-value="5000">R$ 5.000</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Salario Flavio</strong></td>
+                  <td>Folha</td>
+                  <td>Impulso</td>
+                  <td data-value="3500">R$ 3.500</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Comissao Guilherme</strong></td>
+                  <td>Folha</td>
+                  <td>Impulso</td>
+                  <td data-value="0">Pendente</td>
                   <td>Mensal</td>
                 </tr>
               </tbody>
@@ -2272,6 +2295,13 @@ const finData = {
     ],
     label: 'Mar/2026'
   },
+  abr: {
+    receita: 37730.20, despesas: 8500,
+    clientes: [
+      { nome: '1pra1', valor: 37730.20, pct: 100, cor: '#FF9800' },
+    ],
+    label: 'Abr/2026 (parcial)'
+  },
   q1: {
     receita: 202045.98, despesas: 0,
     clientes: [
@@ -2282,13 +2312,13 @@ const finData = {
     label: 'Q1 2026 (Jan-Mar)'
   },
   all: {
-    receita: 202045.98, despesas: 0,
+    receita: 239776.18, despesas: 8500,
     clientes: [
-      { nome: '1pra1', valor: 172045.98, pct: 85.2, cor: '#FF9800' },
-      { nome: 'Moom', valor: 15000, pct: 7.4, cor: '#00BCD4' },
-      { nome: 'Mermaid', valor: 15000, pct: 7.4, cor: '#9C27B0' },
+      { nome: '1pra1', valor: 209776.18, pct: 87.5, cor: '#FF9800' },
+      { nome: 'Moom', valor: 15000, pct: 6.3, cor: '#00BCD4' },
+      { nome: 'Mermaid', valor: 15000, pct: 6.3, cor: '#9C27B0' },
     ],
-    label: 'Todos (Jan-Mar 2026)'
+    label: 'Todos (Jan-Abr 2026)'
   }
 };
 
@@ -2312,7 +2342,7 @@ function setFinPeriod(period, btn) {
 
   // Update KPIs values and labels
   const periodLabels = {
-    jan: 'Jan/26', fev: 'Fev/26', mar: 'Mar/26',
+    jan: 'Jan/26', fev: 'Fev/26', mar: 'Mar/26', abr: 'Abr/26',
     q1: 'Q1 2026', all: 'Todos'
   };
   const pl = periodLabels[period] || period;
