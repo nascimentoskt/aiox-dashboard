@@ -700,12 +700,26 @@ body {
   overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
   background: transparent;
 }
-.fin-evo-bar-receita {
-  width: 100%; background: #00C853; border-radius: 8px 8px 0 0;
-  transition: height 0.8s ease;
+.fin-evo-bar-receita, .fin-evo-bar-despesa {
+  width: 100%; position: relative; cursor: pointer;
+  transition: height 0.8s ease, filter 0.2s;
 }
-.fin-evo-bar-despesa {
-  width: 100%; background: #FF4444;
+.fin-evo-bar-receita:hover, .fin-evo-bar-despesa:hover { filter: brightness(1.2); }
+.fin-evo-bar-receita::after, .fin-evo-bar-despesa::after {
+  content: attr(data-tooltip);
+  position: absolute; left: 50%; transform: translateX(-50%);
+  background: var(--navy); color: #fff;
+  font-size: 10px; font-weight: 600; white-space: nowrap;
+  padding: 4px 10px; border-radius: 6px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+.fin-evo-bar-receita::after { bottom: calc(100% + 6px); }
+.fin-evo-bar-despesa::after { top: calc(100% + 6px); }
+.fin-evo-bar-receita:hover::after, .fin-evo-bar-despesa:hover::after { opacity: 1; }
+.fin-evo-bar-receita { background: #00C853; border-radius: 8px 8px 0 0; }
+.fin-evo-bar-despesa { background: #FF4444;
   border-radius: 0 0 4px 4px;
   transition: height 0.8s ease;
 }
@@ -1309,48 +1323,48 @@ body {
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 28k</div>
               <div class="fin-evo-bar" style="height:59%;">
-                <div class="fin-evo-bar-receita" style="height:70%;"></div>
-                <div class="fin-evo-bar-despesa" style="height:30%;"></div>
+                <div class="fin-evo-bar-receita" style="height:70%;" data-tooltip="Receita: R$ 19.600"></div>
+                <div class="fin-evo-bar-despesa" style="height:30%;" data-tooltip="Despesas: R$ 8.400"></div>
               </div>
               <div class="fin-evo-bar-label">Nov</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 32,5k</div>
               <div class="fin-evo-bar" style="height:68%;">
-                <div class="fin-evo-bar-receita" style="height:72%;"></div>
-                <div class="fin-evo-bar-despesa" style="height:28%;"></div>
+                <div class="fin-evo-bar-receita" style="height:72%;" data-tooltip="Receita: R$ 23.400"></div>
+                <div class="fin-evo-bar-despesa" style="height:28%;" data-tooltip="Despesas: R$ 9.100"></div>
               </div>
               <div class="fin-evo-bar-label">Dez</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 35k</div>
               <div class="fin-evo-bar" style="height:74%;">
-                <div class="fin-evo-bar-receita" style="height:68%;"></div>
-                <div class="fin-evo-bar-despesa" style="height:32%;"></div>
+                <div class="fin-evo-bar-receita" style="height:68%;" data-tooltip="Receita: R$ 23.800"></div>
+                <div class="fin-evo-bar-despesa" style="height:32%;" data-tooltip="Despesas: R$ 11.200"></div>
               </div>
               <div class="fin-evo-bar-label">Jan</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 38,2k</div>
               <div class="fin-evo-bar" style="height:80%;">
-                <div class="fin-evo-bar-receita" style="height:65%;"></div>
-                <div class="fin-evo-bar-despesa" style="height:35%;"></div>
+                <div class="fin-evo-bar-receita" style="height:65%;" data-tooltip="Receita: R$ 24.830"></div>
+                <div class="fin-evo-bar-despesa" style="height:35%;" data-tooltip="Despesas: R$ 13.370"></div>
               </div>
               <div class="fin-evo-bar-label">Fev</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 42,3k</div>
               <div class="fin-evo-bar" style="height:89%;">
-                <div class="fin-evo-bar-receita" style="height:62%;"></div>
-                <div class="fin-evo-bar-despesa" style="height:38%;"></div>
+                <div class="fin-evo-bar-receita" style="height:62%;" data-tooltip="Receita: R$ 26.226"></div>
+                <div class="fin-evo-bar-despesa" style="height:38%;" data-tooltip="Despesas: R$ 16.074"></div>
               </div>
               <div class="fin-evo-bar-label">Mar</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 47,5k</div>
               <div class="fin-evo-bar" style="height:100%;">
-                <div class="fin-evo-bar-receita" style="height:62%;"></div>
-                <div class="fin-evo-bar-despesa" style="height:38%;"></div>
+                <div class="fin-evo-bar-receita" style="height:62%;" data-tooltip="Receita: R$ 29.450"></div>
+                <div class="fin-evo-bar-despesa" style="height:38%;" data-tooltip="Despesas: R$ 18.050"></div>
               </div>
               <div class="fin-evo-bar-label">Abr</div>
             </div>
