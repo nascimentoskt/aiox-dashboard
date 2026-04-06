@@ -1281,7 +1281,13 @@ body {
           <span class="accent-dot"></span>
           Kanban Board
         </div>
-        <div class="section-badge">13 tasks</div>
+        <div class="section-badge" id="kanbanBadge">AIOX</div>
+      </div>
+
+      <!-- Kanban Source Filter -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button class="fin-period-btn active" id="btnAiox" onclick="switchKanban('aiox')">AIOX</button>
+        <button class="fin-period-btn" id="btnLuzzoo" onclick="switchKanban('luzzoo')">Luzzoo</button>
       </div>
 
       <div class="kanban-wrapper">
@@ -2199,9 +2205,90 @@ async function syncFromNotion() {
   }
 }
 
-// Auto-sync on load and every 60 seconds
+// ========== KANBAN SOURCE SWITCH ==========
+let currentKanbanSource = 'aiox';
+
+async function switchKanban(source) {
+  currentKanbanSource = source;
+
+  // Update buttons
+  document.getElementById('btnAiox').classList.toggle('active', source === 'aiox');
+  document.getElementById('btnLuzzoo').classList.toggle('active', source === 'luzzoo');
+
+  const badge = document.getElementById('kanbanBadge');
+
+  if (source === 'aiox') {
+    if (badge) badge.textContent = 'Sincronizando AIOX...';
+    syncFromNotion();
+  } else {
+    if (badge) badge.textContent = 'Sincronizando Luzzoo...';
+    await syncFromLuzzoo();
+  }
+}
+
+async function syncFromLuzzoo() {
+  try {
+    const res = await fetch('/api/luzzoo');
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    const board = document.getElementById('kanbanBoard');
+    if (!board || !data.columns) return;
+
+    const colColors = {
+      'aprovar': '#F44336',
+      'nao-iniciado': '#8b8fa3',
+      'planejamento': '#FFB300',
+      'espera': '#FF9800',
+      'producao': '#9C27B0',
+      'continuas': '#0088FF',
+      'concluido': '#00C853'
+    };
+
+    board.innerHTML = data.columns.map(col => `
+      <div class="kanban-column" style="min-width:240px;width:240px;">
+        <div class="kanban-col-header" style="background:${colColors[col.id] || '#1A2744'}">
+          <span class="kanban-col-title">${col.title}</span>
+          <span class="kanban-col-count">${col.cards.length}</span>
+        </div>
+        <div class="kanban-col-body" data-status="${col.id}">
+          ${col.cards.map(card => `
+            <div class="kanban-card" style="border-left:3px solid ${colColors[col.id] || '#0088FF'}">
+              <div class="kanban-card-title">${card.title}</div>
+              <div class="kanban-card-tags">
+                ${card.tipo ? `<span class="kanban-tag squad">${card.tipo}</span>` : ''}
+                ${card.canal ? `<span class="kanban-tag" style="background:rgba(0,136,255,.1);color:#0088FF">${card.canal}</span>` : ''}
+                ${card.setor ? `<span class="kanban-tag" style="background:rgba(156,39,176,.1);color:#9C27B0">${card.setor}</span>` : ''}
+                ${card.priority ? `<span class="kanban-tag priority-${card.priority.toLowerCase()}">${card.priority}</span>` : ''}
+              </div>
+              <div class="kanban-card-footer">
+                <div class="kanban-responsavel">
+                  <div class="avatar">${card.pessoa ? card.pessoa[0].toUpperCase() : '?'}</div>
+                  ${card.pessoa || 'Sem responsavel'}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    const badge = document.getElementById('kanbanBadge');
+    if (badge) badge.textContent = `Luzzoo · ${data.totalCards} tasks · ${new Date(data.lastSync).toLocaleTimeString('pt-BR')}`;
+
+  } catch (err) {
+    console.log('[AIOX] Luzzoo sync failed:', err.message);
+    const badge = document.getElementById('kanbanBadge');
+    if (badge) badge.textContent = 'Luzzoo · erro de sync';
+  }
+}
+
+// Auto-sync current source on load and every 60 seconds
 syncFromNotion();
-setInterval(syncFromNotion, 60000);
+setInterval(() => {
+  if (currentKanbanSource === 'aiox') syncFromNotion();
+  else syncFromLuzzoo();
+}, 60000);
 
 // ========== FINANCIAL PERIOD FILTER ==========
 const finData = {
