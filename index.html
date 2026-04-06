@@ -1666,24 +1666,24 @@ body {
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 87k</div>
               <div class="fin-evo-bar" style="height:100%;">
-                <div class="fin-evo-bar-receita" style="height:100%;" data-tooltip="Receita: R$ 87.003"></div>
-                <div class="fin-evo-bar-despesa" style="height:0%;" data-tooltip="Despesas: pendente"></div>
+                <div class="fin-evo-bar-receita" style="height:90%;" data-tooltip="Receita: R$ 87.003"></div>
+                <div class="fin-evo-bar-despesa" style="height:10%;" data-tooltip="Despesas: R$ 8.500"></div>
               </div>
               <div class="fin-evo-bar-label">Jan</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 66,5k</div>
               <div class="fin-evo-bar" style="height:76%;">
-                <div class="fin-evo-bar-receita" style="height:100%;" data-tooltip="Receita: R$ 66.479"></div>
-                <div class="fin-evo-bar-despesa" style="height:0%;" data-tooltip="Despesas: pendente"></div>
+                <div class="fin-evo-bar-receita" style="height:87%;" data-tooltip="Receita: R$ 66.479"></div>
+                <div class="fin-evo-bar-despesa" style="height:13%;" data-tooltip="Despesas: R$ 8.500"></div>
               </div>
               <div class="fin-evo-bar-label">Fev</div>
             </div>
             <div class="fin-evo-bar-wrapper">
               <div class="fin-evo-bar-value">R$ 48,6k</div>
               <div class="fin-evo-bar" style="height:56%;">
-                <div class="fin-evo-bar-receita" style="height:100%;" data-tooltip="Receita: R$ 48.564"></div>
-                <div class="fin-evo-bar-despesa" style="height:0%;" data-tooltip="Despesas: pendente"></div>
+                <div class="fin-evo-bar-receita" style="height:82%;" data-tooltip="Receita: R$ 48.564"></div>
+                <div class="fin-evo-bar-despesa" style="height:18%;" data-tooltip="Despesas: R$ 8.500"></div>
               </div>
               <div class="fin-evo-bar-label">Mar</div>
             </div>
@@ -2206,7 +2206,7 @@ setInterval(syncFromNotion, 60000);
 // ========== FINANCIAL PERIOD FILTER ==========
 const finData = {
   jan: {
-    receita: 87003.25, despesas: 0,
+    receita: 87003.25, despesas: 8500,
     clientes: [
       { nome: '1pra1', valor: 77003.25, pct: 88.5, cor: '#FF9800' },
       { nome: 'Moom', valor: 5000, pct: 5.7, cor: '#00BCD4' },
@@ -2215,7 +2215,7 @@ const finData = {
     label: 'Jan/2026'
   },
   fev: {
-    receita: 66479.04, despesas: 0,
+    receita: 66479.04, despesas: 8500,
     clientes: [
       { nome: '1pra1', valor: 56479.04, pct: 85.0, cor: '#FF9800' },
       { nome: 'Moom', valor: 5000, pct: 7.5, cor: '#00BCD4' },
@@ -2224,7 +2224,7 @@ const finData = {
     label: 'Fev/2026'
   },
   mar: {
-    receita: 48563.69, despesas: 0,
+    receita: 48563.69, despesas: 8500,
     clientes: [
       { nome: '1pra1', valor: 38563.69, pct: 79.4, cor: '#FF9800' },
       { nome: 'Moom', valor: 5000, pct: 10.3, cor: '#00BCD4' },
@@ -2240,7 +2240,7 @@ const finData = {
     label: 'Abr/2026 (parcial)'
   },
   q1: {
-    receita: 202045.98, despesas: 0,
+    receita: 202045.98, despesas: 25500,
     clientes: [
       { nome: '1pra1', valor: 172045.98, pct: 85.2, cor: '#FF9800' },
       { nome: 'Moom', valor: 15000, pct: 7.4, cor: '#00BCD4' },
@@ -2249,7 +2249,7 @@ const finData = {
     label: 'Q1 2026 (Jan-Mar)'
   },
   all: {
-    receita: 239776.18, despesas: 8500,
+    receita: 239776.18, despesas: 34000,
     clientes: [
       { nome: '1pra1', valor: 209776.18, pct: 87.5, cor: '#FF9800' },
       { nome: 'Moom', valor: 15000, pct: 6.3, cor: '#00BCD4' },
@@ -2260,20 +2260,26 @@ const finData = {
 };
 
 // Despesas reais por periodo
+const salarioBase = [
+  { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
+  { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
+];
 const despesasData = {
-  jan: [],
-  fev: [],
-  mar: [],
+  jan: [...salarioBase],
+  fev: [...salarioBase],
+  mar: [...salarioBase],
   abr: [
-    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
-    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
+    ...salarioBase,
     { despesa: 'Comissao Guilherme', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
   ],
-  q1: [],
+  q1: [
+    { despesa: 'Salario Diego (Jan-Mar)', categoria: 'Folha', cliente: 'Impulso', valor: 15000, status: 'Pago' },
+    { despesa: 'Salario Flavio (Jan-Mar)', categoria: 'Folha', cliente: 'Impulso', valor: 10500, status: 'Pago' },
+  ],
   all: [
-    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
-    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
-    { despesa: 'Comissao Guilherme', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
+    { despesa: 'Salario Diego (Jan-Abr)', categoria: 'Folha', cliente: 'Impulso', valor: 20000, status: 'Pago' },
+    { despesa: 'Salario Flavio (Jan-Abr)', categoria: 'Folha', cliente: 'Impulso', valor: 14000, status: 'Pago' },
+    { despesa: 'Comissao Guilherme (Abr)', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
   ]
 };
 
