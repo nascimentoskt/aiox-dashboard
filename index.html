@@ -718,6 +718,15 @@ body {
 .fin-evo-bar-receita::after { bottom: calc(100% + 6px); }
 .fin-evo-bar-despesa::after { top: calc(100% + 6px); }
 .fin-evo-bar-receita:hover::after, .fin-evo-bar-despesa:hover::after { opacity: 1; }
+
+/* Period Filter Buttons */
+.fin-period-btn {
+  padding: 8px 18px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid rgba(26,39,68,0.12); color: var(--chumbo);
+  background: #fff; font-family: var(--font); transition: all 0.2s;
+}
+.fin-period-btn:hover { border-color: var(--blue); color: var(--blue); }
+.fin-period-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 .fin-evo-bar-receita { background: #00C853; border-radius: 8px 8px 0 0; }
 .fin-evo-bar-despesa { background: #FF4444;
   border-radius: 0 0 4px 4px;
@@ -1223,7 +1232,16 @@ body {
           <span class="accent-dot"></span>
           Financeiro
         </div>
-        <div class="section-badge">Marco 2026 (dados parciais — faltam Luzzoo, Encanto, Black)</div>
+        <div class="section-badge">Dados parciais — faltam Luzzoo, Encanto, Black</div>
+      </div>
+
+      <!-- Filtro de Periodo -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+        <button class="fin-period-btn active" onclick="setFinPeriod('mar', this)">Mar/2026</button>
+        <button class="fin-period-btn" onclick="setFinPeriod('fev', this)">Fev/2026</button>
+        <button class="fin-period-btn" onclick="setFinPeriod('jan', this)">Jan/2026</button>
+        <button class="fin-period-btn" onclick="setFinPeriod('q1', this)">Q1 2026</button>
+        <button class="fin-period-btn" onclick="setFinPeriod('all', this)">Todos</button>
       </div>
 
       <!-- KPI Cards -->
@@ -1895,6 +1913,102 @@ async function syncFromNotion() {
 // Auto-sync on load and every 60 seconds
 syncFromNotion();
 setInterval(syncFromNotion, 60000);
+
+// ========== FINANCIAL PERIOD FILTER ==========
+const finData = {
+  jan: {
+    receita: 87003.25, despesas: 0,
+    clientes: [
+      { nome: '1pra1', valor: 77003.25, pct: 88.5, cor: '#FF9800' },
+      { nome: 'Moom', valor: 5000, pct: 5.7, cor: '#00BCD4' },
+      { nome: 'Mermaid', valor: 5000, pct: 5.7, cor: '#9C27B0' },
+    ],
+    label: 'Jan/2026'
+  },
+  fev: {
+    receita: 66479.04, despesas: 0,
+    clientes: [
+      { nome: '1pra1', valor: 56479.04, pct: 85.0, cor: '#FF9800' },
+      { nome: 'Moom', valor: 5000, pct: 7.5, cor: '#00BCD4' },
+      { nome: 'Mermaid', valor: 5000, pct: 7.5, cor: '#9C27B0' },
+    ],
+    label: 'Fev/2026'
+  },
+  mar: {
+    receita: 48563.69, despesas: 0,
+    clientes: [
+      { nome: '1pra1', valor: 38563.69, pct: 79.4, cor: '#FF9800' },
+      { nome: 'Moom', valor: 5000, pct: 10.3, cor: '#00BCD4' },
+      { nome: 'Mermaid', valor: 5000, pct: 10.3, cor: '#9C27B0' },
+    ],
+    label: 'Mar/2026'
+  },
+  q1: {
+    receita: 202045.98, despesas: 0,
+    clientes: [
+      { nome: '1pra1', valor: 172045.98, pct: 85.2, cor: '#FF9800' },
+      { nome: 'Moom', valor: 15000, pct: 7.4, cor: '#00BCD4' },
+      { nome: 'Mermaid', valor: 15000, pct: 7.4, cor: '#9C27B0' },
+    ],
+    label: 'Q1 2026 (Jan-Mar)'
+  },
+  all: {
+    receita: 202045.98, despesas: 0,
+    clientes: [
+      { nome: '1pra1', valor: 172045.98, pct: 85.2, cor: '#FF9800' },
+      { nome: 'Moom', valor: 15000, pct: 7.4, cor: '#00BCD4' },
+      { nome: 'Mermaid', valor: 15000, pct: 7.4, cor: '#9C27B0' },
+    ],
+    label: 'Todos (Jan-Mar 2026)'
+  }
+};
+
+const pendingClients = [
+  { nome: 'Luzzoo', cor: 'var(--blue)' },
+  { nome: 'Encanto', cor: '#FFB300' },
+  { nome: 'Black', cor: '#F44336' },
+];
+
+function fmt(v) {
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function setFinPeriod(period, btn) {
+  // Update active button
+  document.querySelectorAll('.fin-period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const d = finData[period];
+  if (!d) return;
+
+  // Update KPIs
+  const kpis = document.querySelectorAll('.fin-kpi-value');
+  if (kpis[0]) kpis[0].textContent = fmt(d.receita);
+
+  // Update badge
+  const badge = document.querySelector('#financeiro .section-badge');
+  if (badge) badge.textContent = d.label + ' (dados parciais — faltam Luzzoo, Encanto, Black)';
+
+  // Update bar chart
+  const chart = document.querySelector('.fin-bar-chart');
+  if (!chart) return;
+
+  const maxVal = Math.max(...d.clientes.map(c => c.valor));
+
+  chart.innerHTML = d.clientes.map(c => `
+    <div class="fin-bar-item">
+      <div class="fin-bar-label">${c.nome}</div>
+      <div class="fin-bar-track"><div class="fin-bar-fill" style="width:${(c.valor/maxVal*100).toFixed(0)}%;background:${c.cor};">${c.pct}%</div></div>
+      <div class="fin-bar-value">${fmt(c.valor)}</div>
+    </div>
+  `).join('') + pendingClients.map(c => `
+    <div class="fin-bar-item">
+      <div class="fin-bar-label">${c.nome}</div>
+      <div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:${c.cor};">—</div></div>
+      <div class="fin-bar-value" style="opacity:.4">Pendente</div>
+    </div>
+  `).join('');
+}
 
 // ========== TABLE SORTING ==========
 const sortState = {};
