@@ -1306,6 +1306,105 @@ window.addEventListener('scroll', () => {
     }
   });
 });
+
+// ========== NOTION SYNC ==========
+async function syncFromNotion() {
+  try {
+    const syncBadge = document.querySelector('.section-badge');
+    if (syncBadge) syncBadge.textContent = 'Sincronizando...';
+
+    const res = await fetch('/api/notion');
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    const board = document.getElementById('kanbanBoard');
+    if (!board || !data.columns) return;
+
+    const priorityClass = p => {
+      if (p === 'Alta') return 'priority-alta';
+      if (p === 'Média' || p === 'Media') return 'priority-media';
+      return 'priority-baixa';
+    };
+
+    const projetoClass = p => {
+      if (!p) return '';
+      const slug = p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return 'projeto-' + slug;
+    };
+
+    const squadClass = s => {
+      if (!s) return 'squad';
+      const slug = s.toLowerCase().replace(/\s+/g, '-');
+      return 'squad-' + slug;
+    };
+
+    const colClassMap = {
+      backlog: 'kanban-col-backlog',
+      todo: 'kanban-col-todo',
+      progress: 'kanban-col-progress',
+      review: 'kanban-col-review',
+      done: 'kanban-col-done'
+    };
+
+    board.innerHTML = data.columns.map(col => `
+      <div class="kanban-column ${colClassMap[col.id] || ''}">
+        <div class="kanban-col-header">
+          <span class="kanban-col-title">${col.title}</span>
+          <span class="kanban-col-count">${col.cards.length}</span>
+        </div>
+        <div class="kanban-col-body" data-status="${col.id}">
+          ${col.cards.map((card, i) => `
+            <div class="kanban-card" draggable="true" data-id="${card.id}">
+              <div class="kanban-card-title">${card.title}</div>
+              <div class="kanban-card-tags">
+                ${card.squad ? `<span class="kanban-tag ${squadClass(card.squad)}">${card.squad}</span>` : ''}
+                ${card.projeto ? `<span class="kanban-tag ${projetoClass(card.projeto)}">${card.projeto}</span>` : ''}
+                ${card.prioridade ? `<span class="kanban-tag ${priorityClass(card.prioridade)}">${card.prioridade}</span>` : ''}
+              </div>
+              <div class="kanban-card-footer">
+                <div class="kanban-responsavel">
+                  <div class="avatar">${(card.responsavel || '?')[0].toUpperCase()}</div>
+                  ${card.responsavel || 'N/A'}
+                </div>
+                <div class="kanban-priority-dot ${(card.prioridade || '').toLowerCase()}"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    // Re-attach drag and drop
+    board.querySelectorAll('.kanban-card').forEach(card => {
+      card.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', card.dataset.id);
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    });
+
+    board.querySelectorAll('.kanban-col-body').forEach(col => {
+      col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drag-over'); });
+      col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+      col.addEventListener('drop', e => {
+        e.preventDefault();
+        col.classList.remove('drag-over');
+        const cardId = e.dataTransfer.getData('text/plain');
+        const cardEl = board.querySelector(`[data-id="${cardId}"]`);
+        if (cardEl) col.appendChild(cardEl);
+      });
+    });
+
+    if (syncBadge) syncBadge.textContent = `${data.totalCards} tasks · synced ${new Date(data.lastSync).toLocaleTimeString('pt-BR')}`;
+    console.log('[AIOX] Notion sync OK:', data.totalCards, 'cards');
+  } catch (err) {
+    console.log('[AIOX] Notion sync failed, using static data:', err.message);
+  }
+}
+
+// Auto-sync on load and every 60 seconds
+syncFromNotion();
+setInterval(syncFromNotion, 60000);
 </script>
 </body>
 </html>
