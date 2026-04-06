@@ -1,10 +1,8 @@
 {
-  "framework": null,
-  "rewrites": [
-    { "source": "/api/notion", "destination": "/api/notion" }
-  ],
+  "buildCommand": "",
+  "outputDirectory": ".",
   "functions": {
-    "api/notion.js": {
+    "api/*.js": {
       "runtime": "@vercel/node@3"
     }
   }

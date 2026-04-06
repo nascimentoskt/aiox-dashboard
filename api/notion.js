@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const NOTION_TOKEN = process.env.NOTION_TOKEN;
   const NOTION_DB = process.env.NOTION_DB || '33af6feb-79cc-8013-b07d-e794fa0ac469';
 
