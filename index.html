@@ -552,6 +552,187 @@ body {
   width: 300px; height: 200px; opacity: 0.03;
   pointer-events: none;
 }
+
+/* ========== FINANCEIRO SECTION ========== */
+.financeiro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+.financeiro-grid .full-width {
+  grid-column: 1 / -1;
+}
+.fin-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+.fin-kpi-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.fin-kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.fin-kpi-card:nth-child(1)::before { background: var(--blue); }
+.fin-kpi-card:nth-child(2)::before { background: #FF5252; }
+.fin-kpi-card:nth-child(3)::before { background: #00C853; }
+.fin-kpi-card:nth-child(4)::before { background: #FFB300; }
+.fin-kpi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+.fin-kpi-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.fin-kpi-card:nth-child(1) .fin-kpi-icon { background: rgba(0,136,255,0.1); color: var(--blue); }
+.fin-kpi-card:nth-child(2) .fin-kpi-icon { background: rgba(255,82,82,0.1); color: #FF5252; }
+.fin-kpi-card:nth-child(3) .fin-kpi-icon { background: rgba(0,200,83,0.1); color: #00C853; }
+.fin-kpi-card:nth-child(4) .fin-kpi-icon { background: rgba(255,179,0,0.1); color: #FFB300; }
+.fin-kpi-value {
+  font-size: 32px; font-weight: 800; line-height: 1;
+  margin-bottom: 4px; color: var(--navy);
+}
+.fin-kpi-label {
+  font-size: 13px; font-weight: 500; color: #8b8fa3;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.fin-kpi-trend {
+  font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px;
+}
+.fin-kpi-trend.up { background: rgba(0,200,83,0.1); color: #00873E; }
+.fin-kpi-trend.down { background: rgba(255,82,82,0.1); color: #FF5252; }
+.fin-kpi-trend.down.positive { background: rgba(0,200,83,0.1); color: #00873E; }
+
+/* Financeiro Card (generic panel) */
+.fin-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition);
+}
+.fin-card:hover { box-shadow: var(--shadow-hover); }
+.fin-card-title {
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+.fin-card-title svg { width: 20px; height: 20px; color: var(--blue); }
+
+/* Horizontal Bar Chart */
+.fin-bar-chart { display: flex; flex-direction: column; gap: 14px; }
+.fin-bar-item { display: flex; align-items: center; gap: 12px; }
+.fin-bar-label {
+  width: 120px; min-width: 120px;
+  font-size: 13px; font-weight: 600; color: var(--navy);
+}
+.fin-bar-track {
+  flex: 1; height: 28px; background: var(--offwhite);
+  border-radius: 8px; overflow: hidden; position: relative;
+}
+.fin-bar-fill {
+  height: 100%; border-radius: 8px;
+  display: flex; align-items: center; padding-left: 10px;
+  font-size: 11px; font-weight: 700; color: #fff;
+  transition: width 1s ease;
+  min-width: 40px;
+}
+.fin-bar-value {
+  font-size: 12px; font-weight: 600; color: #8b8fa3;
+  min-width: 90px; text-align: right;
+}
+
+/* Contratos Table */
+.fin-table {
+  width: 100%; border-collapse: collapse;
+}
+.fin-table thead th {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: #8b8fa3;
+  padding: 12px 16px; text-align: left;
+  border-bottom: 2px solid var(--offwhite);
+}
+.fin-table tbody td {
+  font-size: 13px; font-weight: 500; color: var(--chumbo);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--offwhite);
+}
+.fin-table tbody tr:hover { background: rgba(0,136,255,0.03); }
+.fin-table .status-badge {
+  font-size: 11px; font-weight: 700; padding: 4px 12px;
+  border-radius: 20px; display: inline-block;
+}
+.fin-table .status-badge.ativo { background: rgba(0,200,83,0.1); color: #00873E; }
+.fin-table .status-badge.pendente { background: rgba(255,179,0,0.15); color: #CC8F00; }
+
+/* Evolucao Mensal Bar Chart (vertical) */
+.fin-evolution-chart {
+  display: flex; align-items: flex-end; gap: 16px;
+  height: 200px; padding-top: 20px;
+}
+.fin-evo-bar-wrapper {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; height: 100%; justify-content: flex-end;
+}
+.fin-evo-bar-value {
+  font-size: 10px; font-weight: 700; color: var(--navy);
+  margin-bottom: 6px; white-space: nowrap;
+}
+.fin-evo-bar {
+  width: 100%; max-width: 48px; border-radius: 8px 8px 4px 4px;
+  background: var(--blue); transition: height 1s ease;
+  min-height: 8px;
+}
+.fin-evo-bar-label {
+  font-size: 10px; font-weight: 600; color: #8b8fa3;
+  margin-top: 8px; white-space: nowrap;
+}
+
+/* Inadimplencia Card */
+.fin-inadimplencia {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  border-left: 4px solid #FFB300;
+}
+.fin-inadimplencia .fin-card-title { color: #CC8F00; }
+.fin-inadimplencia-value {
+  font-size: 28px; font-weight: 800; color: var(--navy);
+  margin-bottom: 12px;
+}
+.fin-inadimplencia-detail {
+  font-size: 13px; color: #8b8fa3; line-height: 1.8;
+}
+.fin-inadimplencia-detail strong { color: var(--chumbo); }
+
+/* Financeiro Responsive */
+@media (max-width: 1024px) {
+  .fin-kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .financeiro-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .fin-kpi-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fin-kpi-value { font-size: 24px; }
+  .fin-bar-label { width: 80px; min-width: 80px; font-size: 11px; }
+  .fin-bar-value { min-width: 70px; font-size: 11px; }
+}
+@media (max-width: 480px) {
+  .fin-kpi-row { grid-template-columns: 1fr; }
+  .fin-table { font-size: 11px; }
+  .fin-table thead th, .fin-table tbody td { padding: 10px 8px; }
+}
 </style>
 </head>
 <body>
@@ -588,6 +769,10 @@ body {
     <a href="#projects" data-nav="projects">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       Projects
+    </a>
+    <a href="#financeiro" data-nav="financeiro">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Financeiro
     </a>
 
     <div class="sidebar-section-title">Squad Categories</div>
@@ -1002,6 +1187,220 @@ body {
       </div>
     </section>
 
+    <!-- FINANCEIRO SECTION -->
+    <section class="section-wrapper" id="financeiro">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="accent-dot"></span>
+          Financeiro
+        </div>
+        <div class="section-badge">Abril 2026</div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="fin-kpi-row" style="margin-bottom:24px;">
+        <div class="fin-kpi-card animate-in">
+          <div class="fin-kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="fin-kpi-value">R$ 47.500</div>
+          <div class="fin-kpi-label">Receita Mensal</div>
+          <span class="fin-kpi-trend up">&#9650; 12% vs mes anterior</span>
+        </div>
+        <div class="fin-kpi-card animate-in">
+          <div class="fin-kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="fin-kpi-value">R$ 18.200</div>
+          <div class="fin-kpi-label">Despesas</div>
+          <span class="fin-kpi-trend down positive">&#9660; 5% vs mes anterior</span>
+        </div>
+        <div class="fin-kpi-card animate-in">
+          <div class="fin-kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="fin-kpi-value">R$ 29.300</div>
+          <div class="fin-kpi-label">Lucro Liquido</div>
+          <span class="fin-kpi-trend up">&#9650; 18% vs mes anterior</span>
+        </div>
+        <div class="fin-kpi-card animate-in">
+          <div class="fin-kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div class="fin-kpi-value">61,7%</div>
+          <div class="fin-kpi-label">Margem</div>
+          <span class="fin-kpi-trend up">&#9650; 3pp vs mes anterior</span>
+        </div>
+      </div>
+
+      <div class="financeiro-grid">
+
+        <!-- Receita por Cliente -->
+        <div class="fin-card">
+          <div class="fin-card-title">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V10"/><path d="M12 17V7"/><path d="M15 17V12"/></svg>
+            Receita por Cliente
+          </div>
+          <div class="fin-bar-chart">
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">Luzzoo</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:100%;background:var(--blue);">25,3%</div></div>
+              <div class="fin-bar-value">R$ 12.000</div>
+            </div>
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">Moom</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:79%;background:#00BCD4;">20%</div></div>
+              <div class="fin-bar-value">R$ 9.500</div>
+            </div>
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">Mermaid</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:65%;background:#9C27B0;">16,4%</div></div>
+              <div class="fin-bar-value">R$ 7.800</div>
+            </div>
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">1pra1</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:52%;background:#FF9800;">13,1%</div></div>
+              <div class="fin-bar-value">R$ 6.200</div>
+            </div>
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">Black</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:46%;background:#F44336;">11,6%</div></div>
+              <div class="fin-bar-value">R$ 5.500</div>
+            </div>
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">Impulso</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:29%;background:#00C853;">7,4%</div></div>
+              <div class="fin-bar-value">R$ 3.500</div>
+            </div>
+            <div class="fin-bar-item">
+              <div class="fin-bar-label">Encanto</div>
+              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:25%;background:#FFB300;">6,3%</div></div>
+              <div class="fin-bar-value">R$ 3.000</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evolucao Mensal -->
+        <div class="fin-card">
+          <div class="fin-card-title">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Evolucao Mensal
+          </div>
+          <div class="fin-evolution-chart">
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 28k</div>
+              <div class="fin-evo-bar" style="height:59%;background:rgba(0,136,255,0.4);"></div>
+              <div class="fin-evo-bar-label">Nov</div>
+            </div>
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 32,5k</div>
+              <div class="fin-evo-bar" style="height:68%;background:rgba(0,136,255,0.5);"></div>
+              <div class="fin-evo-bar-label">Dez</div>
+            </div>
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 35k</div>
+              <div class="fin-evo-bar" style="height:74%;background:rgba(0,136,255,0.6);"></div>
+              <div class="fin-evo-bar-label">Jan</div>
+            </div>
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 38,2k</div>
+              <div class="fin-evo-bar" style="height:80%;background:rgba(0,136,255,0.7);"></div>
+              <div class="fin-evo-bar-label">Fev</div>
+            </div>
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 42,3k</div>
+              <div class="fin-evo-bar" style="height:89%;background:rgba(0,136,255,0.85);"></div>
+              <div class="fin-evo-bar-label">Mar</div>
+            </div>
+            <div class="fin-evo-bar-wrapper">
+              <div class="fin-evo-bar-value">R$ 47,5k</div>
+              <div class="fin-evo-bar" style="height:100%;background:var(--blue);"></div>
+              <div class="fin-evo-bar-label">Abr</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contratos Ativos -->
+        <div class="fin-card full-width">
+          <div class="fin-card-title">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Contratos Ativos
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Plano</th>
+                  <th>Valor Mensal</th>
+                  <th>Status</th>
+                  <th>Vencimento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Luzzoo</strong></td>
+                  <td>Premium</td>
+                  <td>R$ 12.000</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                  <td>Jul 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>Moom</strong></td>
+                  <td>Standard</td>
+                  <td>R$ 9.500</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                  <td>Set 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>Mermaid</strong></td>
+                  <td>Standard</td>
+                  <td>R$ 7.800</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                  <td>Ago 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>1pra1</strong></td>
+                  <td>Basic</td>
+                  <td>R$ 6.200</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                  <td>Jun 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>Black</strong></td>
+                  <td>Basic</td>
+                  <td>R$ 5.500</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                  <td>Dez 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>Encanto</strong></td>
+                  <td>Basic</td>
+                  <td>R$ 3.000</td>
+                  <td><span class="status-badge pendente">Pendente</span></td>
+                  <td>Mai 2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Inadimplencia -->
+        <div class="fin-inadimplencia full-width">
+          <div class="fin-card-title">
+            <svg width="20" height="20" fill="none" stroke="#CC8F00" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Inadimplencia
+          </div>
+          <div class="fin-inadimplencia-value">R$ 3.000</div>
+          <div class="fin-inadimplencia-detail">
+            <strong>Cliente:</strong> Encanto (30 dias em atraso)<br>
+            <strong>Status:</strong> <span class="status-badge pendente" style="font-size:11px;">Pendente</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </div>
 
   <!-- FOOTER -->
@@ -1301,7 +1700,7 @@ document.querySelectorAll('.stat-card, .project-card').forEach(el => {
 });
 
 // ========== SCROLL SPY ==========
-const sections = ['dashboard','kanban','squads','projects'];
+const sections = ['dashboard','kanban','squads','projects','financeiro'];
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY + 100;
   sections.forEach(id => {
