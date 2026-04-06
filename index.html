@@ -1250,33 +1250,33 @@ body {
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
-          <div class="fin-kpi-value">R$ 48.564</div>
-          <div class="fin-kpi-label">Receita Mensal (Mar)</div>
-          <span class="fin-kpi-trend down">&#9660; 27% vs Fev</span>
+          <div class="fin-kpi-value" id="kpi-receita">R$ 48.564</div>
+          <div class="fin-kpi-label" id="kpi-receita-label">Receita Mensal (Mar)</div>
+          <span class="fin-kpi-trend down" id="kpi-receita-trend">&#9660; 27% vs Fev</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </div>
-          <div class="fin-kpi-value">—</div>
-          <div class="fin-kpi-label">Despesas</div>
-          <span class="fin-kpi-trend">Aguardando dados</span>
+          <div class="fin-kpi-value" id="kpi-despesas">—</div>
+          <div class="fin-kpi-label" id="kpi-despesas-label">Despesas (Mar)</div>
+          <span class="fin-kpi-trend" id="kpi-despesas-trend">Aguardando dados</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
           </div>
-          <div class="fin-kpi-value">—</div>
-          <div class="fin-kpi-label">Lucro Liquido</div>
-          <span class="fin-kpi-trend">Aguardando despesas</span>
+          <div class="fin-kpi-value" id="kpi-lucro">—</div>
+          <div class="fin-kpi-label" id="kpi-lucro-label">Lucro Liquido (Mar)</div>
+          <span class="fin-kpi-trend" id="kpi-lucro-trend">Aguardando despesas</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
           </div>
-          <div class="fin-kpi-value">—</div>
-          <div class="fin-kpi-label">Margem</div>
-          <span class="fin-kpi-trend">Aguardando despesas</span>
+          <div class="fin-kpi-value" id="kpi-margem">—</div>
+          <div class="fin-kpi-label" id="kpi-margem-label">Margem (Mar)</div>
+          <span class="fin-kpi-trend" id="kpi-margem-trend">Aguardando despesas</span>
         </div>
       </div>
 
@@ -1981,9 +1981,19 @@ function setFinPeriod(period, btn) {
   const d = finData[period];
   if (!d) return;
 
-  // Update KPIs
-  const kpis = document.querySelectorAll('.fin-kpi-value');
-  if (kpis[0]) kpis[0].textContent = fmt(d.receita);
+  // Update KPIs values and labels
+  const periodLabels = {
+    jan: 'Jan/26', fev: 'Fev/26', mar: 'Mar/26',
+    q1: 'Q1 2026', all: 'Todos'
+  };
+  const pl = periodLabels[period] || period;
+
+  const el = (id) => document.getElementById(id);
+  if (el('kpi-receita')) el('kpi-receita').textContent = fmt(d.receita);
+  if (el('kpi-receita-label')) el('kpi-receita-label').textContent = 'Receita ' + pl;
+  if (el('kpi-despesas-label')) el('kpi-despesas-label').textContent = 'Despesas ' + pl;
+  if (el('kpi-lucro-label')) el('kpi-lucro-label').textContent = 'Lucro Liquido ' + pl;
+  if (el('kpi-margem-label')) el('kpi-margem-label').textContent = 'Margem ' + pl;
 
   // Update badge
   const badge = document.querySelector('#financeiro .section-badge');
