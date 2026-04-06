@@ -662,7 +662,11 @@ body {
   letter-spacing: 1px; color: #8b8fa3;
   padding: 12px 16px; text-align: left;
   border-bottom: 2px solid var(--offwhite);
+  cursor: pointer; user-select: none; transition: color 0.2s;
 }
+.fin-table thead th:hover { color: var(--blue); }
+.fin-table thead th .sort-icon { font-size: 9px; margin-left: 4px; opacity: 0.3; }
+.fin-table thead th.sorted .sort-icon { opacity: 1; color: var(--blue); }
 .fin-table tbody td {
   font-size: 13px; font-weight: 500; color: var(--chumbo);
   padding: 14px 16px;
@@ -1327,58 +1331,110 @@ body {
             Contratos Ativos
           </div>
           <div style="overflow-x:auto;">
-            <table class="fin-table">
+            <table class="fin-table" id="tabelaContratos">
               <thead>
                 <tr>
-                  <th>Cliente</th>
-                  <th>Plano</th>
-                  <th>Valor Mensal</th>
-                  <th>Status</th>
-                  <th>Vencimento</th>
+                  <th onclick="sortFinTable('tabelaContratos', 0, 'text', this)">Cliente <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaContratos', 1, 'text', this)">Modelo <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaContratos', 2, 'number', this)">Valor/Ref. Mensal <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaContratos', 3, 'text', this)">Status <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><strong>Luzzoo</strong></td>
-                  <td>Premium</td>
-                  <td>R$ 12.000</td>
+                  <td>5% do faturamento</td>
+                  <td data-value="12000">R$ 12.000</td>
                   <td><span class="status-badge ativo">Ativo</span></td>
-                  <td>Jul 2026</td>
-                </tr>
-                <tr>
-                  <td><strong>Moom</strong></td>
-                  <td>Standard</td>
-                  <td>R$ 9.500</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                  <td>Set 2026</td>
-                </tr>
-                <tr>
-                  <td><strong>Mermaid</strong></td>
-                  <td>Standard</td>
-                  <td>R$ 7.800</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                  <td>Ago 2026</td>
-                </tr>
-                <tr>
-                  <td><strong>1pra1</strong></td>
-                  <td>Basic</td>
-                  <td>R$ 6.200</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                  <td>Jun 2026</td>
-                </tr>
-                <tr>
-                  <td><strong>Black</strong></td>
-                  <td>Basic</td>
-                  <td>R$ 5.500</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                  <td>Dez 2026</td>
                 </tr>
                 <tr>
                   <td><strong>Encanto</strong></td>
-                  <td>Basic</td>
-                  <td>R$ 3.000</td>
+                  <td>R$ 10k fixo ou 5% (>200k)</td>
+                  <td data-value="10000">R$ 10.000</td>
                   <td><span class="status-badge pendente">Pendente</span></td>
-                  <td>Mai 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>1pra1</strong></td>
+                  <td>3% do investimento</td>
+                  <td data-value="5400">R$ 5.400</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Moom</strong></td>
+                  <td>Fee fixo mensal</td>
+                  <td data-value="5000">R$ 5.000</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Mermaid</strong></td>
+                  <td>Fee fixo mensal</td>
+                  <td data-value="5000">R$ 5.000</td>
+                  <td><span class="status-badge ativo">Ativo</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Relatorio de Despesas -->
+        <div class="fin-card full-width">
+          <div class="fin-card-title">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Relatorio de Despesas
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="fin-table" id="tabelaDespesas">
+              <thead>
+                <tr>
+                  <th onclick="sortFinTable('tabelaDespesas', 0, 'text', this)">Despesa <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 1, 'text', this)">Categoria <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 2, 'text', this)">Cliente <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 3, 'number', this)">Valor <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 4, 'text', this)">Recorrencia <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Ferramentas de gestao</strong></td>
+                  <td>Software</td>
+                  <td>Geral</td>
+                  <td data-value="1200">R$ 1.200</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Custos operacionais Luzzoo</strong></td>
+                  <td>Operacional</td>
+                  <td>Luzzoo</td>
+                  <td data-value="3200">R$ 3.200</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Plataformas de design</strong></td>
+                  <td>Software</td>
+                  <td>Geral</td>
+                  <td data-value="800">R$ 800</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Hospedagem e dominio</strong></td>
+                  <td>Infraestrutura</td>
+                  <td>Geral</td>
+                  <td data-value="350">R$ 350</td>
+                  <td>Mensal</td>
+                </tr>
+                <tr>
+                  <td><strong>Freelancers</strong></td>
+                  <td>Terceiros</td>
+                  <td>Geral</td>
+                  <td data-value="2500">R$ 2.500</td>
+                  <td>Variavel</td>
+                </tr>
+                <tr>
+                  <td><strong>Trafego pago interno</strong></td>
+                  <td>Marketing</td>
+                  <td>Impulso</td>
+                  <td data-value="1500">R$ 1.500</td>
+                  <td>Mensal</td>
                 </tr>
               </tbody>
             </table>
@@ -1814,6 +1870,46 @@ async function syncFromNotion() {
 // Auto-sync on load and every 60 seconds
 syncFromNotion();
 setInterval(syncFromNotion, 60000);
+
+// ========== TABLE SORTING ==========
+const sortState = {};
+
+function sortFinTable(tableId, colIndex, type, thEl) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+
+  const key = tableId + '-' + colIndex;
+  sortState[key] = sortState[key] === 'asc' ? 'desc' : 'asc';
+  const dir = sortState[key];
+
+  // Update header styles
+  table.querySelectorAll('thead th').forEach(th => th.classList.remove('sorted'));
+  thEl.classList.add('sorted');
+
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+
+  rows.sort((a, b) => {
+    const cellA = a.cells[colIndex];
+    const cellB = b.cells[colIndex];
+
+    let valA, valB;
+
+    if (type === 'number') {
+      valA = parseFloat(cellA.dataset.value || cellA.textContent.replace(/[^\d.-]/g, '')) || 0;
+      valB = parseFloat(cellB.dataset.value || cellB.textContent.replace(/[^\d.-]/g, '')) || 0;
+    } else {
+      valA = cellA.textContent.trim().toLowerCase();
+      valB = cellB.textContent.trim().toLowerCase();
+    }
+
+    if (valA < valB) return dir === 'asc' ? -1 : 1;
+    if (valA > valB) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
+}
 </script>
 </body>
 </html>
