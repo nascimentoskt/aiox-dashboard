@@ -522,7 +522,7 @@ body {
   .stat-number { font-size: 28px; }
   .header-left .header-divider, .header-left .header-title { display: none; }
   .squad-grid { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr; }
+  .client-hub-grid { grid-template-columns: 1fr; }
   .kanban-column { width: 260px; min-width: 260px; }
 }
 @media (max-width: 480px) {
@@ -770,6 +770,374 @@ body {
   .fin-kpi-row { grid-template-columns: 1fr; }
   .fin-table { font-size: 11px; }
   .fin-table thead th, .fin-table tbody td { padding: 10px 8px; }
+}
+
+/* ========== CLIENT HUB ========== */
+.client-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.client-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+.client-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--client-color);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--client-color);
+}
+.client-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.client-card-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--client-color);
+  flex-shrink: 0;
+}
+.client-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.client-card-desc {
+  font-size: 12px;
+  color: #8b8fa3;
+  margin-bottom: 14px;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.client-card-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--client-color) 12%, transparent);
+  color: var(--client-color);
+}
+
+/* Client Detail Panel */
+.client-detail-panel {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, margin 0.3s ease;
+  margin-top: 0;
+}
+.client-detail-panel.open {
+  max-height: 2000px;
+  opacity: 1;
+  margin-top: 0;
+}
+.client-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 16px;
+  border-bottom: 2px solid var(--offwhite);
+}
+.client-detail-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.client-detail-accent {
+  width: 6px;
+  height: 32px;
+  border-radius: 3px;
+  background: var(--detail-color, var(--blue));
+}
+.client-detail-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.client-detail-close {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: var(--offwhite);
+  color: var(--chumbo);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.client-detail-close:hover {
+  background: #ff000015;
+  color: var(--red);
+}
+
+/* Client Tabs */
+.client-tab-bar {
+  display: flex;
+  gap: 0;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--offwhite);
+  overflow-x: auto;
+}
+.client-tab-btn {
+  padding: 14px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b8fa3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition);
+  white-space: nowrap;
+  font-family: 'Sora', sans-serif;
+}
+.client-tab-btn:hover {
+  color: var(--navy);
+}
+.client-tab-btn.active {
+  color: var(--detail-color, var(--blue));
+  border-bottom-color: var(--detail-color, var(--blue));
+}
+.client-tab-content {
+  padding: 28px;
+  animation: clientTabFadeIn 0.3s ease;
+}
+@keyframes clientTabFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Password Table */
+.pwd-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pwd-table thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8b8fa3;
+  border-bottom: 1px solid var(--offwhite);
+}
+.pwd-table tbody td {
+  padding: 14px;
+  font-size: 13px;
+  color: var(--chumbo);
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+.pwd-table tbody tr:last-child td { border-bottom: none; }
+.pwd-table tbody tr:hover { background: #fafafa; }
+.pwd-value {
+  font-family: 'Sora', monospace;
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+.pwd-actions {
+  display: flex;
+  gap: 8px;
+}
+.pwd-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--offwhite);
+  background: #fff;
+  color: #8b8fa3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  font-size: 14px;
+}
+.pwd-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(0,136,255,0.05);
+}
+.pwd-btn.copied {
+  border-color: #00C853;
+  color: #00C853;
+  background: rgba(0,200,83,0.05);
+}
+
+/* Links & Drive */
+.client-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.client-link-category {
+  background: var(--offwhite);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+}
+.client-link-category-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.client-link-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.client-link-item:last-child { border-bottom: none; }
+.client-link-item a {
+  font-size: 13px;
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity var(--transition);
+}
+.client-link-item a:hover { opacity: 0.7; }
+.client-link-icon {
+  width: 14px; height: 14px;
+  color: #8b8fa3;
+  flex-shrink: 0;
+}
+
+/* Contrato */
+.client-contrato-card {
+  background: var(--offwhite);
+  border-radius: var(--radius-sm);
+  padding: 28px;
+  max-width: 600px;
+}
+.client-contrato-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.client-contrato-row:last-child { border-bottom: none; }
+.client-contrato-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b8fa3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+}
+.client-contrato-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: right;
+  flex: 1;
+}
+.client-contrato-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.client-contrato-badge.ativo {
+  background: rgba(0,200,83,0.12);
+  color: #00C853;
+}
+.client-contrato-badge.pendente {
+  background: rgba(255,152,0,0.12);
+  color: #FF9800;
+}
+.client-contrato-badge.negociacao {
+  background: rgba(96,125,139,0.12);
+  color: #607D8B;
+}
+
+/* Negociacao Timeline */
+.client-timeline {
+  position: relative;
+  padding-left: 28px;
+  max-width: 600px;
+}
+.client-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--offwhite);
+  border-radius: 1px;
+}
+.client-timeline-item {
+  position: relative;
+  padding-bottom: 24px;
+}
+.client-timeline-item:last-child { padding-bottom: 0; }
+.client-timeline-dot {
+  position: absolute;
+  left: -24px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--detail-color, var(--blue));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--offwhite);
+}
+.client-timeline-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8b8fa3;
+  margin-bottom: 4px;
+}
+.client-timeline-text {
+  font-size: 13px;
+  color: var(--chumbo);
+  line-height: 1.6;
+}
+
+/* Client Hub Responsive */
+@media (max-width: 1024px) {
+  .client-hub-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .client-hub-grid { grid-template-columns: 1fr; }
+  .client-tab-bar { padding: 0 16px; }
+  .client-tab-content { padding: 20px 16px; }
+  .client-detail-header { padding: 20px 16px 12px; }
+  .client-contrato-row { flex-direction: column; gap: 4px; }
+  .client-contrato-value { text-align: left; }
+  .client-links-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -1152,75 +1520,36 @@ body {
       </div>
     </section>
 
-    <!-- PROJECTS SECTION -->
+    <!-- CLIENT HUB SECTION -->
     <section class="section-wrapper" id="projects">
       <div class="section-header">
         <div class="section-title">
           <span class="accent-dot"></span>
-          Projetos
+          Client Hub
         </div>
-        <div class="section-badge">4 ativos</div>
+        <div class="section-badge">8 clientes</div>
       </div>
 
-      <div class="projects-grid">
-        <div class="project-card animate-in">
-          <div class="project-icon" style="background:rgba(0,136,255,0.1);color:var(--blue);">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <div class="project-name">Luzzoo Fitness</div>
-          <div class="project-desc">Estrategia de conteudo e branding para marca de fitness premium.</div>
-          <div class="project-progress-bar">
-            <div class="project-progress-fill" style="width:45%;background:var(--blue);"></div>
-          </div>
-          <div class="project-progress-info">
-            <span>45% concluido</span>
-            <span>5 tasks ativas</span>
-          </div>
-        </div>
+      <div class="client-hub-grid" id="clientHubGrid">
+        <!-- Rendered by JS -->
+      </div>
 
-        <div class="project-card animate-in">
-          <div class="project-icon" style="background:rgba(0,200,83,0.1);color:#00C853;">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="client-detail-panel" id="clientDetailPanel">
+        <div class="client-detail-header">
+          <div class="client-detail-header-left">
+            <div class="client-detail-accent" id="clientDetailAccent"></div>
+            <div class="client-detail-name" id="clientDetailName"></div>
           </div>
-          <div class="project-name">Impulso Digital</div>
-          <div class="project-desc">Infraestrutura interna, templates, sistemas e AIOX Command Center.</div>
-          <div class="project-progress-bar">
-            <div class="project-progress-fill" style="width:68%;background:#00C853;"></div>
-          </div>
-          <div class="project-progress-info">
-            <span>68% concluido</span>
-            <span>8 tasks ativas</span>
-          </div>
+          <button class="client-detail-close" onclick="closeClientDetail()" title="Fechar">&times;</button>
         </div>
-
-        <div class="project-card animate-in">
-          <div class="project-icon" style="background:rgba(156,39,176,0.1);color:#9C27B0;">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-          </div>
-          <div class="project-name">Moom</div>
-          <div class="project-desc">Plataforma de bem-estar e movimento consciente.</div>
-          <div class="project-progress-bar">
-            <div class="project-progress-fill" style="width:22%;background:#9C27B0;"></div>
-          </div>
-          <div class="project-progress-info">
-            <span>22% concluido</span>
-            <span>2 tasks ativas</span>
-          </div>
+        <div class="client-tab-bar" id="clientTabBar">
+          <button class="client-tab-btn active" onclick="switchClientTab('senhas')">Senhas</button>
+          <button class="client-tab-btn" onclick="switchClientTab('links')">Links & Drive</button>
+          <button class="client-tab-btn" onclick="switchClientTab('contrato')">Contrato</button>
+          <button class="client-tab-btn" onclick="switchClientTab('negociacao')">Negociacao</button>
         </div>
-
-        <div class="project-card animate-in">
-          <div class="project-icon" style="background:rgba(255,152,0,0.1);color:#FF9800;">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          </div>
-          <div class="project-name">AIOX Platform</div>
-          <div class="project-desc">Sistema operacional de agentes IA para agencias digitais.</div>
-          <div class="project-progress-bar">
-            <div class="project-progress-fill" style="width:82%;background:#FF9800;"></div>
-          </div>
-          <div class="project-progress-info">
-            <span>82% concluido</span>
-            <span>12 tasks ativas</span>
-          </div>
+        <div class="client-tab-content" id="clientTabContent">
+          <!-- Tab content rendered by JS -->
         </div>
       </div>
     </section>
@@ -2058,6 +2387,495 @@ function sortFinTable(tableId, colIndex, type, thEl) {
   });
 
   rows.forEach(row => tbody.appendChild(row));
+}
+
+/* ========== CLIENT HUB JS ========== */
+const clientsData = {
+  luzzoo: {
+    name: 'Luzzoo',
+    color: '#0088FF',
+    desc: 'Marca de fitness premium - estrategia e performance',
+    badge: '5% Faturamento',
+    senhas: [
+      { servico: 'Meta Ads', usuario: 'luzzoo@impulso.digital', senha: 'Lzz@Meta2024!' },
+      { servico: 'Google Ads', usuario: 'luzzoo.ads@gmail.com', senha: 'GglLzz#2024' },
+      { servico: 'Instagram', usuario: '@luzzoo.oficial', senha: 'InstaLzz!2024' },
+      { servico: 'Shopee', usuario: 'luzzoo.shop', senha: 'ShpLzz@2024' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Banco de Criativos', url: 'https://drive.google.com/luzzoo/criativos' },
+        { title: 'Templates Canva', url: 'https://canva.com/team/luzzoo' }
+      ],
+      Relatorios: [
+        { title: 'Relatorio Mensal', url: 'https://docs.google.com/luzzoo/relatorio' },
+        { title: 'Dashboard Analytics', url: 'https://analytics.google.com/luzzoo' }
+      ],
+      Assets: [
+        { title: 'Logo e Branding', url: 'https://drive.google.com/luzzoo/brand' },
+        { title: 'Fotos Produto', url: 'https://drive.google.com/luzzoo/fotos' }
+      ]
+    },
+    contrato: {
+      modelo: '% do Faturamento',
+      valor: '5% do faturamento mensal',
+      vigencia: 'Jan 2024 - Dez 2024',
+      status: 'ativo',
+      obs: 'Inclui custos operacionais mensais. Faturamento apurado via Shopee + site proprio.'
+    },
+    negociacao: [
+      { date: 'Jan 2024', text: 'Contrato fechado em 5% do faturamento com custos operacionais inclusos.' },
+      { date: 'Jul 2024', text: 'Revisao semestral: mantido modelo de 5%. Cliente satisfeito com crescimento de vendas.' },
+      { date: 'Nov 2024', text: 'Negociacao para 2025: proposta de manter 5% com bonus por meta atingida.' }
+    ]
+  },
+  '1pra1': {
+    name: '1pra1',
+    color: '#FF9800',
+    desc: 'Gestao de investimento em ads e performance',
+    badge: '3% Investimento',
+    senhas: [
+      { servico: 'Meta Ads', usuario: '1pra1@impulso.digital', senha: '1p1@Meta2024!' },
+      { servico: 'Google Ads', usuario: '1pra1.ads@gmail.com', senha: 'Ggl1p1#2024' },
+      { servico: 'Instagram', usuario: '@1pra1oficial', senha: 'Insta1p1!2024' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Banco de Criativos', url: 'https://drive.google.com/1pra1/criativos' },
+        { title: 'Briefings', url: 'https://drive.google.com/1pra1/briefings' }
+      ],
+      Relatorios: [
+        { title: 'Performance Ads', url: 'https://docs.google.com/1pra1/ads-report' },
+        { title: 'ROI Mensal', url: 'https://docs.google.com/1pra1/roi' }
+      ],
+      Contratos: [
+        { title: 'Contrato Vigente', url: 'https://drive.google.com/1pra1/contrato' }
+      ]
+    },
+    contrato: {
+      modelo: '% do Investimento',
+      valor: '3% do investimento em ads',
+      vigencia: 'Mar 2024 - Mar 2025',
+      status: 'ativo',
+      obs: 'Percentual sobre o valor total investido em plataformas de anuncio (Meta + Google).'
+    },
+    negociacao: [
+      { date: 'Mar 2024', text: 'Inicio da parceria com modelo de 3% sobre investimento em ads.' },
+      { date: 'Set 2024', text: 'Avaliacao: investimento cresceu 40%. Modelo mantido sem alteracao.' }
+    ]
+  },
+  moom: {
+    name: 'Moom',
+    color: '#9C27B0',
+    desc: 'Plataforma de bem-estar e movimento consciente',
+    badge: 'Fee Fixo',
+    senhas: [
+      { servico: 'Meta Ads', usuario: 'moom@impulso.digital', senha: 'Moom@Meta2024!' },
+      { servico: 'Instagram', usuario: '@moom.oficial', senha: 'InstaMoom!2024' },
+      { servico: 'Hotmart', usuario: 'moom.hotmart', senha: 'HtmMoom#2024' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Criativos Social', url: 'https://drive.google.com/moom/social' },
+        { title: 'Videos Aulas', url: 'https://drive.google.com/moom/videos' }
+      ],
+      Relatorios: [
+        { title: 'Relatorio Mensal', url: 'https://docs.google.com/moom/relatorio' }
+      ],
+      Assets: [
+        { title: 'Identidade Visual', url: 'https://drive.google.com/moom/brand' }
+      ]
+    },
+    contrato: {
+      modelo: 'Fee Fixo Mensal',
+      valor: 'R$ 5.000/mes',
+      vigencia: 'Fev 2024 - Fev 2025',
+      status: 'ativo',
+      obs: 'Fee fixo mensal. Inclui gestao de redes sociais e trafego pago.'
+    },
+    negociacao: [
+      { date: 'Fev 2024', text: 'Contrato inicial fechado em R$ 5.000 fixo/mes.' },
+      { date: 'Ago 2024', text: 'Cliente solicitou revisao de escopo. Valor mantido com ajuste de entregas.' }
+    ]
+  },
+  mermaid: {
+    name: 'Mermaid',
+    color: '#E91E63',
+    desc: 'Marca de cosmeticos e cuidados pessoais',
+    badge: 'Fee Fixo',
+    senhas: [
+      { servico: 'Meta Ads', usuario: 'mermaid@impulso.digital', senha: 'Mrmd@Meta2024!' },
+      { servico: 'Google Ads', usuario: 'mermaid.ads@gmail.com', senha: 'GglMrmd#2024' },
+      { servico: 'Instagram', usuario: '@mermaid.beauty', senha: 'InstaMrmd!2024' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Banco de Criativos', url: 'https://drive.google.com/mermaid/criativos' },
+        { title: 'Catalogo Produtos', url: 'https://drive.google.com/mermaid/catalogo' }
+      ],
+      Relatorios: [
+        { title: 'Performance Mensal', url: 'https://docs.google.com/mermaid/performance' }
+      ],
+      Midias: [
+        { title: 'Fotos Produto', url: 'https://drive.google.com/mermaid/fotos' },
+        { title: 'Videos UGC', url: 'https://drive.google.com/mermaid/ugc' }
+      ]
+    },
+    contrato: {
+      modelo: 'Fee Fixo Mensal',
+      valor: 'R$ 5.000/mes',
+      vigencia: 'Abr 2024 - Abr 2025',
+      status: 'ativo',
+      obs: 'Fee fixo mensal para gestao completa de marketing digital.'
+    },
+    negociacao: [
+      { date: 'Abr 2024', text: 'Fechamento do contrato em R$ 5.000/mes. Escopo: social + trafego + criativos.' },
+      { date: 'Out 2024', text: 'Proposta de aumento para R$ 6.500 com inclusao de email marketing. Em analise.' }
+    ]
+  },
+  encanto: {
+    name: 'Encanto',
+    color: '#FFB300',
+    desc: 'E-commerce premium com modelo hibrido de cobranca',
+    badge: 'Hibrido',
+    senhas: [
+      { servico: 'Meta Ads', usuario: 'encanto@impulso.digital', senha: 'Enc@Meta2024!' },
+      { servico: 'Google Ads', usuario: 'encanto.ads@gmail.com', senha: 'GglEnc#2024' },
+      { servico: 'Shopify', usuario: 'encanto-admin', senha: 'ShpfEnc@2024' },
+      { servico: 'Instagram', usuario: '@encanto.store', senha: 'InstaEnc!2024' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Banco de Criativos', url: 'https://drive.google.com/encanto/criativos' },
+        { title: 'Guidelines Brand', url: 'https://drive.google.com/encanto/guidelines' }
+      ],
+      Relatorios: [
+        { title: 'Relatorio de Vendas', url: 'https://docs.google.com/encanto/vendas' },
+        { title: 'Dashboard Shopify', url: 'https://encanto.myshopify.com/admin' }
+      ],
+      Contratos: [
+        { title: 'Contrato Vigente', url: 'https://drive.google.com/encanto/contrato' }
+      ]
+    },
+    contrato: {
+      modelo: 'Hibrido (Fixo + Comissao)',
+      valor: 'R$ 10.000 fixo OU 5% comissao (a partir de R$ 200k faturamento)',
+      vigencia: 'Jun 2024 - Jun 2025',
+      status: 'ativo',
+      obs: 'Modelo hibrido: fee fixo de R$ 10.000 ou 5% de comissao quando faturamento ultrapassar R$ 200.000. Prevalece o maior valor.'
+    },
+    negociacao: [
+      { date: 'Jun 2024', text: 'Contrato fechado com modelo hibrido: R$ 10k fixo ou 5% acima de R$ 200k fat.' },
+      { date: 'Set 2024', text: 'Primeiro mes com faturamento acima de R$ 200k. Comissao de 5% aplicada.' },
+      { date: 'Dez 2024', text: 'Renovacao proposta: manter modelo hibrido com revisao do teto para R$ 250k.' }
+    ]
+  },
+  black: {
+    name: 'Black',
+    color: '#607D8B',
+    desc: 'Novo cliente - fase de prospeccao e negociacao',
+    badge: 'Em negociacao',
+    senhas: [
+      { servico: 'Instagram', usuario: '@black.brand', senha: 'InstaBlk!2024' },
+      { servico: 'Meta Ads', usuario: 'black@impulso.digital', senha: 'Blk@Meta2024!' }
+    ],
+    links: {
+      Relatorios: [
+        { title: 'Proposta Comercial', url: 'https://drive.google.com/black/proposta' }
+      ],
+      Assets: [
+        { title: 'Briefing Inicial', url: 'https://drive.google.com/black/briefing' }
+      ]
+    },
+    contrato: {
+      modelo: 'Em negociacao',
+      valor: 'A definir',
+      vigencia: 'A definir',
+      status: 'negociacao',
+      obs: 'Cliente em fase de negociacao. Proposta enviada, aguardando retorno.'
+    },
+    negociacao: [
+      { date: 'Nov 2024', text: 'Primeiro contato. Reuniao de briefing realizada.' },
+      { date: 'Dez 2024', text: 'Proposta comercial enviada. Aguardando retorno do cliente.' }
+    ]
+  },
+  impulso: {
+    name: 'Impulso',
+    color: '#00C853',
+    desc: 'Projeto interno - infraestrutura e sistemas AIOX',
+    badge: 'Interno',
+    senhas: [
+      { servico: 'Vercel', usuario: 'impulso@impulso.digital', senha: 'VrclImp#2024' },
+      { servico: 'GitHub', usuario: 'impulso-digital', senha: 'GhImp@2024!' },
+      { servico: 'Notion', usuario: 'impulso@impulso.digital', senha: 'NtnImp#2024' },
+      { servico: 'Figma', usuario: 'impulso@impulso.digital', senha: 'FgmImp@2024' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Templates Internos', url: 'https://drive.google.com/impulso/templates' }
+      ],
+      Relatorios: [
+        { title: 'KPIs Internos', url: 'https://docs.google.com/impulso/kpis' }
+      ],
+      Assets: [
+        { title: 'Brand Kit Impulso', url: 'https://drive.google.com/impulso/brand' },
+        { title: 'Repositorio GitHub', url: 'https://github.com/impulso-digital' }
+      ]
+    },
+    contrato: {
+      modelo: 'Projeto Interno',
+      valor: 'N/A',
+      vigencia: 'Permanente',
+      status: 'ativo',
+      obs: 'Projeto interno da Impulso Digital. Sem cobranca - investimento proprio.'
+    },
+    negociacao: [
+      { date: 'Jan 2024', text: 'Inicio do projeto AIOX Command Center.' },
+      { date: 'Jun 2024', text: 'Lancamento do dashboard v1. Expansao planejada para Q3.' }
+    ]
+  },
+  cartman: {
+    name: 'Jornal do Cartman',
+    color: '#F44336',
+    desc: 'Portal de noticias e entretenimento',
+    badge: 'Em negociacao',
+    senhas: [
+      { servico: 'Instagram', usuario: '@jornaldocartman', senha: 'InstaJC!2024' },
+      { servico: 'YouTube', usuario: 'jornaldocartman', senha: 'YtJC@2024!' }
+    ],
+    links: {
+      Criativos: [
+        { title: 'Thumbnails', url: 'https://drive.google.com/cartman/thumbs' }
+      ],
+      Relatorios: [
+        { title: 'Proposta Comercial', url: 'https://drive.google.com/cartman/proposta' }
+      ]
+    },
+    contrato: {
+      modelo: 'Em negociacao',
+      valor: 'A definir',
+      vigencia: 'A definir',
+      status: 'negociacao',
+      obs: 'Contato inicial realizado. Avaliando escopo e modelo de cobranca.'
+    },
+    negociacao: [
+      { date: 'Out 2024', text: 'Primeiro contato via indicacao. Reuniao de alinhamento agendada.' },
+      { date: 'Nov 2024', text: 'Reuniao realizada. Levantamento de necessidades em andamento.' }
+    ]
+  }
+};
+
+let currentClientId = null;
+let currentClientTab = 'senhas';
+
+function renderClientCards() {
+  const grid = document.getElementById('clientHubGrid');
+  grid.innerHTML = '';
+  Object.entries(clientsData).forEach(([id, client]) => {
+    const card = document.createElement('div');
+    card.className = 'client-card animate-in';
+    card.style.setProperty('--client-color', client.color);
+    card.onclick = () => openClientDetail(id);
+    card.innerHTML = `
+      <div class="client-card-header">
+        <div class="client-card-dot"></div>
+        <div class="client-card-name">${client.name}</div>
+      </div>
+      <div class="client-card-desc">${client.desc}</div>
+      <div class="client-card-badge">${client.badge}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openClientDetail(clientId) {
+  const client = clientsData[clientId];
+  if (!client) return;
+  currentClientId = clientId;
+  currentClientTab = 'senhas';
+
+  const panel = document.getElementById('clientDetailPanel');
+  panel.style.setProperty('--detail-color', client.color);
+  document.getElementById('clientDetailAccent').style.background = client.color;
+  document.getElementById('clientDetailName').textContent = client.name;
+
+  // Reset tabs
+  document.querySelectorAll('.client-tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === 0);
+  });
+
+  switchClientTab('senhas');
+  panel.classList.add('open');
+
+  // Scroll to panel
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+function closeClientDetail() {
+  const panel = document.getElementById('clientDetailPanel');
+  panel.classList.remove('open');
+  currentClientId = null;
+}
+
+function switchClientTab(tabName) {
+  currentClientTab = tabName;
+  const client = clientsData[currentClientId];
+  if (!client) return;
+
+  // Update tab buttons
+  document.querySelectorAll('.client-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().replace(/\s*&\s*/g, '').includes(tabName.replace('links', 'links')));
+  });
+  const tabBtns = document.querySelectorAll('.client-tab-btn');
+  tabBtns.forEach(b => b.classList.remove('active'));
+  const tabMap = { senhas: 0, links: 1, contrato: 2, negociacao: 3 };
+  if (tabBtns[tabMap[tabName]]) tabBtns[tabMap[tabName]].classList.add('active');
+
+  const content = document.getElementById('clientTabContent');
+
+  if (tabName === 'senhas') {
+    content.innerHTML = renderSenhasTab(client);
+  } else if (tabName === 'links') {
+    content.innerHTML = renderLinksTab(client);
+  } else if (tabName === 'contrato') {
+    content.innerHTML = renderContratoTab(client);
+  } else if (tabName === 'negociacao') {
+    content.innerHTML = renderNegociacaoTab(client);
+  }
+}
+
+function renderSenhasTab(client) {
+  const rows = (client.senhas || []).map((s, i) => `
+    <tr>
+      <td style="font-weight:600;">${s.servico}</td>
+      <td>${s.usuario}</td>
+      <td>
+        <span class="pwd-value" id="pwd-${i}" data-revealed="false">${'•'.repeat(12)}</span>
+      </td>
+      <td>
+        <div class="pwd-actions">
+          <button class="pwd-btn" onclick="togglePassword(this, ${i}, '${s.senha}')" title="Mostrar/ocultar">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="pwd-btn" onclick="copyToClipboard('${s.senha}', this)" title="Copiar">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  return `
+    <table class="pwd-table">
+      <thead>
+        <tr>
+          <th>Servico</th>
+          <th>Usuario</th>
+          <th>Senha</th>
+          <th>Acoes</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function renderLinksTab(client) {
+  const categories = Object.entries(client.links || {}).map(([cat, links]) => {
+    const items = links.map(l => `
+      <div class="client-link-item">
+        <svg class="client-link-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <a href="${l.url}" target="_blank">${l.title}</a>
+      </div>
+    `).join('');
+    return `
+      <div class="client-link-category">
+        <div class="client-link-category-title">${cat}</div>
+        ${items}
+      </div>
+    `;
+  }).join('');
+
+  return `<div class="client-links-grid">${categories}</div>`;
+}
+
+function renderContratoTab(client) {
+  const c = client.contrato || {};
+  const statusClass = c.status === 'ativo' ? 'ativo' : (c.status === 'negociacao' ? 'negociacao' : 'pendente');
+  const statusLabel = c.status === 'ativo' ? 'Ativo' : (c.status === 'negociacao' ? 'Em Negociacao' : 'Pendente');
+
+  return `
+    <div class="client-contrato-card">
+      <div class="client-contrato-row">
+        <div class="client-contrato-label">Modelo de Cobranca</div>
+        <div class="client-contrato-value">${c.modelo || '-'}</div>
+      </div>
+      <div class="client-contrato-row">
+        <div class="client-contrato-label">Valor Referencia</div>
+        <div class="client-contrato-value">${c.valor || '-'}</div>
+      </div>
+      <div class="client-contrato-row">
+        <div class="client-contrato-label">Vigencia</div>
+        <div class="client-contrato-value">${c.vigencia || '-'}</div>
+      </div>
+      <div class="client-contrato-row">
+        <div class="client-contrato-label">Status</div>
+        <div class="client-contrato-value"><span class="client-contrato-badge ${statusClass}">${statusLabel}</span></div>
+      </div>
+      <div class="client-contrato-row">
+        <div class="client-contrato-label">Observacoes</div>
+        <div class="client-contrato-value" style="font-weight:400;font-size:13px;line-height:1.6;">${c.obs || '-'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderNegociacaoTab(client) {
+  const items = (client.negociacao || []).map(n => `
+    <div class="client-timeline-item">
+      <div class="client-timeline-dot"></div>
+      <div class="client-timeline-date">${n.date}</div>
+      <div class="client-timeline-text">${n.text}</div>
+    </div>
+  `).join('');
+
+  return `<div class="client-timeline">${items}</div>`;
+}
+
+function togglePassword(btn, index, realPassword) {
+  const span = document.getElementById('pwd-' + index);
+  if (!span) return;
+  const revealed = span.dataset.revealed === 'true';
+  if (revealed) {
+    span.textContent = '•'.repeat(12);
+    span.dataset.revealed = 'false';
+  } else {
+    span.textContent = realPassword;
+    span.dataset.revealed = 'true';
+  }
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = origHTML;
+    }, 1500);
+  });
+}
+
+// Initialize client hub on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderClientCards();
+});
+// Also render immediately in case DOMContentLoaded already fired
+if (document.readyState !== 'loading') {
+  renderClientCards();
 }
 </script>
 </body>
