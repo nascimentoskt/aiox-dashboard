@@ -1767,70 +1767,7 @@ body {
                   <th onclick="sortFinTable('tabelaDespesas', 4, 'text', this)">Recorrencia <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Ferramentas de gestao</strong></td>
-                  <td>Software</td>
-                  <td>Geral</td>
-                  <td data-value="1200">R$ 1.200</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Custos operacionais Luzzoo</strong></td>
-                  <td>Operacional</td>
-                  <td>Luzzoo</td>
-                  <td data-value="3200">R$ 3.200</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Plataformas de design</strong></td>
-                  <td>Software</td>
-                  <td>Geral</td>
-                  <td data-value="800">R$ 800</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Hospedagem e dominio</strong></td>
-                  <td>Infraestrutura</td>
-                  <td>Geral</td>
-                  <td data-value="350">R$ 350</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Freelancers</strong></td>
-                  <td>Terceiros</td>
-                  <td>Geral</td>
-                  <td data-value="2500">R$ 2.500</td>
-                  <td>Variavel</td>
-                </tr>
-                <tr>
-                  <td><strong>Trafego pago interno</strong></td>
-                  <td>Marketing</td>
-                  <td>Impulso</td>
-                  <td data-value="1500">R$ 1.500</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Salario Diego</strong></td>
-                  <td>Folha</td>
-                  <td>Impulso</td>
-                  <td data-value="5000">R$ 5.000</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Salario Flavio</strong></td>
-                  <td>Folha</td>
-                  <td>Impulso</td>
-                  <td data-value="3500">R$ 3.500</td>
-                  <td>Mensal</td>
-                </tr>
-                <tr>
-                  <td><strong>Comissao Guilherme</strong></td>
-                  <td>Folha</td>
-                  <td>Impulso</td>
-                  <td data-value="0">Pendente</td>
-                  <td>Mensal</td>
-                </tr>
+              <tbody id="despesasBody">
               </tbody>
             </table>
           </div>
@@ -2322,6 +2259,43 @@ const finData = {
   }
 };
 
+// Despesas reais por periodo
+const despesasData = {
+  jan: [],
+  fev: [],
+  mar: [],
+  abr: [
+    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
+    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
+    { despesa: 'Comissao Guilherme', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
+  ],
+  q1: [],
+  all: [
+    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
+    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
+    { despesa: 'Comissao Guilherme', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
+  ]
+};
+
+function renderDespesas(period) {
+  const tbody = document.getElementById('despesasBody');
+  if (!tbody) return;
+  const items = despesasData[period] || [];
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma despesa cadastrada para este periodo</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(d => `
+    <tr>
+      <td><strong>${d.despesa}</strong></td>
+      <td>${d.categoria}</td>
+      <td>${d.cliente}</td>
+      <td data-value="${d.valor}">${d.valor > 0 ? 'R$ ' + d.valor.toLocaleString('pt-BR') : '<span style="color:#CC8F00">Pendente</span>'}</td>
+      <td><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;${d.status === 'Pago' ? 'background:rgba(0,200,83,.1);color:#00873E' : 'background:rgba(255,179,0,.15);color:#CC8F00'}">${d.status}</span></td>
+    </tr>
+  `).join('');
+}
+
 const pendingClients = [
   { nome: 'Luzzoo', cor: 'var(--blue)' },
   { nome: 'Encanto', cor: '#FFB300' },
@@ -2377,6 +2351,19 @@ function setFinPeriod(period, btn) {
       <div class="fin-bar-value" style="opacity:.4">Pendente</div>
     </div>
   `).join('');
+
+  // Update despesas table
+  renderDespesas(period);
+
+  // Update despesas/lucro/margem KPIs dynamically
+  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.despesas > 0 ? fmt(d.despesas) : '—';
+  if (el('kpi-despesas-trend')) el('kpi-despesas-trend').textContent = d.despesas > 0 ? 'Dados reais' : 'Sem despesas cadastradas';
+  const lucro = d.receita - d.despesas;
+  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.despesas > 0 ? fmt(lucro) : '—';
+  if (el('kpi-lucro-trend')) el('kpi-lucro-trend').textContent = d.despesas > 0 ? 'Receita - Despesas' : 'Aguardando despesas';
+  const margem = d.receita > 0 && d.despesas > 0 ? ((lucro / d.receita) * 100).toFixed(1) + '%' : '—';
+  if (el('kpi-margem')) el('kpi-margem').textContent = margem;
+  if (el('kpi-margem-trend')) el('kpi-margem-trend').textContent = d.despesas > 0 ? 'Lucro / Receita' : 'Aguardando despesas';
 }
 
 // ========== TABLE SORTING ==========
@@ -2899,13 +2886,14 @@ function copyToClipboard(text, btn) {
   });
 }
 
-// Initialize client hub on load
+// Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
   renderClientCards();
+  renderDespesas('abr');
 });
-// Also render immediately in case DOMContentLoaded already fired
 if (document.readyState !== 'loading') {
   renderClientCards();
+  renderDespesas('abr');
 }
 </script>
 </body>
