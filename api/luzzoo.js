@@ -56,12 +56,12 @@ module.exports = async function handler(req, res) {
     };
 
     const columns = [
-      { id: 'aprovar', title: 'Aprovar', color: '#F44336', cards: [] },
       { id: 'nao-iniciado', title: 'Não Iniciado', color: '#8b8fa3', cards: [] },
       { id: 'planejamento', title: 'Em Planejamento', color: '#FFB300', cards: [] },
       { id: 'espera', title: 'Em Espera', color: '#FF9800', cards: [] },
       { id: 'producao', title: 'Em Produção', color: '#9C27B0', cards: [] },
       { id: 'continuas', title: 'Tarefas Contínuas', color: '#0088FF', cards: [] },
+      { id: 'aprovar', title: 'Aprovar', color: '#F44336', cards: [] },
       { id: 'concluido', title: 'Concluído', color: '#00C853', cards: [] }
     ];
 
