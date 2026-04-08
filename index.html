@@ -4497,126 +4497,684 @@ if (document.readyState !== 'loading') {
   loadDashActivity();
   loadDashPending();
 }
-// ========== API INTEGRATION: submitFinModal -> POST /api/add-financial ==========
-(function() {
-  var _origSubmitFinModal = submitFinModal;
-  submitFinModal = function(e) {
-    _origSubmitFinModal(e);
+// ========== FINANCEIRO: API-DRIVEN DATA (replaces hardcoded finData/despesasData/receitasData) ==========
+var finApiData = null;
+var finApiLoading = false;
+var finSelectedMonth = 'all'; // 'all' or a mesAno string like 'Abr/2026'
 
-    // Gather form values (modal already closed, read from data arrays)
-    var type = finModalType;
-    var status = '';
-    var nome = '';
-    var valor = 0;
-    var cnpj = '';
-    var vencimento = '';
-    var categoria = '';
-    var modelo = '';
-    var period = currentFinPeriod;
+// Color palette for clients
+var finClientColors = ['#FF9800','#00BCD4','#9C27B0','#4CAF50','#FF5722','#607D8B','#E91E63','#3F51B5','#009688','#795548'];
 
-    // Read from the last pushed entry in the data arrays
-    var dataArr = type === 'despesa' ? despesasData : receitasData;
-    if (dataArr[period] && dataArr[period].length > 0) {
-      var lastEntry = dataArr[period][dataArr[period].length - 1];
-      status = lastEntry.status || '';
-      nome = lastEntry.nome || '';
-      valor = lastEntry.valor || 0;
-      cnpj = lastEntry.cnpj || '';
-      vencimento = lastEntry.vencimento || '';
-      categoria = lastEntry.categoria || '';
-      modelo = lastEntry.modelo || '';
-    }
+function loadFinanceiro() {
+  if (finApiLoading) return;
+  finApiLoading = true;
+  console.log('[AIOX] Loading financeiro data from API...');
 
-    // Show saving indicator on the form button (if still visible)
-    var submitBtn = document.querySelector('#finModalForm button[type="submit"]');
-    var origText = '';
-    if (submitBtn) {
-      origText = submitBtn.textContent;
-      submitBtn.textContent = 'Salvando...';
-      submitBtn.disabled = true;
-    }
-
-    fetch('/api/add-financial', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        type: type,
-        nome: nome,
-        valor: valor,
-        status: status,
-        categoria: categoria,
-        modelo: modelo,
-        cnpj: cnpj,
-        vencimento: vencimento,
-        mesAno: period,
-        cliente: nome
-      })
-    })
-    .then(function(res) {
-      if (submitBtn) {
-        submitBtn.textContent = 'Salvo \u2713';
-        setTimeout(function() {
-          submitBtn.textContent = origText || 'Adicionar';
-          submitBtn.disabled = false;
-        }, 1500);
-      }
-      console.log('[AIOX] Financial entry saved to API');
+  fetch('/api/financeiro')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      finApiData = data;
+      finApiLoading = false;
+      console.log('[AIOX] Financeiro loaded: ' + data.totalRecords + ' records, ' + data.months.length + ' months');
+      renderFinanceiro();
     })
     .catch(function(err) {
-      if (submitBtn) {
-        submitBtn.textContent = origText || 'Adicionar';
-        submitBtn.disabled = false;
-      }
-      console.log('[AIOX] Failed to save financial entry:', err.message);
+      finApiLoading = false;
+      console.log('[AIOX] Failed to load financeiro:', err.message);
     });
+}
+
+function renderFinanceiro() {
+  if (!finApiData) return;
+
+  // Build period filter buttons dynamically
+  renderFinPeriodButtons();
+
+  // Determine current data based on selected period
+  var periodData = getFinPeriodData();
+
+  // Update KPIs
+  renderFinKPIs(periodData);
+
+  // Update Receita por Cliente chart
+  renderFinReceitaChart(periodData);
+
+  // Update Evolucao Mensal chart
+  renderFinEvoChart();
+
+  // Update tables
+  renderFinReceitasTable(periodData);
+  renderFinDespesasTable(periodData);
+
+  // Update inadimplencia
+  renderFinInadimplencia(periodData);
+}
+
+function getFinPeriodData() {
+  if (!finApiData) return { receita: 0, custos: 0, lucro: 0, margem: 0, clientes: [], receitas: [], despesas: [], label: '' };
+
+  if (finSelectedMonth === 'all') {
+    return {
+      receita: finApiData.totals.receita,
+      custos: finApiData.totals.custos,
+      lucro: finApiData.totals.lucro,
+      margem: finApiData.totals.margem,
+      clientes: finApiData.clienteList,
+      receitas: finApiData.receitas,
+      despesas: finApiData.despesas,
+      label: 'Todos (' + (finApiData.months.length > 0 ? finApiData.months[0] + ' - ' + finApiData.months[finApiData.months.length - 1] : '') + ')'
+    };
+  }
+
+  // Find matching month summary
+  var summary = null;
+  for (var i = 0; i < finApiData.monthSummaries.length; i++) {
+    if (finApiData.monthSummaries[i].mes === finSelectedMonth) {
+      summary = finApiData.monthSummaries[i];
+      break;
+    }
+  }
+
+  if (!summary) return { receita: 0, custos: 0, lucro: 0, margem: 0, clientes: [], receitas: [], despesas: [], label: finSelectedMonth };
+
+  // Build client breakdown for this month
+  var byCliente = {};
+  for (var j = 0; j < summary.receitas.length; j++) {
+    var r = summary.receitas[j];
+    var cname = r.cliente || r.nome;
+    if (!byCliente[cname]) byCliente[cname] = 0;
+    byCliente[cname] += r.receita;
+  }
+  var clientes = [];
+  var keys = Object.keys(byCliente);
+  for (var k = 0; k < keys.length; k++) {
+    clientes.push({
+      nome: keys[k],
+      valor: byCliente[keys[k]],
+      pct: summary.receita > 0 ? Math.round(byCliente[keys[k]] / summary.receita * 1000) / 10 : 0
+    });
+  }
+  clientes.sort(function(a, b) { return b.valor - a.valor; });
+
+  return {
+    receita: summary.receita,
+    custos: summary.custos,
+    lucro: summary.lucro,
+    margem: summary.margem,
+    clientes: clientes,
+    receitas: summary.receitas,
+    despesas: summary.despesas,
+    label: finSelectedMonth
+  };
+}
+
+// ========== RENDER PERIOD FILTER BUTTONS ==========
+function renderFinPeriodButtons() {
+  if (!finApiData) return;
+  var container = document.querySelector('#financeiro .section-header').nextElementSibling;
+  if (!container || !container.querySelector('.fin-period-btn')) {
+    // fallback: find the period buttons wrapper
+    var finSection = document.getElementById('financeiro');
+    if (!finSection) return;
+    var divs = finSection.querySelectorAll('div');
+    for (var d = 0; d < divs.length; d++) {
+      if (divs[d].querySelector('.fin-period-btn')) {
+        container = divs[d];
+        break;
+      }
+    }
+  }
+  if (!container) return;
+
+  var html = '';
+  // Add individual months in reverse order (most recent first)
+  var reversedMonths = finApiData.months.slice().reverse();
+  for (var i = 0; i < reversedMonths.length; i++) {
+    var mes = reversedMonths[i];
+    var isActive = (finSelectedMonth === mes) ? ' active' : '';
+    html += '<button class="fin-period-btn' + isActive + '" onclick="setFinPeriod(\'' + mes.replace(/'/g, "\\'") + '\', this)">' + mes + '</button>';
+  }
+  // Add "Todos" button
+  var allActive = (finSelectedMonth === 'all') ? ' active' : '';
+  html += '<button class="fin-period-btn' + allActive + '" onclick="setFinPeriod(\'all\', this)">Todos</button>';
+
+  container.innerHTML = html;
+}
+
+// ========== RENDER KPIs ==========
+function renderFinKPIs(pd) {
+  var el = function(id) { return document.getElementById(id); };
+  if (el('kpi-receita')) el('kpi-receita').textContent = fmt(pd.receita);
+  if (el('kpi-receita-label')) el('kpi-receita-label').textContent = 'Receita ' + (pd.label || '');
+
+  if (el('kpi-despesas')) el('kpi-despesas').textContent = pd.custos > 0 ? fmt(pd.custos) : '-';
+  if (el('kpi-despesas-label')) el('kpi-despesas-label').textContent = 'Despesas ' + (pd.label || '');
+
+  var lucro = pd.receita - pd.custos;
+  if (el('kpi-lucro')) el('kpi-lucro').textContent = (pd.receita > 0 && pd.custos > 0) ? fmt(lucro) : '-';
+  if (el('kpi-lucro-label')) el('kpi-lucro-label').textContent = 'Lucro Liquido ' + (pd.label || '');
+  if (el('kpi-lucro-trend')) el('kpi-lucro-trend').textContent = (pd.receita > 0 && pd.custos > 0) ? 'Receita - Despesas' : 'Aguardando dados';
+
+  var margem = (pd.receita > 0 && pd.custos > 0) ? ((lucro / pd.receita) * 100).toFixed(1) + '%' : '-';
+  if (el('kpi-margem')) el('kpi-margem').textContent = margem;
+  if (el('kpi-margem-label')) el('kpi-margem-label').textContent = 'Margem ' + (pd.label || '');
+  if (el('kpi-margem-trend')) el('kpi-margem-trend').textContent = (pd.receita > 0 && pd.custos > 0) ? 'Lucro / Receita' : 'Aguardando dados';
+
+  // Receita trend
+  if (el('kpi-receita-trend')) {
+    if (finApiData && finApiData.monthSummaries.length >= 2 && finSelectedMonth !== 'all') {
+      var currentIdx = -1;
+      for (var i = 0; i < finApiData.monthSummaries.length; i++) {
+        if (finApiData.monthSummaries[i].mes === finSelectedMonth) { currentIdx = i; break; }
+      }
+      if (currentIdx > 0) {
+        var prev = finApiData.monthSummaries[currentIdx - 1];
+        if (prev.receita > 0) {
+          var pctChange = Math.round((pd.receita - prev.receita) / prev.receita * 100);
+          var arrow = pctChange >= 0 ? '\u25B2' : '\u25BC';
+          var cls = pctChange >= 0 ? 'up' : 'down';
+          el('kpi-receita-trend').className = 'fin-kpi-trend ' + cls;
+          el('kpi-receita-trend').textContent = arrow + ' ' + Math.abs(pctChange) + '% vs ' + prev.mes;
+        } else {
+          el('kpi-receita-trend').textContent = 'Dados do periodo';
+        }
+      } else {
+        el('kpi-receita-trend').textContent = 'Primeiro periodo';
+      }
+    } else {
+      el('kpi-receita-trend').textContent = pd.label || '';
+    }
+  }
+
+  // Despesas trend
+  if (el('kpi-despesas-trend')) {
+    if (pd.custos > 0) {
+      // Summarize categories
+      var catSum = {};
+      for (var c = 0; c < pd.despesas.length; c++) {
+        var catName = pd.despesas[c].nome || 'Outros';
+        if (!catSum[catName]) catSum[catName] = 0;
+        catSum[catName] += pd.despesas[c].custos || 0;
+      }
+      var catParts = [];
+      var catKeys = Object.keys(catSum);
+      for (var ck = 0; ck < catKeys.length && ck < 3; ck++) {
+        catParts.push(catKeys[ck] + ' R$' + Math.round(catSum[catKeys[ck]] / 1000) + 'k');
+      }
+      el('kpi-despesas-trend').textContent = catParts.length > 0 ? catParts.join(' + ') : 'Dados reais';
+    } else {
+      el('kpi-despesas-trend').textContent = 'Sem despesas cadastradas';
+    }
+  }
+
+  // Badge
+  var badge = document.querySelector('#financeiro .section-badge');
+  if (badge) badge.textContent = pd.label || '';
+}
+
+// ========== RENDER RECEITA POR CLIENTE CHART ==========
+function renderFinReceitaChart(pd) {
+  var container = document.getElementById('receitaChartContainer');
+  if (!container) return;
+
+  var clientes = pd.clientes || [];
+  // Assign colors
+  for (var ci = 0; ci < clientes.length; ci++) {
+    if (!clientes[ci].cor) {
+      clientes[ci].cor = finClientColors[ci % finClientColors.length];
+    }
+  }
+
+  if (receitaChartMode === 'barras') {
+    var maxVal = 1;
+    for (var i = 0; i < clientes.length; i++) {
+      if (clientes[i].valor > maxVal) maxVal = clientes[i].valor;
+    }
+    var html = '<div class="fin-bar-chart" id="receitaBarChart">';
+    for (var j = 0; j < clientes.length; j++) {
+      var c = clientes[j];
+      html += '<div class="fin-bar-item">';
+      html += '<div class="fin-bar-label">' + c.nome + '</div>';
+      html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:' + (c.valor / maxVal * 100).toFixed(0) + '%;background:' + c.cor + ';">' + c.pct + '%</div></div>';
+      html += '<div class="fin-bar-value">' + fmt(c.valor) + '</div>';
+      html += '</div>';
+    }
+    if (clientes.length === 0) {
+      html += '<div style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma receita neste periodo</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    // Pizza / Donut chart
+    var total = 0;
+    for (var m = 0; m < clientes.length; m++) total += clientes[m].valor;
+    if (total === 0) total = 1;
+
+    var gradientParts = [];
+    var cumulative = 0;
+    for (var n = 0; n < clientes.length; n++) {
+      var pct = (clientes[n].valor / total) * 100;
+      gradientParts.push(clientes[n].cor + ' ' + cumulative.toFixed(1) + '% ' + (cumulative + pct).toFixed(1) + '%');
+      cumulative += pct;
+    }
+    if (cumulative < 100) {
+      gradientParts.push('#E0E0E0 ' + cumulative.toFixed(1) + '% 100%');
+    }
+
+    var html2 = '<div class="fin-donut-wrap">';
+    html2 += '<div class="fin-donut" style="background:conic-gradient(' + gradientParts.join(',') + ');">';
+    html2 += '<div class="fin-donut-hole"><div class="fin-donut-hole-val">' + fmt(total) + '</div><div class="fin-donut-hole-lbl">Total</div></div>';
+    html2 += '</div>';
+    html2 += '<div class="fin-donut-legend">';
+    for (var p = 0; p < clientes.length; p++) {
+      html2 += '<div class="fin-donut-legend-item">';
+      html2 += '<div class="fin-donut-legend-dot" style="background:' + clientes[p].cor + ';"></div>';
+      html2 += clientes[p].nome + ' - ' + fmt(clientes[p].valor) + ' (' + clientes[p].pct + '%)';
+      html2 += '</div>';
+    }
+    html2 += '</div></div>';
+    container.innerHTML = html2;
+  }
+}
+
+// ========== RENDER EVOLUCAO MENSAL CHART ==========
+function renderFinEvoChart() {
+  if (!finApiData) return;
+  var container = document.getElementById('evoChartContainer');
+  if (!container) return;
+
+  var months = finApiData.monthSummaries;
+  if (!months || months.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#8b8fa3;padding:24px;">Sem dados mensais</div>';
+    return;
+  }
+
+  // Override global evoMonths so toggle buttons keep working
+  evoMonths = [];
+  for (var i = 0; i < months.length; i++) {
+    var shortLabel = months[i].mes.split('/')[0] || months[i].mes;
+    evoMonths.push({ key: months[i].mes, label: shortLabel, receita: months[i].receita, despesas: months[i].custos });
+  }
+
+  // Use original renderEvoChart which reads evoMonths
+  renderEvoChart();
+}
+
+// ========== RENDER RECEITAS TABLE ==========
+function renderFinReceitasTable(pd) {
+  var tbody = document.getElementById('receitasBody');
+  if (!tbody) return;
+  var items = pd.receitas || [];
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma receita cadastrada para este periodo</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var r = items[i];
+    html += '<tr data-page-id="' + (r.id || '') + '" data-type="receita" data-index="' + i + '">';
+    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(r.status || 'Pendente') + '</td>';
+    html += '<td class="fin-editable" data-field="nome"><strong>' + (r.cliente || r.nome || '') + '</strong></td>';
+    html += '<td class="fin-editable" data-field="modelo">' + (r.modelo || '-') + '</td>';
+    html += '<td class="fin-editable" data-field="valor" data-value="' + (r.receita || 0) + '">' + (r.receita > 0 ? fmt(r.receita) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
+    html += '<td class="fin-editable" data-field="vencimento">' + (r.mesAno || '-') + '</td>';
+    html += '<td class="fin-editable" data-field="cnpj">' + (r.cnpj || '-') + '</td>';
+    html += '</tr>';
+  }
+  tbody.innerHTML = html;
+  attachApiInlineEditing(tbody);
+}
+
+// ========== RENDER DESPESAS TABLE ==========
+function renderFinDespesasTable(pd) {
+  var tbody = document.getElementById('despesasBody');
+  if (!tbody) return;
+  var items = pd.despesas || [];
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma despesa cadastrada para este periodo</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var d = items[i];
+    html += '<tr data-page-id="' + (d.id || '') + '" data-type="despesa" data-index="' + i + '">';
+    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(d.status || 'Pendente') + '</td>';
+    html += '<td class="fin-editable" data-field="nome"><strong>' + (d.nome || '') + '</strong></td>';
+    html += '<td class="fin-editable" data-field="categoria">' + (d.modelo || '-') + '</td>';
+    html += '<td class="fin-editable" data-field="valor" data-value="' + (d.custos || 0) + '">' + (d.custos > 0 ? fmt(d.custos) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
+    html += '<td class="fin-editable" data-field="cnpj">' + (d.cnpj || '-') + '</td>';
+    html += '<td class="fin-editable" data-field="vencimento">' + (d.mesAno || '-') + '</td>';
+    html += '</tr>';
+  }
+  tbody.innerHTML = html;
+  attachApiInlineEditing(tbody);
+}
+
+// ========== RENDER INADIMPLENCIA ==========
+function renderFinInadimplencia(pd) {
+  var container = document.querySelector('#financeiro .fin-inadimplencia');
+  if (!container) return;
+
+  // Find overdue records from all receitas
+  var overdue = [];
+  var allReceitas = finApiData ? finApiData.receitas : [];
+  for (var i = 0; i < allReceitas.length; i++) {
+    if (allReceitas[i].status === 'Atrasado') {
+      overdue.push(allReceitas[i]);
+    }
+  }
+
+  if (overdue.length === 0) {
+    container.querySelector('.fin-inadimplencia-value').textContent = 'R$ 0';
+    container.querySelector('.fin-inadimplencia-detail').innerHTML = '<span style="color:#22C55E;font-weight:600;">Nenhuma inadimplencia</span>';
+    return;
+  }
+
+  var totalOverdue = 0;
+  var detailHtml = '';
+  for (var j = 0; j < overdue.length; j++) {
+    totalOverdue += overdue[j].receita || 0;
+    detailHtml += '<strong>Cliente:</strong> ' + (overdue[j].cliente || overdue[j].nome) + '<br>';
+    detailHtml += '<strong>Status:</strong> <span class="status-badge atrasado" style="font-size:11px;">Atrasado</span><br>';
+  }
+
+  container.querySelector('.fin-inadimplencia-value').textContent = fmt(totalOverdue);
+  container.querySelector('.fin-inadimplencia-detail').innerHTML = detailHtml;
+}
+
+// ========== API-DRIVEN INLINE EDITING ==========
+function attachApiInlineEditing(tbody) {
+  var cells = tbody.querySelectorAll('.fin-editable');
+  for (var i = 0; i < cells.length; i++) {
+    cells[i].addEventListener('dblclick', handleApiCellEdit);
+  }
+}
+
+function handleApiCellEdit(e) {
+  var td = e.currentTarget;
+  if (td.classList.contains('editing')) return;
+  var tr = td.parentElement;
+  var pageId = tr.dataset.pageId;
+  var type = tr.dataset.type;
+  var field = td.dataset.field;
+
+  if (!pageId) {
+    console.log('[AIOX] No page ID for this row, cannot edit');
+    return;
+  }
+
+  td.classList.add('editing');
+
+  // Get current display value
+  var currentVal = td.textContent.trim();
+  if (field === 'valor') {
+    currentVal = td.dataset.value || '0';
+  }
+
+  if (field === 'status') {
+    var sel = document.createElement('select');
+    var opts = ['Pago', 'Pendente', 'Atrasado'];
+    for (var i = 0; i < opts.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = opts[i];
+      opt.textContent = opts[i];
+      if (currentVal.indexOf(opts[i]) !== -1) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel);
+    sel.focus();
+    sel.addEventListener('change', function() { finishApiEdit(td, sel.value, pageId, type, field); });
+    sel.addEventListener('blur', function() { finishApiEdit(td, sel.value, pageId, type, field); });
+  } else if (field === 'categoria') {
+    var sel2 = document.createElement('select');
+    var cats = ['Folha', 'Infraestrutura', 'Software', 'Marketing', 'Operacional', 'Terceiros'];
+    for (var j = 0; j < cats.length; j++) {
+      var opt2 = document.createElement('option');
+      opt2.value = cats[j];
+      opt2.textContent = cats[j];
+      if (cats[j] === currentVal) opt2.selected = true;
+      sel2.appendChild(opt2);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel2);
+    sel2.focus();
+    sel2.addEventListener('change', function() { finishApiEdit(td, sel2.value, pageId, type, field); });
+    sel2.addEventListener('blur', function() { finishApiEdit(td, sel2.value, pageId, type, field); });
+  } else if (field === 'modelo') {
+    var sel3 = document.createElement('select');
+    var mods = ['% Faturamento', '% Investimento', 'Fee Fixo', 'Fixo + Comissao'];
+    for (var k = 0; k < mods.length; k++) {
+      var opt3 = document.createElement('option');
+      opt3.value = mods[k];
+      opt3.textContent = mods[k];
+      if (mods[k] === currentVal) opt3.selected = true;
+      sel3.appendChild(opt3);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel3);
+    sel3.focus();
+    sel3.addEventListener('change', function() { finishApiEdit(td, sel3.value, pageId, type, field); });
+    sel3.addEventListener('blur', function() { finishApiEdit(td, sel3.value, pageId, type, field); });
+  } else if (field === 'valor') {
+    var inp = document.createElement('input');
+    inp.type = 'number';
+    inp.step = '0.01';
+    inp.value = currentVal;
+    td.innerHTML = '';
+    td.appendChild(inp);
+    inp.focus();
+    inp.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishApiEdit(td, parseFloat(inp.value) || 0, pageId, type, field); });
+    inp.addEventListener('blur', function() { finishApiEdit(td, parseFloat(inp.value) || 0, pageId, type, field); });
+  } else if (field === 'vencimento') {
+    var inp2 = document.createElement('input');
+    inp2.type = 'date';
+    inp2.value = currentVal;
+    td.innerHTML = '';
+    td.appendChild(inp2);
+    inp2.focus();
+    inp2.addEventListener('change', function() { finishApiEdit(td, inp2.value, pageId, type, field); });
+    inp2.addEventListener('blur', function() { finishApiEdit(td, inp2.value, pageId, type, field); });
+  } else {
+    var inp3 = document.createElement('input');
+    inp3.type = 'text';
+    inp3.value = currentVal;
+    td.innerHTML = '';
+    td.appendChild(inp3);
+    inp3.focus();
+    inp3.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishApiEdit(td, inp3.value, pageId, type, field); });
+    inp3.addEventListener('blur', function() { finishApiEdit(td, inp3.value, pageId, type, field); });
+  }
+}
+
+function finishApiEdit(td, newVal, pageId, type, field) {
+  if (!td.classList.contains('editing')) return;
+  td.classList.remove('editing');
+
+  // Show saving state
+  td.innerHTML = '<span style="color:#8b8fa3;font-size:12px;">Salvando...</span>';
+
+  // Map field to API field name
+  var apiField = field;
+  if (field === 'valor') {
+    apiField = type === 'despesa' ? 'custos' : 'receita';
+  }
+
+  fetch('/api/update-financial', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pageId: pageId, field: apiField, value: newVal })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    // Show "Salvo" indicator
+    var indicator = document.createElement('span');
+    indicator.textContent = 'Salvo \u2713';
+    indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#22C55E;font-weight:600;pointer-events:none;z-index:10;';
+    td.style.position = 'relative';
+    td.appendChild(indicator);
+    setTimeout(function() {
+      if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
+    }, 1500);
+    console.log('[AIOX] Inline edit saved: ' + field + ' = ' + newVal);
+
+    // Reload all data from API to refresh KPIs, charts, tables
+    loadFinanceiro();
+  })
+  .catch(function(err) {
+    console.log('[AIOX] Inline edit save failed:', err.message);
+    td.innerHTML = '<span style="color:#FF4444;font-size:12px;">Erro</span>';
+    setTimeout(function() { loadFinanceiro(); }, 1000);
+  });
+}
+
+// ========== OVERRIDE: setFinPeriod -> use API data ==========
+setFinPeriod = function(period, btn) {
+  finSelectedMonth = period;
+
+  // Also update legacy currentFinPeriod for compatibility
+  currentFinPeriod = period;
+
+  // Update active button
+  var finSection = document.getElementById('financeiro');
+  if (finSection) {
+    var periodBtns = finSection.querySelectorAll('.fin-period-btn');
+    for (var i = 0; i < periodBtns.length; i++) periodBtns[i].classList.remove('active');
+  }
+  if (btn) btn.classList.add('active');
+
+  // Re-render everything from API data
+  if (finApiData) {
+    renderFinanceiro();
+  }
+};
+
+// ========== OVERRIDE: submitFinModal -> POST to API then reload ==========
+submitFinModal = function(e) {
+  e.preventDefault();
+  var status = document.getElementById('fm-status').value;
+  var nome = document.getElementById('fm-nome').value;
+  var valor = parseFloat(document.getElementById('fm-valor').value) || 0;
+  var cnpj = document.getElementById('fm-cnpj').value;
+  var vencimento = document.getElementById('fm-vencimento').value;
+
+  var type = finModalType;
+  var categoria = '';
+  var modelo = '';
+
+  if (type === 'despesa') {
+    categoria = document.getElementById('fm-categoria').value;
+  } else {
+    modelo = document.getElementById('fm-modelo').value;
+  }
+
+  // Determine mesAno from vencimento date or selected period
+  var mesAno = finSelectedMonth;
+  if (vencimento) {
+    var parts = vencimento.split('-');
+    if (parts.length === 3) {
+      var monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      var mIdx = parseInt(parts[1], 10) - 1;
+      if (mIdx >= 0 && mIdx < 12) {
+        mesAno = monthNames[mIdx] + '/' + parts[0];
+      }
+    }
+  }
+
+  // Show saving state
+  var submitBtn = document.querySelector('#finModalForm button[type="submit"]');
+  var origText = '';
+  if (submitBtn) {
+    origText = submitBtn.textContent;
+    submitBtn.textContent = 'Salvando...';
+    submitBtn.disabled = true;
+  }
+
+  fetch('/api/add-financial', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: type,
+      nome: nome,
+      valor: valor,
+      status: status,
+      categoria: categoria,
+      modelo: modelo,
+      cnpj: cnpj,
+      vencimento: vencimento,
+      mesAno: mesAno,
+      cliente: nome
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (submitBtn) {
+      submitBtn.textContent = 'Salvo \u2713';
+      submitBtn.disabled = false;
+    }
+    console.log('[AIOX] Financial entry saved to API');
+    closeFinModal();
+    // Reload all data from API - this will update KPIs, charts, tables automatically
+    loadFinanceiro();
+  })
+  .catch(function(err) {
+    if (submitBtn) {
+      submitBtn.textContent = origText || 'Salvar';
+      submitBtn.disabled = false;
+    }
+    console.log('[AIOX] Failed to save financial entry:', err.message);
+  });
+};
+
+// ========== OVERRIDE: toggleReceitaChart -> use API data ==========
+toggleReceitaChart = function(mode, btn) {
+  receitaChartMode = mode;
+  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  if (finApiData) {
+    renderFinReceitaChart(getFinPeriodData());
+  }
+};
+
+// ========== OVERRIDE: toggleEvoChart -> use API data ==========
+toggleEvoChart = function(mode, btn) {
+  evoChartMode = mode;
+  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  if (finApiData) {
+    renderFinEvoChart();
+  }
+};
+
+// ========== OVERRIDE: refreshKPIs -> use API data ==========
+refreshKPIs = function() {
+  if (finApiData) {
+    renderFinKPIs(getFinPeriodData());
+  }
+};
+
+// ========== HOOK: showSection -> load financeiro when switching to tab ==========
+(function() {
+  var _origShowSection = showSection;
+  showSection = function(sectionId) {
+    _origShowSection(sectionId);
+    if (sectionId === 'financeiro') {
+      loadFinanceiro();
+    }
   };
 })();
 
-// ========== API INTEGRATION: finishEdit -> show "Salvo" indicator ==========
+// ========== HOOK: DOMContentLoaded -> load financeiro on page load ==========
 (function() {
-  var _origFinishEdit = finishEdit;
-  finishEdit = function(td, newVal, type, period, idx, field) {
-    _origFinishEdit(td, newVal, type, period, idx, field);
-
-    // Build payload from updated data
-    var dataArr = type === 'despesa' ? despesasData : receitasData;
-    var entry = (dataArr[period] && dataArr[period][idx]) ? dataArr[period][idx] : {};
-
-    fetch('/api/add-financial', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        type: type,
-        nome: entry.nome || '',
-        valor: entry.valor || 0,
-        status: entry.status || '',
-        categoria: entry.categoria || '',
-        modelo: entry.modelo || '',
-        cnpj: entry.cnpj || '',
-        vencimento: entry.vencimento || '',
-        mesAno: period,
-        cliente: entry.nome || '',
-        update: true,
-        index: idx,
-        field: field
-      })
-    })
-    .then(function() {
-      // Show small "Salvo" indicator near the edited cell
-      var indicator = document.createElement('span');
-      indicator.textContent = 'Salvo';
-      indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#22C55E;font-weight:600;pointer-events:none;z-index:10;';
-      td.style.position = 'relative';
-      td.appendChild(indicator);
-      setTimeout(function() {
-        if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
-      }, 1500);
-      console.log('[AIOX] Inline edit saved to API');
-    })
-    .catch(function(err) {
-      console.log('[AIOX] Inline edit save failed:', err.message);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      loadFinanceiro();
     });
-  };
+  } else {
+    loadFinanceiro();
+  }
 })();
 
 // ========== API INTEGRATION: Kanban drag & drop -> POST /api/update-status ==========
