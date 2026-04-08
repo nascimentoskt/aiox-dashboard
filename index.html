@@ -2474,23 +2474,32 @@ sidebarOverlay.addEventListener('click', () => {
 });
 
 // Tab-based navigation — show/hide sections
+var finUnlocked = false;
+var FIN_PASS = '1Pra1*123';
+
 function showSection(sectionId) {
+  // Password gate for Financeiro
+  if (sectionId === 'financeiro' && !finUnlocked) {
+    showFinPasswordOverlay();
+    return;
+  }
+
   // Hide all sections
   document.querySelectorAll('.content > section, .content > .section-wrapper').forEach(s => {
     s.classList.remove('active-section');
   });
   // Show target
-  const target = document.getElementById(sectionId);
+  var target = document.getElementById(sectionId);
   if (target) {
     target.classList.add('active-section');
     window.scrollTo(0, 0);
   }
   // Update sidebar active
   document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(x => x.classList.remove('active'));
-  const navItem = document.querySelector(`a[data-nav="${sectionId}"]`);
+  var navItem = document.querySelector('a[data-nav="' + sectionId + '"]');
   if (navItem) navItem.classList.add('active');
   // Update breadcrumb
-  const bc = document.getElementById('breadcrumb-current');
+  var bc = document.getElementById('breadcrumb-current');
   if (bc && navItem) bc.textContent = navItem.textContent.trim();
   // Refresh financeiro data when switching to financeiro tab
   if (sectionId === 'financeiro' && typeof loadFinanceiro === 'function') loadFinanceiro();
@@ -4636,6 +4645,79 @@ function attachKanbanDragDropAPI(board) {
     }
   }
 })();
+
+// ========== FINANCEIRO PASSWORD GATE ==========
+function showFinPasswordOverlay() {
+  var existing = document.getElementById('finPassOverlay');
+  if (existing) { existing.style.display = 'flex'; return; }
+
+  var overlay = document.createElement('div');
+  overlay.id = 'finPassOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,39,68,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:16px;padding:40px;width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);';
+
+  var icon = document.createElement('div');
+  icon.style.cssText = 'font-size:48px;margin-bottom:16px;';
+  icon.textContent = '🔒';
+
+  var title = document.createElement('h3');
+  title.style.cssText = 'font-size:18px;font-weight:700;color:#1A2744;margin-bottom:8px;';
+  title.textContent = 'Acesso Restrito';
+
+  var sub = document.createElement('p');
+  sub.style.cssText = 'font-size:13px;color:#8b8fa3;margin-bottom:24px;';
+  sub.textContent = 'Digite a senha para acessar o Financeiro';
+
+  var input = document.createElement('input');
+  input.type = 'password';
+  input.placeholder = 'Senha';
+  input.id = 'finPassInput';
+  input.style.cssText = 'width:100%;padding:12px 16px;border:2px solid #E0E0E0;border-radius:10px;font-size:14px;font-family:Sora,sans-serif;outline:none;text-align:center;letter-spacing:2px;transition:border-color 0.2s;';
+
+  var error = document.createElement('p');
+  error.id = 'finPassError';
+  error.style.cssText = 'font-size:12px;color:#F44336;margin-top:8px;min-height:18px;';
+
+  var btn = document.createElement('button');
+  btn.style.cssText = 'width:100%;padding:12px;background:#0088FF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:Sora,sans-serif;cursor:pointer;margin-top:16px;transition:background 0.2s;';
+  btn.textContent = 'Desbloquear';
+
+  btn.onclick = function() { checkFinPassword(); };
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') checkFinPassword(); });
+  input.addEventListener('focus', function() { input.style.borderColor = '#0088FF'; });
+  input.addEventListener('blur', function() { input.style.borderColor = '#E0E0E0'; });
+
+  box.appendChild(icon);
+  box.appendChild(title);
+  box.appendChild(sub);
+  box.appendChild(input);
+  box.appendChild(error);
+  box.appendChild(btn);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  setTimeout(function() { input.focus(); }, 100);
+}
+
+function checkFinPassword() {
+  var input = document.getElementById('finPassInput');
+  var error = document.getElementById('finPassError');
+  if (!input) return;
+
+  if (input.value === FIN_PASS) {
+    finUnlocked = true;
+    var overlay = document.getElementById('finPassOverlay');
+    if (overlay) overlay.style.display = 'none';
+    showSection('financeiro');
+  } else {
+    if (error) error.textContent = 'Senha incorreta';
+    input.value = '';
+    input.style.borderColor = '#F44336';
+    setTimeout(function() { input.style.borderColor = '#E0E0E0'; if (error) error.textContent = ''; }, 2000);
+  }
+}
 
 </script>
 </body>
