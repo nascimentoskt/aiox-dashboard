@@ -757,6 +757,134 @@ body {
   font-size: 28px; font-weight: 800; color: var(--navy);
   margin-bottom: 12px;
 }
+
+/* Chart Toggle Buttons */
+.chart-toggle-wrap {
+  display: flex; gap: 4px; margin-left: auto;
+}
+.chart-toggle-btn {
+  padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: 1px solid rgba(26,39,68,0.12); color: #8b8fa3;
+  background: #fff; font-family: 'Sora', sans-serif; transition: all 0.2s;
+}
+.chart-toggle-btn:hover { border-color: var(--blue); color: var(--blue); }
+.chart-toggle-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* Donut Chart */
+.fin-donut-wrap {
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+  padding: 16px 0;
+}
+.fin-donut {
+  width: 180px; height: 180px; border-radius: 50%;
+  position: relative; flex-shrink: 0;
+}
+.fin-donut-hole {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 100px; height: 100px; border-radius: 50%;
+  background: #fff; display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.fin-donut-hole-val { font-size: 14px; font-weight: 800; color: var(--navy); }
+.fin-donut-hole-lbl { font-size: 10px; color: #8b8fa3; }
+.fin-donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.fin-donut-legend-item {
+  display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--chumbo);
+}
+.fin-donut-legend-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* Line Chart */
+.fin-line-chart-wrap {
+  height: 200px; padding-top: 20px; position: relative;
+}
+.fin-line-chart-svg {
+  width: 100%; height: 100%;
+}
+
+/* Add Receita / Despesa Buttons */
+.fin-action-btns {
+  display: flex; gap: 12px; margin-bottom: 24px;
+}
+.fin-action-btn {
+  padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; color: #fff; font-family: 'Sora', sans-serif;
+  transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+}
+.fin-action-btn.green { background: #00C853; }
+.fin-action-btn.green:hover { background: #00A844; }
+.fin-action-btn.red { background: #FF5252; }
+.fin-action-btn.red:hover { background: #E04848; }
+
+/* Modal Overlay */
+.fin-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(26,39,68,0.65); z-index: 2000;
+  align-items: center; justify-content: center;
+}
+.fin-modal-overlay.open { display: flex; }
+.fin-modal {
+  background: #fff; border-radius: var(--radius);
+  padding: 32px; width: 480px; max-width: 90vw;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.25);
+  max-height: 90vh; overflow-y: auto;
+}
+.fin-modal-title {
+  font-size: 18px; font-weight: 800; color: var(--navy);
+  margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;
+}
+.fin-modal-close {
+  width: 32px; height: 32px; border-radius: 8px; border: none;
+  background: var(--offwhite); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--chumbo); transition: all 0.2s;
+}
+.fin-modal-close:hover { background: #FF5252; color: #fff; }
+.fin-modal-field {
+  margin-bottom: 16px;
+}
+.fin-modal-field label {
+  display: block; font-size: 12px; font-weight: 700;
+  color: #8b8fa3; text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.fin-modal-field input,
+.fin-modal-field select {
+  width: 100%; padding: 10px 14px; border-radius: 10px;
+  border: 1.5px solid rgba(26,39,68,0.12); font-size: 14px;
+  font-family: 'Sora', sans-serif; color: var(--chumbo);
+  background: var(--offwhite); transition: border-color 0.2s;
+}
+.fin-modal-field input:focus,
+.fin-modal-field select:focus {
+  outline: none; border-color: var(--blue);
+}
+.fin-modal-submit {
+  width: 100%; padding: 12px; border-radius: 12px; border: none;
+  background: var(--blue); color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: 'Sora', sans-serif;
+  transition: all 0.2s; margin-top: 8px;
+}
+.fin-modal-submit:hover { background: #0070DD; }
+
+/* Status badges for new tables */
+.fin-table .status-badge.pago { background: rgba(0,200,83,0.1); color: #00873E; }
+.fin-table .status-badge.atrasado { background: rgba(255,82,82,0.1); color: #FF5252; }
+
+/* Inline Edit */
+.fin-table td.editing {
+  padding: 6px 8px;
+}
+.fin-table td.editing input,
+.fin-table td.editing select {
+  width: 100%; padding: 6px 10px; border-radius: 8px;
+  border: 1.5px solid var(--blue); font-size: 13px;
+  font-family: 'Sora', sans-serif; color: var(--chumbo);
+  background: #fff;
+}
+.fin-table td.editing input:focus,
+.fin-table td.editing select:focus { outline: none; }
 .fin-inadimplencia-detail {
   font-size: 13px; color: #8b8fa3; line-height: 1.8;
 }
@@ -1720,7 +1848,13 @@ body {
           <span class="accent-dot"></span>
           Financeiro
         </div>
-        <div class="section-badge" id="fin-badge">Abr/2026 (parcial — faltam Moom, Mermaid, Luzzoo, Encanto, Black)</div>
+        <div class="section-badge" id="fin-badge">Abr/2026 (parcial)</div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="fin-action-btns">
+        <button class="fin-action-btn green" onclick="openFinModal('receita')">+ Adicionar Receita</button>
+        <button class="fin-action-btn red" onclick="openFinModal('despesa')">+ Adicionar Despesa</button>
       </div>
 
       <!-- Filtro de Periodo -->
@@ -1757,7 +1891,7 @@ body {
           </div>
           <div class="fin-kpi-value" id="kpi-lucro">R$ 27.230</div>
           <div class="fin-kpi-label" id="kpi-lucro-label">Lucro Liquido Abr/26</div>
-          <span class="fin-kpi-trend up" id="kpi-lucro-trend">Parcial — faltam clientes</span>
+          <span class="fin-kpi-trend up" id="kpi-lucro-trend">Parcial</span>
         </div>
         <div class="fin-kpi-card animate-in">
           <div class="fin-kpi-icon">
@@ -1765,169 +1899,86 @@ body {
           </div>
           <div class="fin-kpi-value" id="kpi-margem">72,2%</div>
           <div class="fin-kpi-label" id="kpi-margem-label">Margem Abr/26</div>
-          <span class="fin-kpi-trend" id="kpi-margem-trend">Parcial — faltam clientes</span>
+          <span class="fin-kpi-trend" id="kpi-margem-trend">Parcial</span>
         </div>
       </div>
 
       <div class="financeiro-grid">
 
-        <!-- Receita por Cliente -->
+        <!-- Receita por Cliente (with toggle) -->
         <div class="fin-card">
           <div class="fin-card-title">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V10"/><path d="M12 17V7"/><path d="M15 17V12"/></svg>
             Receita por Cliente
+            <div class="chart-toggle-wrap">
+              <button class="chart-toggle-btn active" onclick="toggleReceitaChart('barras', this)">Barras</button>
+              <button class="chart-toggle-btn" onclick="toggleReceitaChart('pizza', this)">Pizza</button>
+            </div>
           </div>
-          <div class="fin-bar-chart">
-            <div class="fin-bar-item">
-              <div class="fin-bar-label">1pra1</div>
-              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:100%;background:#FF9800;">79,4%</div></div>
-              <div class="fin-bar-value">R$ 38.564</div>
-            </div>
-            <div class="fin-bar-item">
-              <div class="fin-bar-label">Moom</div>
-              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:13%;background:#00BCD4;">10,3%</div></div>
-              <div class="fin-bar-value">R$ 5.000</div>
-            </div>
-            <div class="fin-bar-item">
-              <div class="fin-bar-label">Mermaid</div>
-              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:13%;background:#9C27B0;">10,3%</div></div>
-              <div class="fin-bar-value">R$ 5.000</div>
-            </div>
-            <div class="fin-bar-item">
-              <div class="fin-bar-label">Luzzoo</div>
-              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:var(--blue);">—</div></div>
-              <div class="fin-bar-value" style="opacity:.4">Pendente</div>
-            </div>
-            <div class="fin-bar-item">
-              <div class="fin-bar-label">Encanto</div>
-              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:#FFB300;">—</div></div>
-              <div class="fin-bar-value" style="opacity:.4">Pendente</div>
-            </div>
-            <div class="fin-bar-item">
-              <div class="fin-bar-label">Black</div>
-              <div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:#F44336;">—</div></div>
-              <div class="fin-bar-value" style="opacity:.4">Pendente</div>
-            </div>
+          <div id="receitaChartContainer">
+            <div class="fin-bar-chart" id="receitaBarChart"></div>
           </div>
         </div>
 
-        <!-- Evolucao Mensal -->
+        <!-- Evolucao Mensal (with toggle) -->
         <div class="fin-card">
           <div class="fin-card-title">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             Evolucao Mensal
+            <div class="chart-toggle-wrap">
+              <button class="chart-toggle-btn active" onclick="toggleEvoChart('barras', this)">Barras</button>
+              <button class="chart-toggle-btn" onclick="toggleEvoChart('linhas', this)">Linhas</button>
+            </div>
           </div>
           <div style="display:flex;gap:16px;margin-bottom:12px;font-size:11px;font-weight:600;">
             <span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#00C853;"></span> Receita</span>
             <span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#FF4444;"></span> Despesas</span>
           </div>
-          <div class="fin-evolution-chart">
-            <div class="fin-evo-bar-wrapper">
-              <div class="fin-evo-bar-value">R$ 87k</div>
-              <div class="fin-evo-bar" style="height:100%;">
-                <div class="fin-evo-bar-receita" style="height:73%;" data-tooltip="Receita: R$ 87.003"></div>
-                <div class="fin-evo-bar-despesa" style="height:27%;" data-tooltip="Despesas: R$ 23.260"></div>
-              </div>
-              <div class="fin-evo-bar-label">Jan</div>
-            </div>
-            <div class="fin-evo-bar-wrapper">
-              <div class="fin-evo-bar-value">R$ 66,5k</div>
-              <div class="fin-evo-bar" style="height:76%;">
-                <div class="fin-evo-bar-receita" style="height:70%;" data-tooltip="Receita: R$ 66.479"></div>
-                <div class="fin-evo-bar-despesa" style="height:30%;" data-tooltip="Despesas: R$ 20.113"></div>
-              </div>
-              <div class="fin-evo-bar-label">Fev</div>
-            </div>
-            <div class="fin-evo-bar-wrapper">
-              <div class="fin-evo-bar-value">R$ 48,6k</div>
-              <div class="fin-evo-bar" style="height:56%;">
-                <div class="fin-evo-bar-receita" style="height:61%;" data-tooltip="Receita: R$ 48.564"></div>
-                <div class="fin-evo-bar-despesa" style="height:39%;" data-tooltip="Despesas: R$ 18.721"></div>
-              </div>
-              <div class="fin-evo-bar-label">Mar</div>
-            </div>
-            <div class="fin-evo-bar-wrapper">
-              <div class="fin-evo-bar-value">R$ 37,7k</div>
-              <div class="fin-evo-bar" style="height:43%;">
-                <div class="fin-evo-bar-receita" style="height:72%;" data-tooltip="Receita: R$ 37.730 (parcial)"></div>
-                <div class="fin-evo-bar-despesa" style="height:28%;" data-tooltip="Despesas: R$ 10.500"></div>
-              </div>
-              <div class="fin-evo-bar-label">Abr</div>
-            </div>
-          </div>
+          <div id="evoChartContainer"></div>
         </div>
 
-        <!-- Contratos Ativos -->
+        <!-- Receitas Table -->
         <div class="fin-card full-width">
           <div class="fin-card-title">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Contratos Ativos
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Receitas
           </div>
           <div style="overflow-x:auto;">
-            <table class="fin-table" id="tabelaContratos">
+            <table class="fin-table" id="tabelaReceitas">
               <thead>
                 <tr>
-                  <th onclick="sortFinTable('tabelaContratos', 0, 'text', this)">Cliente <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaContratos', 1, 'text', this)">Modelo <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaContratos', 2, 'number', this)">Valor/Ref. Mensal <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaContratos', 3, 'text', this)">Status <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 0, 'text', this)">Status <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 1, 'text', this)">Nome <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 2, 'text', this)">Modelo <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 3, 'number', this)">Valor <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 4, 'text', this)">Vencimento <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 5, 'text', this)">CNPJ/CPF <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Luzzoo</strong></td>
-                  <td>5% do faturamento</td>
-                  <td data-value="12000">R$ 12.000</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Encanto</strong></td>
-                  <td>R$ 10k fixo ou 5% (>200k)</td>
-                  <td data-value="10000">R$ 10.000</td>
-                  <td><span class="status-badge pendente">Pendente</span></td>
-                </tr>
-                <tr>
-                  <td><strong>1pra1</strong></td>
-                  <td>3% do investimento</td>
-                  <td data-value="52444">R$ 52.444 <span style="font-size:10px;color:#8b8fa3;">(media Jan-Abr)</span></td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Moom</strong></td>
-                  <td>Fee fixo mensal</td>
-                  <td data-value="5000">R$ 5.000</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Mermaid</strong></td>
-                  <td>Fee fixo mensal</td>
-                  <td data-value="5000">R$ 5.000</td>
-                  <td><span class="status-badge ativo">Ativo</span></td>
-                </tr>
-              </tbody>
+              <tbody id="receitasBody"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- Relatorio de Despesas -->
+        <!-- Despesas Table -->
         <div class="fin-card full-width">
           <div class="fin-card-title">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-            Relatorio de Despesas
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Despesas
           </div>
           <div style="overflow-x:auto;">
             <table class="fin-table" id="tabelaDespesas">
               <thead>
                 <tr>
-                  <th onclick="sortFinTable('tabelaDespesas', 0, 'text', this)">Despesa <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaDespesas', 1, 'text', this)">Categoria <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaDespesas', 2, 'text', this)">Cliente <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 0, 'text', this)">Status <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 1, 'text', this)">Nome <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 2, 'text', this)">Categoria <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                   <th onclick="sortFinTable('tabelaDespesas', 3, 'number', this)">Valor <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaDespesas', 4, 'text', this)">Recorrencia <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 4, 'text', this)">CNPJ/CPF <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaDespesas', 5, 'text', this)">Vencimento <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                 </tr>
               </thead>
-              <tbody id="despesasBody">
-              </tbody>
+              <tbody id="despesasBody"></tbody>
             </table>
           </div>
         </div>
@@ -1947,6 +1998,20 @@ body {
 
       </div>
     </section>
+
+    <!-- Financeiro Modal -->
+    <div class="fin-modal-overlay" id="finModalOverlay" onclick="if(event.target===this)closeFinModal()">
+      <div class="fin-modal">
+        <div class="fin-modal-title">
+          <span id="finModalTitle">Adicionar</span>
+          <button class="fin-modal-close" onclick="closeFinModal()">&times;</button>
+        </div>
+        <form id="finModalForm" onsubmit="submitFinModal(event)">
+          <div id="finModalFields"></div>
+          <button type="submit" class="fin-modal-submit" id="finModalSubmit">Salvar</button>
+        </form>
+      </div>
+    </div>
 
   </div>
 
@@ -2442,7 +2507,11 @@ setInterval(function() {
 }, 60000);
 
 // ========== FINANCIAL PERIOD FILTER ==========
-const finData = {
+var currentFinPeriod = 'abr';
+var receitaChartMode = 'barras';
+var evoChartMode = 'barras';
+
+var finData = {
   jan: {
     receita: 87003.25, despesas: 23259.98,
     clientes: [
@@ -2497,67 +2566,86 @@ const finData = {
   }
 };
 
-// Despesas reais por periodo
-const despesasData = {
+// Despesas data (new format with status, nome, categoria, valor, cnpj, vencimento)
+var despesasData = {
   jan: [
-    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
-    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
-    { despesa: 'Aluguel', categoria: 'Infraestrutura', cliente: 'Impulso', valor: 2000, status: 'Pago' },
-    { despesa: 'Comissao Joao', categoria: 'Comissao', cliente: 'Luzzoo', valor: 12759.98, status: 'Pago' },
+    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-01-05' },
+    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-01-05' },
+    { status: 'Pago', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-01-10' },
+    { status: 'Pago', nome: 'Comissao Joao', categoria: 'Terceiros', valor: 12759.98, cnpj: '', vencimento: '2026-01-15' },
   ],
   fev: [
-    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
-    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
-    { despesa: 'Aluguel', categoria: 'Infraestrutura', cliente: 'Impulso', valor: 2000, status: 'Pago' },
-    { despesa: 'Comissao Joao', categoria: 'Comissao', cliente: 'Luzzoo', valor: 9613.30, status: 'Pago' },
+    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-02-05' },
+    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-02-05' },
+    { status: 'Pago', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-02-10' },
+    { status: 'Pago', nome: 'Comissao Joao', categoria: 'Terceiros', valor: 9613.30, cnpj: '', vencimento: '2026-02-15' },
   ],
   mar: [
-    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
-    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
-    { despesa: 'Aluguel', categoria: 'Infraestrutura', cliente: 'Impulso', valor: 2000, status: 'Pago' },
-    { despesa: 'Comissao Joao', categoria: 'Comissao', cliente: 'Luzzoo', valor: 8221.05, status: 'Pago' },
+    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-03-05' },
+    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-03-05' },
+    { status: 'Pago', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-03-10' },
+    { status: 'Pago', nome: 'Comissao Joao', categoria: 'Terceiros', valor: 8221.05, cnpj: '', vencimento: '2026-03-15' },
   ],
   abr: [
-    { despesa: 'Salario Diego', categoria: 'Folha', cliente: 'Impulso', valor: 5000, status: 'Pago' },
-    { despesa: 'Salario Flavio', categoria: 'Folha', cliente: 'Impulso', valor: 3500, status: 'Pago' },
-    { despesa: 'Comissao Guilherme', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
-    { despesa: 'Aluguel', categoria: 'Infraestrutura', cliente: 'Impulso', valor: 2000, status: 'Pendente' },
+    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-04-05' },
+    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-04-05' },
+    { status: 'Pendente', nome: 'Comissao Guilherme', categoria: 'Folha', valor: 0, cnpj: '', vencimento: '2026-04-15' },
+    { status: 'Pendente', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-04-10' },
   ],
   q1: [
-    { despesa: 'Salario Diego (Jan-Mar)', categoria: 'Folha', cliente: 'Impulso', valor: 15000, status: 'Pago' },
-    { despesa: 'Salario Flavio (Jan-Mar)', categoria: 'Folha', cliente: 'Impulso', valor: 10500, status: 'Pago' },
-    { despesa: 'Aluguel (Jan-Mar)', categoria: 'Infraestrutura', cliente: 'Impulso', valor: 6000, status: 'Pago' },
-    { despesa: 'Comissao Joao (Jan-Mar)', categoria: 'Comissao', cliente: 'Luzzoo', valor: 30594.33, status: 'Pago' },
+    { status: 'Pago', nome: 'Salario Diego (Jan-Mar)', categoria: 'Folha', valor: 15000, cnpj: '', vencimento: '2026-03-05' },
+    { status: 'Pago', nome: 'Salario Flavio (Jan-Mar)', categoria: 'Folha', valor: 10500, cnpj: '', vencimento: '2026-03-05' },
+    { status: 'Pago', nome: 'Aluguel (Jan-Mar)', categoria: 'Infraestrutura', valor: 6000, cnpj: '', vencimento: '2026-03-10' },
+    { status: 'Pago', nome: 'Comissao Joao (Jan-Mar)', categoria: 'Terceiros', valor: 30594.33, cnpj: '', vencimento: '2026-03-15' },
   ],
   all: [
-    { despesa: 'Salario Diego (Jan-Abr)', categoria: 'Folha', cliente: 'Impulso', valor: 20000, status: 'Pago' },
-    { despesa: 'Salario Flavio (Jan-Abr)', categoria: 'Folha', cliente: 'Impulso', valor: 14000, status: 'Pago' },
-    { despesa: 'Aluguel (Jan-Abr)', categoria: 'Infraestrutura', cliente: 'Impulso', valor: 8000, status: 'Pago/Pendente' },
-    { despesa: 'Comissao Joao (Jan-Mar)', categoria: 'Comissao', cliente: 'Luzzoo', valor: 30594.33, status: 'Pago' },
-    { despesa: 'Comissao Guilherme (Abr)', categoria: 'Folha', cliente: 'Impulso', valor: 0, status: 'Pendente' },
+    { status: 'Pago', nome: 'Salario Diego (Jan-Abr)', categoria: 'Folha', valor: 20000, cnpj: '', vencimento: '2026-04-05' },
+    { status: 'Pago', nome: 'Salario Flavio (Jan-Abr)', categoria: 'Folha', valor: 14000, cnpj: '', vencimento: '2026-04-05' },
+    { status: 'Pendente', nome: 'Aluguel (Jan-Abr)', categoria: 'Infraestrutura', valor: 8000, cnpj: '', vencimento: '2026-04-10' },
+    { status: 'Pago', nome: 'Comissao Joao (Jan-Mar)', categoria: 'Terceiros', valor: 30594.33, cnpj: '', vencimento: '2026-03-15' },
+    { status: 'Pendente', nome: 'Comissao Guilherme (Abr)', categoria: 'Folha', valor: 0, cnpj: '', vencimento: '2026-04-15' },
   ]
 };
 
-function renderDespesas(period) {
-  const tbody = document.getElementById('despesasBody');
-  if (!tbody) return;
-  const items = despesasData[period] || [];
-  if (items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma despesa cadastrada para este periodo</td></tr>';
-    return;
-  }
-  tbody.innerHTML = items.map(d => `
-    <tr>
-      <td><strong>${d.despesa}</strong></td>
-      <td>${d.categoria}</td>
-      <td>${d.cliente}</td>
-      <td data-value="${d.valor}">${d.valor > 0 ? 'R$ ' + d.valor.toLocaleString('pt-BR') : '<span style="color:#CC8F00">Pendente</span>'}</td>
-      <td><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;${d.status === 'Pago' ? 'background:rgba(0,200,83,.1);color:#00873E' : 'background:rgba(255,179,0,.15);color:#CC8F00'}">${d.status}</span></td>
-    </tr>
-  `).join('');
-}
+// Receitas data (new)
+var receitasData = {
+  jan: [
+    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 77003.25, vencimento: '2026-01-15', cnpj: '' },
+    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-01-10', cnpj: '' },
+    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-01-10', cnpj: '' },
+  ],
+  fev: [
+    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 56479.04, vencimento: '2026-02-15', cnpj: '' },
+    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-02-10', cnpj: '' },
+    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-02-10', cnpj: '' },
+  ],
+  mar: [
+    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 38563.69, vencimento: '2026-03-15', cnpj: '' },
+    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-03-10', cnpj: '' },
+    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-03-10', cnpj: '' },
+  ],
+  abr: [
+    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 37730.20, vencimento: '2026-04-15', cnpj: '' },
+    { status: 'Pendente', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-04-10', cnpj: '' },
+    { status: 'Pendente', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-04-10', cnpj: '' },
+    { status: 'Pendente', nome: 'Luzzoo', modelo: '% Faturamento', valor: 0, vencimento: '2026-04-20', cnpj: '' },
+    { status: 'Atrasado', nome: 'Encanto', modelo: 'Fee Fixo', valor: 10000, vencimento: '2026-03-10', cnpj: '' },
+  ],
+  q1: [
+    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 172045.98, vencimento: '2026-03-15', cnpj: '' },
+    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-03-10', cnpj: '' },
+    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-03-10', cnpj: '' },
+  ],
+  all: [
+    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 209776.18, vencimento: '2026-04-15', cnpj: '' },
+    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-04-10', cnpj: '' },
+    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-04-10', cnpj: '' },
+    { status: 'Pendente', nome: 'Luzzoo', modelo: '% Faturamento', valor: 0, vencimento: '2026-04-20', cnpj: '' },
+    { status: 'Atrasado', nome: 'Encanto', modelo: 'Fee Fixo', valor: 10000, vencimento: '2026-03-10', cnpj: '' },
+  ]
+};
 
-const pendingClients = [
+var pendingClients = [
   { nome: 'Luzzoo', cor: 'var(--blue)' },
   { nome: 'Encanto', cor: '#FFB300' },
   { nome: 'Black', cor: '#F44336' },
@@ -2567,64 +2655,514 @@ function fmt(v) {
   return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
+function fmtDate(d) {
+  if (!d) return '';
+  var parts = d.split('-');
+  if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+  return d;
+}
+
+function statusBadgeHtml(status) {
+  var cls = 'pendente';
+  if (status === 'Pago') cls = 'pago';
+  else if (status === 'Atrasado') cls = 'atrasado';
+  return '<span class="status-badge ' + cls + '">' + status + '</span>';
+}
+
+// ========== RENDER DESPESAS TABLE ==========
+function renderDespesas(period) {
+  var tbody = document.getElementById('despesasBody');
+  if (!tbody) return;
+  var items = despesasData[period] || [];
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma despesa cadastrada para este periodo</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var d = items[i];
+    html += '<tr data-type="despesa" data-period="' + period + '" data-index="' + i + '">';
+    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(d.status) + '</td>';
+    html += '<td class="fin-editable" data-field="nome"><strong>' + d.nome + '</strong></td>';
+    html += '<td class="fin-editable" data-field="categoria">' + d.categoria + '</td>';
+    html += '<td class="fin-editable" data-field="valor" data-value="' + d.valor + '">' + (d.valor > 0 ? fmt(d.valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
+    html += '<td class="fin-editable" data-field="cnpj">' + (d.cnpj || '-') + '</td>';
+    html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(d.vencimento) + '</td>';
+    html += '</tr>';
+  }
+  tbody.innerHTML = html;
+  attachInlineEditing(tbody);
+}
+
+// ========== RENDER RECEITAS TABLE ==========
+function renderReceitas(period) {
+  var tbody = document.getElementById('receitasBody');
+  if (!tbody) return;
+  var items = receitasData[period] || [];
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma receita cadastrada para este periodo</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var r = items[i];
+    html += '<tr data-type="receita" data-period="' + period + '" data-index="' + i + '">';
+    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(r.status) + '</td>';
+    html += '<td class="fin-editable" data-field="nome"><strong>' + r.nome + '</strong></td>';
+    html += '<td class="fin-editable" data-field="modelo">' + r.modelo + '</td>';
+    html += '<td class="fin-editable" data-field="valor" data-value="' + r.valor + '">' + (r.valor > 0 ? fmt(r.valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
+    html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(r.vencimento) + '</td>';
+    html += '<td class="fin-editable" data-field="cnpj">' + (r.cnpj || '-') + '</td>';
+    html += '</tr>';
+  }
+  tbody.innerHTML = html;
+  attachInlineEditing(tbody);
+}
+
+// ========== INLINE EDITING ==========
+function attachInlineEditing(tbody) {
+  var cells = tbody.querySelectorAll('.fin-editable');
+  for (var i = 0; i < cells.length; i++) {
+    cells[i].addEventListener('dblclick', handleCellEdit);
+  }
+}
+
+function handleCellEdit(e) {
+  var td = e.currentTarget;
+  if (td.classList.contains('editing')) return;
+  var tr = td.parentElement;
+  var type = tr.dataset.type;
+  var period = tr.dataset.period;
+  var idx = parseInt(tr.dataset.index);
+  var field = td.dataset.field;
+  var dataArr = type === 'despesa' ? despesasData : receitasData;
+  var item = dataArr[period] ? dataArr[period][idx] : null;
+  if (!item) return;
+
+  td.classList.add('editing');
+  var currentVal = item[field] || '';
+
+  if (field === 'status') {
+    var sel = document.createElement('select');
+    var opts = ['Pago', 'Pendente', 'Atrasado'];
+    for (var i = 0; i < opts.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = opts[i];
+      opt.textContent = opts[i];
+      if (opts[i] === currentVal) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel);
+    sel.focus();
+    sel.addEventListener('change', function() { finishEdit(td, sel.value, type, period, idx, field); });
+    sel.addEventListener('blur', function() { finishEdit(td, sel.value, type, period, idx, field); });
+  } else if (field === 'categoria') {
+    var sel2 = document.createElement('select');
+    var cats = ['Folha', 'Infraestrutura', 'Software', 'Marketing', 'Operacional', 'Terceiros'];
+    for (var j = 0; j < cats.length; j++) {
+      var opt2 = document.createElement('option');
+      opt2.value = cats[j];
+      opt2.textContent = cats[j];
+      if (cats[j] === currentVal) opt2.selected = true;
+      sel2.appendChild(opt2);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel2);
+    sel2.focus();
+    sel2.addEventListener('change', function() { finishEdit(td, sel2.value, type, period, idx, field); });
+    sel2.addEventListener('blur', function() { finishEdit(td, sel2.value, type, period, idx, field); });
+  } else if (field === 'modelo') {
+    var sel3 = document.createElement('select');
+    var mods = ['% Faturamento', '% Investimento', 'Fee Fixo', 'Fixo + Comissao'];
+    for (var k = 0; k < mods.length; k++) {
+      var opt3 = document.createElement('option');
+      opt3.value = mods[k];
+      opt3.textContent = mods[k];
+      if (mods[k] === currentVal) opt3.selected = true;
+      sel3.appendChild(opt3);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel3);
+    sel3.focus();
+    sel3.addEventListener('change', function() { finishEdit(td, sel3.value, type, period, idx, field); });
+    sel3.addEventListener('blur', function() { finishEdit(td, sel3.value, type, period, idx, field); });
+  } else if (field === 'valor') {
+    var inp = document.createElement('input');
+    inp.type = 'number';
+    inp.step = '0.01';
+    inp.value = currentVal;
+    td.innerHTML = '';
+    td.appendChild(inp);
+    inp.focus();
+    inp.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishEdit(td, parseFloat(inp.value) || 0, type, period, idx, field); });
+    inp.addEventListener('blur', function() { finishEdit(td, parseFloat(inp.value) || 0, type, period, idx, field); });
+  } else if (field === 'vencimento') {
+    var inp2 = document.createElement('input');
+    inp2.type = 'date';
+    inp2.value = currentVal;
+    td.innerHTML = '';
+    td.appendChild(inp2);
+    inp2.focus();
+    inp2.addEventListener('change', function() { finishEdit(td, inp2.value, type, period, idx, field); });
+    inp2.addEventListener('blur', function() { finishEdit(td, inp2.value, type, period, idx, field); });
+  } else {
+    var inp3 = document.createElement('input');
+    inp3.type = 'text';
+    inp3.value = currentVal;
+    td.innerHTML = '';
+    td.appendChild(inp3);
+    inp3.focus();
+    inp3.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishEdit(td, inp3.value, type, period, idx, field); });
+    inp3.addEventListener('blur', function() { finishEdit(td, inp3.value, type, period, idx, field); });
+  }
+}
+
+function finishEdit(td, newVal, type, period, idx, field) {
+  if (!td.classList.contains('editing')) return;
+  td.classList.remove('editing');
+  var dataArr = type === 'despesa' ? despesasData : receitasData;
+  if (dataArr[period] && dataArr[period][idx]) {
+    dataArr[period][idx][field] = newVal;
+  }
+  if (type === 'despesa') {
+    renderDespesas(period);
+  } else {
+    renderReceitas(period);
+  }
+  refreshKPIs();
+}
+
+// ========== RECEITA BAR CHART ==========
+function renderReceitaBarChart() {
+  var d = finData[currentFinPeriod];
+  if (!d) return;
+  var container = document.getElementById('receitaChartContainer');
+  if (!container) return;
+
+  if (receitaChartMode === 'barras') {
+    var maxVal = 1;
+    for (var i = 0; i < d.clientes.length; i++) {
+      if (d.clientes[i].valor > maxVal) maxVal = d.clientes[i].valor;
+    }
+    var html = '<div class="fin-bar-chart" id="receitaBarChart">';
+    for (var j = 0; j < d.clientes.length; j++) {
+      var c = d.clientes[j];
+      html += '<div class="fin-bar-item">';
+      html += '<div class="fin-bar-label">' + c.nome + '</div>';
+      html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:' + (c.valor/maxVal*100).toFixed(0) + '%;background:' + c.cor + ';">' + c.pct + '%</div></div>';
+      html += '<div class="fin-bar-value">' + fmt(c.valor) + '</div>';
+      html += '</div>';
+    }
+    for (var k = 0; k < pendingClients.length; k++) {
+      var pc = pendingClients[k];
+      html += '<div class="fin-bar-item">';
+      html += '<div class="fin-bar-label">' + pc.nome + '</div>';
+      html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:' + pc.cor + ';">-</div></div>';
+      html += '<div class="fin-bar-value" style="opacity:.4">Pendente</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    // Pizza / Donut chart
+    var total = 0;
+    for (var m = 0; m < d.clientes.length; m++) total += d.clientes[m].valor;
+    if (total === 0) total = 1;
+
+    var gradientParts = [];
+    var cumulative = 0;
+    for (var n = 0; n < d.clientes.length; n++) {
+      var pct = (d.clientes[n].valor / total) * 100;
+      gradientParts.push(d.clientes[n].cor + ' ' + cumulative.toFixed(1) + '% ' + (cumulative + pct).toFixed(1) + '%');
+      cumulative += pct;
+    }
+    if (cumulative < 100) {
+      gradientParts.push('#E0E0E0 ' + cumulative.toFixed(1) + '% 100%');
+    }
+
+    var html2 = '<div class="fin-donut-wrap">';
+    html2 += '<div class="fin-donut" style="background:conic-gradient(' + gradientParts.join(',') + ');">';
+    html2 += '<div class="fin-donut-hole"><div class="fin-donut-hole-val">' + fmt(total) + '</div><div class="fin-donut-hole-lbl">Total</div></div>';
+    html2 += '</div>';
+    html2 += '<div class="fin-donut-legend">';
+    for (var p = 0; p < d.clientes.length; p++) {
+      html2 += '<div class="fin-donut-legend-item">';
+      html2 += '<div class="fin-donut-legend-dot" style="background:' + d.clientes[p].cor + ';"></div>';
+      html2 += d.clientes[p].nome + ' - ' + fmt(d.clientes[p].valor) + ' (' + d.clientes[p].pct + '%)';
+      html2 += '</div>';
+    }
+    for (var q = 0; q < pendingClients.length; q++) {
+      html2 += '<div class="fin-donut-legend-item" style="opacity:0.4;">';
+      html2 += '<div class="fin-donut-legend-dot" style="background:#E0E0E0;"></div>';
+      html2 += pendingClients[q].nome + ' - Pendente';
+      html2 += '</div>';
+    }
+    html2 += '</div></div>';
+    container.innerHTML = html2;
+  }
+}
+
+function toggleReceitaChart(mode, btn) {
+  receitaChartMode = mode;
+  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  renderReceitaBarChart();
+}
+
+// ========== EVOLUTION CHART ==========
+var evoMonths = [
+  { key: 'jan', label: 'Jan', receita: 87003.25, despesas: 23259.98 },
+  { key: 'fev', label: 'Fev', receita: 66479.04, despesas: 20113.30 },
+  { key: 'mar', label: 'Mar', receita: 48563.69, despesas: 18721.05 },
+  { key: 'abr', label: 'Abr', receita: 37730.20, despesas: 10500 }
+];
+
+function renderEvoChart() {
+  var container = document.getElementById('evoChartContainer');
+  if (!container) return;
+
+  if (evoChartMode === 'barras') {
+    var maxTotal = 1;
+    for (var i = 0; i < evoMonths.length; i++) {
+      var t = evoMonths[i].receita + evoMonths[i].despesas;
+      if (t > maxTotal) maxTotal = t;
+    }
+    var html = '<div class="fin-evolution-chart">';
+    for (var j = 0; j < evoMonths.length; j++) {
+      var m = evoMonths[j];
+      var totalH = ((m.receita + m.despesas) / maxTotal * 100);
+      var recPct = m.receita / (m.receita + m.despesas) * 100;
+      var despPct = 100 - recPct;
+      html += '<div class="fin-evo-bar-wrapper">';
+      html += '<div class="fin-evo-bar-value">R$ ' + Math.round(m.receita/1000) + 'k</div>';
+      html += '<div class="fin-evo-bar" style="height:' + totalH.toFixed(0) + '%;">';
+      html += '<div class="fin-evo-bar-receita" style="height:' + recPct.toFixed(0) + '%;" data-tooltip="Receita: ' + fmt(m.receita) + '"></div>';
+      html += '<div class="fin-evo-bar-despesa" style="height:' + despPct.toFixed(0) + '%;" data-tooltip="Despesas: ' + fmt(m.despesas) + '"></div>';
+      html += '</div>';
+      html += '<div class="fin-evo-bar-label">' + m.label + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    // Line chart (SVG)
+    var maxVal = 1;
+    for (var k = 0; k < evoMonths.length; k++) {
+      if (evoMonths[k].receita > maxVal) maxVal = evoMonths[k].receita;
+      if (evoMonths[k].despesas > maxVal) maxVal = evoMonths[k].despesas;
+    }
+    maxVal = maxVal * 1.1;
+    var svgW = 400;
+    var svgH = 200;
+    var padL = 10;
+    var padR = 10;
+    var padT = 20;
+    var padB = 30;
+    var chartW = svgW - padL - padR;
+    var chartH = svgH - padT - padB;
+
+    var recPoints = [];
+    var despPoints = [];
+    for (var l = 0; l < evoMonths.length; l++) {
+      var x = padL + (l / (evoMonths.length - 1)) * chartW;
+      var yR = padT + (1 - evoMonths[l].receita / maxVal) * chartH;
+      var yD = padT + (1 - evoMonths[l].despesas / maxVal) * chartH;
+      recPoints.push(x.toFixed(1) + ',' + yR.toFixed(1));
+      despPoints.push(x.toFixed(1) + ',' + yD.toFixed(1));
+    }
+
+    var svg = '<div class="fin-line-chart-wrap">';
+    svg += '<svg class="fin-line-chart-svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" preserveAspectRatio="none">';
+    // Grid lines
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + (g / 4) * chartH;
+      svg += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (svgW - padR) + '" y2="' + gy.toFixed(1) + '" stroke="#E8E4DE" stroke-width="1"/>';
+    }
+    // Receita line
+    svg += '<polyline points="' + recPoints.join(' ') + '" fill="none" stroke="#00C853" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+    // Despesas line
+    svg += '<polyline points="' + despPoints.join(' ') + '" fill="none" stroke="#FF4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+    // Dots and labels
+    for (var n = 0; n < evoMonths.length; n++) {
+      var xn = padL + (n / (evoMonths.length - 1)) * chartW;
+      var yrn = padT + (1 - evoMonths[n].receita / maxVal) * chartH;
+      var ydn = padT + (1 - evoMonths[n].despesas / maxVal) * chartH;
+      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + yrn.toFixed(1) + '" r="5" fill="#00C853" stroke="#fff" stroke-width="2"/>';
+      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + ydn.toFixed(1) + '" r="5" fill="#FF4444" stroke="#fff" stroke-width="2"/>';
+      svg += '<text x="' + xn.toFixed(1) + '" y="' + (svgH - 5) + '" text-anchor="middle" font-size="11" font-weight="600" fill="#8b8fa3" font-family="Sora,sans-serif">' + evoMonths[n].label + '</text>';
+      svg += '<text x="' + xn.toFixed(1) + '" y="' + (yrn - 10).toFixed(1) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#00873E" font-family="Sora,sans-serif">R$ ' + Math.round(evoMonths[n].receita/1000) + 'k</text>';
+    }
+    svg += '</svg></div>';
+    container.innerHTML = svg;
+  }
+}
+
+function toggleEvoChart(mode, btn) {
+  evoChartMode = mode;
+  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  renderEvoChart();
+}
+
+// ========== KPI REFRESH ==========
+function refreshKPIs() {
+  var period = currentFinPeriod;
+  var d = finData[period];
+  if (!d) return;
+  var el = function(id) { return document.getElementById(id); };
+  if (el('kpi-receita')) el('kpi-receita').textContent = fmt(d.receita);
+  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.despesas > 0 ? fmt(d.despesas) : '-';
+  var lucro = d.receita - d.despesas;
+  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.despesas > 0 ? fmt(lucro) : '-';
+  var margem = d.receita > 0 && d.despesas > 0 ? ((lucro / d.receita) * 100).toFixed(1) + '%' : '-';
+  if (el('kpi-margem')) el('kpi-margem').textContent = margem;
+}
+
+// ========== SET PERIOD ==========
 function setFinPeriod(period, btn) {
-  // Update active button
-  document.querySelectorAll('.fin-period-btn').forEach(b => b.classList.remove('active'));
+  currentFinPeriod = period;
+  // Update active button (only within financeiro section)
+  var finSection = document.getElementById('financeiro');
+  if (finSection) {
+    var periodBtns = finSection.querySelectorAll('.fin-period-btn');
+    for (var i = 0; i < periodBtns.length; i++) periodBtns[i].classList.remove('active');
+  }
   btn.classList.add('active');
 
-  const d = finData[period];
+  var d = finData[period];
   if (!d) return;
 
-  // Update KPIs values and labels
-  const periodLabels = {
+  var periodLabels = {
     jan: 'Jan/26', fev: 'Fev/26', mar: 'Mar/26', abr: 'Abr/26',
     q1: 'Q1 2026', all: 'Todos'
   };
-  const pl = periodLabels[period] || period;
+  var pl = periodLabels[period] || period;
 
-  const el = (id) => document.getElementById(id);
+  var el = function(id) { return document.getElementById(id); };
   if (el('kpi-receita')) el('kpi-receita').textContent = fmt(d.receita);
   if (el('kpi-receita-label')) el('kpi-receita-label').textContent = 'Receita ' + pl;
   if (el('kpi-despesas-label')) el('kpi-despesas-label').textContent = 'Despesas ' + pl;
   if (el('kpi-lucro-label')) el('kpi-lucro-label').textContent = 'Lucro Liquido ' + pl;
   if (el('kpi-margem-label')) el('kpi-margem-label').textContent = 'Margem ' + pl;
 
-  // Update badge
-  const badge = document.querySelector('#financeiro .section-badge');
-  if (badge) badge.textContent = d.label + ' (dados parciais — faltam Luzzoo, Encanto, Black)';
+  var badge = document.querySelector('#financeiro .section-badge');
+  if (badge) badge.textContent = d.label;
 
-  // Update bar chart
-  const chart = document.querySelector('.fin-bar-chart');
-  if (!chart) return;
+  // Update charts
+  renderReceitaBarChart();
+  renderEvoChart();
 
-  const maxVal = Math.max(...d.clientes.map(c => c.valor));
-
-  chart.innerHTML = d.clientes.map(c => `
-    <div class="fin-bar-item">
-      <div class="fin-bar-label">${c.nome}</div>
-      <div class="fin-bar-track"><div class="fin-bar-fill" style="width:${(c.valor/maxVal*100).toFixed(0)}%;background:${c.cor};">${c.pct}%</div></div>
-      <div class="fin-bar-value">${fmt(c.valor)}</div>
-    </div>
-  `).join('') + pendingClients.map(c => `
-    <div class="fin-bar-item">
-      <div class="fin-bar-label">${c.nome}</div>
-      <div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:${c.cor};">—</div></div>
-      <div class="fin-bar-value" style="opacity:.4">Pendente</div>
-    </div>
-  `).join('');
-
-  // Update despesas table
+  // Update tables
   renderDespesas(period);
+  renderReceitas(period);
 
-  // Update despesas/lucro/margem KPIs dynamically
-  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.despesas > 0 ? fmt(d.despesas) : '—';
+  // Update KPIs
+  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.despesas > 0 ? fmt(d.despesas) : '-';
   if (el('kpi-despesas-trend')) el('kpi-despesas-trend').textContent = d.despesas > 0 ? 'Dados reais' : 'Sem despesas cadastradas';
-  const lucro = d.receita - d.despesas;
-  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.despesas > 0 ? fmt(lucro) : '—';
+  var lucro = d.receita - d.despesas;
+  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.despesas > 0 ? fmt(lucro) : '-';
   if (el('kpi-lucro-trend')) el('kpi-lucro-trend').textContent = d.despesas > 0 ? 'Receita - Despesas' : 'Aguardando despesas';
-  const margem = d.receita > 0 && d.despesas > 0 ? ((lucro / d.receita) * 100).toFixed(1) + '%' : '—';
+  var margem = d.receita > 0 && d.despesas > 0 ? ((lucro / d.receita) * 100).toFixed(1) + '%' : '-';
   if (el('kpi-margem')) el('kpi-margem').textContent = margem;
   if (el('kpi-margem-trend')) el('kpi-margem-trend').textContent = d.despesas > 0 ? 'Lucro / Receita' : 'Aguardando despesas';
+}
+
+// ========== MODAL (Add Receita / Despesa) ==========
+var finModalType = '';
+
+function openFinModal(type) {
+  finModalType = type;
+  var overlay = document.getElementById('finModalOverlay');
+  var title = document.getElementById('finModalTitle');
+  var fieldsDiv = document.getElementById('finModalFields');
+  if (!overlay || !title || !fieldsDiv) return;
+
+  title.textContent = type === 'receita' ? 'Adicionar Receita' : 'Adicionar Despesa';
+
+  var html = '';
+  // Status
+  html += '<div class="fin-modal-field"><label>Status</label>';
+  html += '<select id="fm-status"><option value="Pago">Pago</option><option value="Pendente" selected>Pendente</option><option value="Atrasado">Atrasado</option></select></div>';
+  // Nome
+  html += '<div class="fin-modal-field"><label>Nome</label><input type="text" id="fm-nome" placeholder="Nome do lancamento" required></div>';
+
+  if (type === 'despesa') {
+    html += '<div class="fin-modal-field"><label>Categoria</label>';
+    html += '<select id="fm-categoria"><option value="Folha">Folha</option><option value="Infraestrutura">Infraestrutura</option><option value="Software">Software</option><option value="Marketing">Marketing</option><option value="Operacional">Operacional</option><option value="Terceiros">Terceiros</option></select></div>';
+  } else {
+    html += '<div class="fin-modal-field"><label>Modelo</label>';
+    html += '<select id="fm-modelo"><option value="% Faturamento">% Faturamento</option><option value="% Investimento">% Investimento</option><option value="Fee Fixo">Fee Fixo</option><option value="Fixo + Comissao">Fixo + Comissao</option></select></div>';
+  }
+
+  // Valor
+  html += '<div class="fin-modal-field"><label>Valor (R$)</label><input type="number" id="fm-valor" step="0.01" min="0" placeholder="0,00" required></div>';
+  // CNPJ/CPF
+  html += '<div class="fin-modal-field"><label>CNPJ/CPF</label><input type="text" id="fm-cnpj" placeholder="00.000.000/0000-00"></div>';
+  // Vencimento
+  html += '<div class="fin-modal-field"><label>Vencimento</label><input type="date" id="fm-vencimento" required></div>';
+
+  fieldsDiv.innerHTML = html;
+  overlay.classList.add('open');
+}
+
+function closeFinModal() {
+  var overlay = document.getElementById('finModalOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function submitFinModal(e) {
+  e.preventDefault();
+  var status = document.getElementById('fm-status').value;
+  var nome = document.getElementById('fm-nome').value;
+  var valor = parseFloat(document.getElementById('fm-valor').value) || 0;
+  var cnpj = document.getElementById('fm-cnpj').value;
+  var vencimento = document.getElementById('fm-vencimento').value;
+  var period = currentFinPeriod;
+
+  if (finModalType === 'despesa') {
+    var categoria = document.getElementById('fm-categoria').value;
+    var entry = { status: status, nome: nome, categoria: categoria, valor: valor, cnpj: cnpj, vencimento: vencimento };
+    if (!despesasData[period]) despesasData[period] = [];
+    despesasData[period].push(entry);
+    // Update finData despesas total
+    if (finData[period]) finData[period].despesas += valor;
+    renderDespesas(period);
+  } else {
+    var modelo = document.getElementById('fm-modelo').value;
+    var entry2 = { status: status, nome: nome, modelo: modelo, valor: valor, vencimento: vencimento, cnpj: cnpj };
+    if (!receitasData[period]) receitasData[period] = [];
+    receitasData[period].push(entry2);
+    // Update finData receita total and clientes
+    if (finData[period]) {
+      finData[period].receita += valor;
+      var found = false;
+      for (var i = 0; i < finData[period].clientes.length; i++) {
+        if (finData[period].clientes[i].nome === nome) {
+          finData[period].clientes[i].valor += valor;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        var colors = ['#FF9800','#00BCD4','#9C27B0','#4CAF50','#FF5722','#607D8B','#E91E63','#3F51B5'];
+        finData[period].clientes.push({ nome: nome, valor: valor, pct: 0, cor: colors[finData[period].clientes.length % colors.length] });
+      }
+      // Recalculate percentages
+      var totalR = 0;
+      for (var j = 0; j < finData[period].clientes.length; j++) totalR += finData[period].clientes[j].valor;
+      for (var k = 0; k < finData[period].clientes.length; k++) {
+        finData[period].clientes[k].pct = totalR > 0 ? parseFloat(((finData[period].clientes[k].valor / totalR) * 100).toFixed(1)) : 0;
+      }
+    }
+    renderReceitas(period);
+    renderReceitaBarChart();
+  }
+
+  refreshKPIs();
+  closeFinModal();
 }
 
 // ========== TABLE SORTING ==========
@@ -3388,14 +3926,20 @@ async function loadAprovacao() {
 }
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   renderClientCards();
   renderDespesas('abr');
+  renderReceitas('abr');
+  renderReceitaBarChart();
+  renderEvoChart();
   loadAprovacao();
 });
 if (document.readyState !== 'loading') {
   renderClientCards();
   renderDespesas('abr');
+  renderReceitas('abr');
+  renderReceitaBarChart();
+  renderEvoChart();
   loadAprovacao();
 }
 </script>
