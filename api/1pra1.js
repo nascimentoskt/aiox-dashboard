@@ -5,13 +5,28 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
   try {
-    var response = await fetch('https://api.notion.com/v1/databases/' + DB + '/query', {
-      method: 'POST', headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ page_size: 100 })
-    });
-    var data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data.message });
-    var cards = data.results.map(function(page) {
+    // Paginate to get ALL cards
+    var allResults = [];
+    var hasMore = true;
+    var cursor = undefined;
+
+    while (hasMore) {
+      var body = { page_size: 100 };
+      if (cursor) body.start_cursor = cursor;
+
+      var response = await fetch('https://api.notion.com/v1/databases/' + DB + '/query', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await response.json();
+      if (!response.ok) return res.status(response.status).json({ error: data.message });
+
+      allResults = allResults.concat(data.results);
+      hasMore = data.has_more || false;
+      cursor = data.next_cursor || undefined;
+    }
+
+    var cards = allResults.map(function(page) {
       var p = page.properties;
       return {
         id: page.id, title: (p['Nome da campanha'] && p['Nome da campanha'].title[0]) ? p['Nome da campanha'].title[0].text.content : 'Sem titulo',

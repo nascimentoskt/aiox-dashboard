@@ -10,23 +10,37 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
 
   try {
-    const response = await fetch(`https://api.notion.com/v1/databases/${LUZZOO_DB}/query`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${NOTION_TOKEN}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ page_size: 100 })
-    });
+    // Paginate to get ALL cards
+    let allResults = [];
+    let hasMore = true;
+    let cursor = undefined;
 
-    const data = await response.json();
+    while (hasMore) {
+      const body = { page_size: 100 };
+      if (cursor) body.start_cursor = cursor;
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.message });
+      const response = await fetch(`https://api.notion.com/v1/databases/${LUZZOO_DB}/query`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${NOTION_TOKEN}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return res.status(response.status).json({ error: data.message });
+      }
+
+      allResults = allResults.concat(data.results);
+      hasMore = data.has_more || false;
+      cursor = data.next_cursor || undefined;
     }
 
-    const cards = data.results.map(page => {
+    const cards = allResults.map(page => {
       const p = page.properties;
       return {
         id: page.id,
