@@ -3092,7 +3092,7 @@ function renderDespesas(period) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var d = items[i];
-    html += '<tr data-type="despesa" data-period="' + period + '" data-index="' + i + '">';
+    html += '<tr data-type="despesa" data-period="' + period + '" data-index="' + i + '"' + (d.pageId ? ' data-page-id="' + d.pageId + '"' : '') + '>';
     html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(d.status) + '</td>';
     html += '<td class="fin-editable" data-field="nome"><strong>' + d.nome + '</strong></td>';
     html += '<td class="fin-editable" data-field="categoria">' + d.categoria + '</td>';
@@ -3117,7 +3117,7 @@ function renderReceitas(period) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var r = items[i];
-    html += '<tr data-type="receita" data-period="' + period + '" data-index="' + i + '">';
+    html += '<tr data-type="receita" data-period="' + period + '" data-index="' + i + '"' + (r.pageId ? ' data-page-id="' + r.pageId + '"' : '') + '>';
     html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(r.status) + '</td>';
     html += '<td class="fin-editable" data-field="nome"><strong>' + r.nome + '</strong></td>';
     html += '<td class="fin-editable" data-field="modelo">' + r.modelo + '</td>';
@@ -4638,48 +4638,107 @@ if (document.readyState !== 'loading') {
   };
 })();
 
-// ========== LOAD NOTION IDs INTO TABLES ==========
-// Fetch financeiro data and add page IDs to table rows
+// ========== LOAD NOTION DATA INTO FINANCEIRO ==========
+// Replace local arrays with Notion data (includes pageId)
 (function() {
-  function enrichTablesWithNotionIds() {
+  function loadNotionFinanceiro() {
     fetch('/api/financeiro')
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data.records) return;
 
-        // Match records to table rows by name
-        var receitaRows = document.querySelectorAll('#tabelaReceitas tbody tr[data-type="receita"]');
-        var despesaRows = document.querySelectorAll('#tabelaDespesas tbody tr[data-type="despesa"]');
+        // Group by mesAno and type
+        var newReceitas = {};
+        var newDespesas = {};
 
-        // For each Notion record, find matching row and set data-page-id
         data.records.forEach(function(rec) {
-          var nome = rec.registro || rec.nome || '';
-          if (!nome) return;
+          var mes = rec.mesAno || '';
+          if (!mes) return;
 
-          var allRows = document.querySelectorAll('#receitasBody tr, #despesasBody tr');
-          for (var i = 0; i < allRows.length; i++) {
-            var row = allRows[i];
-            var nameCell = row.querySelector('td[data-field="nome"]');
-            if (nameCell && nameCell.textContent.trim().indexOf(nome) >= 0 && !row.getAttribute('data-page-id')) {
-              row.setAttribute('data-page-id', rec.id);
-              break;
+          var receita = rec.receitaImpulso || 0;
+          var custos = rec.custosOperacionais || 0;
+
+          if (receita > 0) {
+            if (!newReceitas[mes]) newReceitas[mes] = [];
+            newReceitas[mes].push({
+              status: rec.statusPgto || 'Pendente',
+              nome: rec.registro || '',
+              modelo: rec.modelo || '',
+              valor: receita,
+              vencimento: '',
+              cnpj: '',
+              pageId: rec.id
+            });
+          }
+
+          if (custos > 0) {
+            if (!newDespesas[mes]) newDespesas[mes] = [];
+            newDespesas[mes].push({
+              despesa: rec.registro || '',
+              nome: rec.registro || '',
+              categoria: rec.modelo || 'Folha',
+              cliente: rec.cliente || 'Impulso',
+              valor: custos,
+              status: rec.statusPgto || 'Pago',
+              cnpj: '',
+              vencimento: '',
+              pageId: rec.id
+            });
+          }
+        });
+
+        // Merge with existing data (keep structure, add pageId)
+        var periods = Object.keys(newReceitas).concat(Object.keys(newDespesas));
+        var uniquePeriods = {};
+        periods.forEach(function(p) { uniquePeriods[p] = true; });
+
+        Object.keys(uniquePeriods).forEach(function(period) {
+          if (newReceitas[period]) receitasData[period] = newReceitas[period];
+          if (newDespesas[period]) despesasData[period] = newDespesas[period];
+        });
+
+        // Also update finData totals
+        Object.keys(uniquePeriods).forEach(function(period) {
+          var recs = newReceitas[period] || [];
+          var desps = newDespesas[period] || [];
+          var totalRec = 0;
+          var totalDesp = 0;
+          recs.forEach(function(r) { totalRec += r.valor; });
+          desps.forEach(function(d) { totalDesp += d.valor; });
+
+          if (!finData[period.toLowerCase().replace('/', '')]) {
+            // Create short key (e.g. "Abr/2026" -> "abr")
+            var shortKey = period.split('/')[0].toLowerCase();
+            if (finData[shortKey]) {
+              finData[shortKey].receita = totalRec;
+              finData[shortKey].despesas = totalDesp;
+              // Update clientes
+              finData[shortKey].clientes = recs.map(function(r) {
+                return { nome: r.nome, valor: r.valor, pct: totalRec > 0 ? Math.round(r.valor / totalRec * 1000) / 10 : 0, cor: '#0088FF' };
+              });
             }
           }
         });
 
-        console.log('[AIOX] Enriched financial tables with Notion IDs');
+        // Re-render current period
+        var currentPeriod = currentFinPeriod || 'abr';
+        renderReceitas(currentPeriod);
+        renderDespesas(currentPeriod);
+        refreshKPIs();
+
+        console.log('[AIOX] Financeiro loaded from Notion: ' + data.records.length + ' records');
       })
-      .catch(function() {});
+      .catch(function(err) { console.log('[AIOX] Financeiro load failed:', err); });
   }
 
-  // Run after tables render
-  setTimeout(enrichTablesWithNotionIds, 3000);
+  // Run on page load
+  setTimeout(loadNotionFinanceiro, 2000);
 
-  // Also run when switching to financeiro tab
-  var _origShowSection = showSection;
+  // Run when switching to financeiro tab
+  var _origShowSection2 = showSection;
   showSection = function(id) {
-    _origShowSection(id);
-    if (id === 'financeiro') setTimeout(enrichTablesWithNotionIds, 1000);
+    _origShowSection2(id);
+    if (id === 'financeiro') loadNotionFinanceiro();
   };
 })();
 
