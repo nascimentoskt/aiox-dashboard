@@ -2314,8 +2314,19 @@ body {
           </div>
         </div>
 
-        <!-- Evolucao Mensal (with toggle) -->
+        <!-- Despesas por Categoria (ranking) -->
         <div class="fin-card">
+          <div class="fin-card-title">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Despesas por Categoria
+          </div>
+          <div id="despesaChartContainer">
+            <div class="fin-bar-chart" id="despesaBarChart"></div>
+          </div>
+        </div>
+
+        <!-- Evolucao Mensal (full width, below) -->
+        <div class="fin-card full-width">
           <div class="fin-card-title">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             Evolucao Mensal
@@ -2963,9 +2974,53 @@ function renderFinAll() {
   renderFinPeriodBtns();
   renderFinKPIs();
   renderFinReceitaChart();
+  renderFinDespesaChart();
   renderFinEvoChart();
   renderFinReceitas();
   renderFinDespesas();
+}
+
+function renderFinDespesaChart() {
+  var container = document.getElementById('despesaChartContainer');
+  if (!container) return;
+  var d = getSelectedData();
+  var despesas = d.despesas || [];
+
+  // Group by nome/category
+  var byNome = {};
+  for (var i = 0; i < despesas.length; i++) {
+    var nome = despesas[i].nome || despesas[i].registro || 'Outros';
+    // Clean name - remove "- Mes/Ano" suffix
+    nome = nome.replace(/ - [A-Z][a-z]+\/\d{4}$/, '');
+    byNome[nome] = (byNome[nome] || 0) + despesas[i].custos;
+  }
+
+  var items = [];
+  var keys = Object.keys(byNome);
+  for (var j = 0; j < keys.length; j++) {
+    items.push({ nome: keys[j], valor: byNome[keys[j]] });
+  }
+  items.sort(function(a, b) { return b.valor - a.valor; });
+
+  if (items.length === 0) {
+    container.innerHTML = '<p style="color:#8b8fa3;font-size:13px;text-align:center;padding:24px;">Sem despesas neste periodo</p>';
+    return;
+  }
+
+  var maxVal = items[0].valor || 1;
+  var colors = ['#F44336', '#FF5722', '#FF7043', '#FF8A65', '#FFAB91', '#E57373', '#EF9A9A', '#FFCDD2'];
+  var html = '<div class="fin-bar-chart">';
+  for (var k = 0; k < items.length; k++) {
+    var pct = Math.round(items[k].valor / maxVal * 100);
+    var cor = colors[k % colors.length];
+    html += '<div class="fin-bar-item">';
+    html += '<div class="fin-bar-label">' + items[k].nome + '</div>';
+    html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:' + pct + '%;background:' + cor + ';">' + (d.custos > 0 ? Math.round(items[k].valor / d.custos * 100) : 0) + '%</div></div>';
+    html += '<div class="fin-bar-value">' + fmt(items[k].valor) + '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
 }
 
 function getSelectedData() {
