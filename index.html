@@ -6216,31 +6216,38 @@ function generateEmailStrategy(client) {
 
   var typeClass = currentEmailType === 'promo' ? 'promo' : currentEmailType === 'nurture' ? 'nurture' : currentEmailType === 'launch' ? 'launch' : 'reactivate';
 
+  var inputStyle = 'width:100%;padding:10px 14px;border:1.5px solid var(--border-light);border-radius:var(--radius-sm);font-family:Sora,sans-serif;font-size:13px;color:var(--navy);background:var(--surface);transition:border-color 0.2s;outline:none;';
+  var inputFocus = ' onfocus="this.style.borderColor=\'var(--blue)\'" onblur="this.style.borderColor=\'var(--border-light)\'"';
+  var textareaStyle = inputStyle + 'resize:vertical;min-height:100px;line-height:1.7;';
+
   var html = '';
   html += '<div class="email-field"><div class="email-field-label">Tipo de Campanha</div>';
   html += '<div class="email-field-value"><span class="email-type-tag ' + typeClass + '">' + tpl.icon + ' ' + tpl.name + '</span></div></div>';
 
+  html += '<div class="email-field"><div class="email-field-label">Assunto do Email</div>';
+  html += '<input type="text" id="emailFieldSubject" value="' + strategy.subject.replace(/"/g, '&quot;') + '" style="' + inputStyle + 'font-weight:700;"' + inputFocus + '></div>';
+
   html += '<div class="email-field"><div class="email-field-label">Segmentacao</div>';
-  html += '<div class="email-field-value highlight">' + strategy.segmentation + '</div></div>';
+  html += '<input type="text" id="emailFieldSegmentation" value="' + strategy.segmentation.replace(/"/g, '&quot;') + '" style="' + inputStyle + '"' + inputFocus + '></div>';
 
   html += '<div class="email-field"><div class="email-field-label">Publico-alvo</div>';
-  html += '<div class="email-field-value">' + info.audience + '</div></div>';
+  html += '<input type="text" id="emailFieldAudience" value="' + info.audience.replace(/"/g, '&quot;') + '" style="' + inputStyle + '"' + inputFocus + '></div>';
 
-  html += '<div class="email-field"><div class="email-field-label">Preview do Email</div>';
-  html += '<div class="email-copy-preview">';
-  html += '<div class="email-copy-subject">' + strategy.subject + '</div>';
-  html += strategy.copy;
-  html += '<br><span class="email-copy-cta">' + strategy.cta + '</span>';
-  html += '</div></div>';
+  html += '<div class="email-field"><div class="email-field-label">Copy do Email</div>';
+  html += '<textarea id="emailFieldCopy" style="' + textareaStyle + '"' + inputFocus + '>' + strategy.copy + '</textarea></div>';
 
+  html += '<div class="email-field"><div class="email-field-label">CTA (Call to Action)</div>';
+  html += '<input type="text" id="emailFieldCta" value="' + strategy.cta.replace(/"/g, '&quot;') + '" style="' + inputStyle + 'font-weight:700;color:var(--blue);"' + inputFocus + '></div>';
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">';
   html += '<div class="email-field"><div class="email-field-label">Horario Recomendado</div>';
-  html += '<div class="email-field-value">' + strategy.schedule + '</div></div>';
-
+  html += '<input type="text" id="emailFieldSchedule" value="' + strategy.schedule.replace(/"/g, '&quot;') + '" style="' + inputStyle + '"' + inputFocus + '></div>';
   html += '<div class="email-field"><div class="email-field-label">Frequencia</div>';
-  html += '<div class="email-field-value">' + strategy.frequency + '</div></div>';
+  html += '<input type="text" id="emailFieldFrequency" value="' + strategy.frequency.replace(/"/g, '&quot;') + '" style="' + inputStyle + '"' + inputFocus + '></div>';
+  html += '</div>';
 
   html += '<div class="email-field"><div class="email-field-label">Tom de Voz</div>';
-  html += '<div class="email-field-value">' + info.tone + '</div></div>';
+  html += '<input type="text" id="emailFieldTone" value="' + info.tone.replace(/"/g, '&quot;') + '" style="' + inputStyle + '"' + inputFocus + '></div>';
 
   // Botao para enviar demanda ao Notion da Luzzoo
   var notionClients = ['luzzoo', 'mermaid', 'moom'];
@@ -6307,26 +6314,36 @@ function sendEmailToNotion(client, type) {
 
   if (btn) { btn.textContent = '⏳ Enviando ao Notion...'; btn.disabled = true; }
 
-  // Build description with full email strategy
+  // Read edited values from fields
+  var editedSubject = (document.getElementById('emailFieldSubject') || {}).value || strategy.subject;
+  var editedSegmentation = (document.getElementById('emailFieldSegmentation') || {}).value || strategy.segmentation;
+  var editedAudience = (document.getElementById('emailFieldAudience') || {}).value || info.audience;
+  var editedCopy = (document.getElementById('emailFieldCopy') || {}).value || strategy.copy;
+  var editedCta = (document.getElementById('emailFieldCta') || {}).value || strategy.cta;
+  var editedSchedule = (document.getElementById('emailFieldSchedule') || {}).value || strategy.schedule;
+  var editedFrequency = (document.getElementById('emailFieldFrequency') || {}).value || strategy.frequency;
+  var editedTone = (document.getElementById('emailFieldTone') || {}).value || info.tone;
+
+  // Build description with edited content
   var descricao = 'DIRECIONAMENTO EMAIL MARKETING\n';
   descricao += '================================\n\n';
   descricao += 'Cliente: ' + info.name + '\n';
   descricao += 'Segmento: ' + info.segment + '\n';
   descricao += 'Tipo: ' + tpl.name + '\n\n';
   descricao += '--- CONTEUDO DO EMAIL ---\n\n';
-  descricao += 'Assunto: ' + strategy.subject + '\n\n';
-  descricao += 'Copy:\n' + strategy.copy + '\n\n';
-  descricao += 'CTA: ' + strategy.cta + '\n\n';
+  descricao += 'Assunto: ' + editedSubject + '\n\n';
+  descricao += 'Copy:\n' + editedCopy + '\n\n';
+  descricao += 'CTA: ' + editedCta + '\n\n';
   descricao += '--- ESTRATEGIA ---\n\n';
-  descricao += 'Segmentacao: ' + strategy.segmentation + '\n';
-  descricao += 'Publico: ' + info.audience + '\n';
-  descricao += 'Horario: ' + strategy.schedule + '\n';
-  descricao += 'Frequencia: ' + strategy.frequency + '\n';
-  descricao += 'Tom: ' + info.tone + '\n\n';
+  descricao += 'Segmentacao: ' + editedSegmentation + '\n';
+  descricao += 'Publico: ' + editedAudience + '\n';
+  descricao += 'Horario: ' + editedSchedule + '\n';
+  descricao += 'Frequencia: ' + editedFrequency + '\n';
+  descricao += 'Tom: ' + editedTone + '\n\n';
   descricao += 'Plataforma: EDRONE\n';
   descricao += 'Obs: Cabecalho e rodape padrao. Criar apenas a imagem central com o conteudo acima.';
 
-  var title = '[Email] ' + info.name + ' — ' + tpl.name + ': ' + strategy.subject.replace(/[^\w\s\-]/g, '').trim().substring(0, 60);
+  var title = '[Email] ' + info.name + ' — ' + tpl.name + ': ' + editedSubject.replace(/[^\w\s\-]/g, '').trim().substring(0, 60);
 
   fetch('/api/create-luzzoo-task', {
     method: 'POST',
