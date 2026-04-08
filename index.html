@@ -6249,15 +6249,20 @@ function generateEmailStrategy(client) {
   html += '<div class="email-field"><div class="email-field-label">Tom de Voz</div>';
   html += '<input type="text" id="emailFieldTone" value="' + info.tone.replace(/"/g, '&quot;') + '" style="' + inputStyle + '"' + inputFocus + '></div>';
 
-  // Botao para enviar demanda ao Notion da Luzzoo
-  var notionClients = ['luzzoo', 'mermaid', 'moom'];
-  if (notionClients.indexOf(client) >= 0) {
-    html += '<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-light);">';
-    html += '<button class="email-client-btn" style="max-width:100%;" id="emailSendNotion" onclick="sendEmailToNotion(\'' + client + '\', \'' + currentEmailType + '\')">';
-    html += '📋 Enviar Demanda ao Notion Luzzoo (Sergio / Em Espera)</button>';
-    html += '<div id="emailNotionStatus" style="margin-top:8px;font-size:11px;color:var(--text-secondary);text-align:center;"></div>';
-    html += '</div>';
-  }
+  // Botao para publicar demanda no Notion
+  var luzzooClients = ['luzzoo', 'mermaid', 'moom'];
+  var isLuzzoo = luzzooClients.indexOf(client) >= 0;
+  var btnLabel = isLuzzoo ? '📋 Publicar Demanda no Notion Luzzoo (Sergio / Em Espera)' : '📋 Publicar Demanda no Notion AIOX';
+  var btnAction = isLuzzoo
+    ? 'sendEmailToNotion(\'' + client + '\', \'' + currentEmailType + '\')'
+    : 'sendEmailToAiox(\'' + client + '\', \'' + currentEmailType + '\')';
+
+  html += '<div style="margin-top:28px;padding-top:24px;border-top:2px solid var(--border-light);">';
+  html += '<button id="emailSendNotion" onclick="' + btnAction + '" style="width:100%;padding:14px 24px;border:none;border-radius:var(--radius-sm);background:var(--navy);color:#fff;font-family:Sora,sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"';
+  html += ' onmouseover="this.style.background=\'var(--blue)\'" onmouseout="this.style.background=\'var(--navy)\'">';
+  html += btnLabel + '</button>';
+  html += '<div id="emailNotionStatus" style="margin-top:10px;font-size:12px;color:var(--text-secondary);text-align:center;"></div>';
+  html += '</div>';
 
   body.innerHTML = html;
 
@@ -6372,6 +6377,63 @@ function sendEmailToNotion(client, type) {
   .catch(function(err) {
     if (btn) { btn.textContent = '❌ Erro de conexao'; btn.disabled = false; btn.style.background = '#FF5252'; }
     if (status) status.textContent = err.message;
+  });
+}
+
+function sendEmailToAiox(client, type) {
+  var tpl = emailTemplates[type];
+  if (!tpl || !tpl.strategies[client]) return;
+  var strategy = tpl.strategies[client];
+  var info = emailClients[client];
+  var btn = document.getElementById('emailSendNotion');
+  var status = document.getElementById('emailNotionStatus');
+
+  if (btn) { btn.textContent = '⏳ Publicando no Notion...'; btn.style.pointerEvents = 'none'; btn.style.opacity = '0.6'; }
+
+  var editedSubject = (document.getElementById('emailFieldSubject') || {}).value || strategy.subject;
+  var editedCopy = (document.getElementById('emailFieldCopy') || {}).value || strategy.copy;
+  var editedCta = (document.getElementById('emailFieldCta') || {}).value || strategy.cta;
+  var editedSegmentation = (document.getElementById('emailFieldSegmentation') || {}).value || strategy.segmentation;
+  var editedSchedule = (document.getElementById('emailFieldSchedule') || {}).value || strategy.schedule;
+  var editedFrequency = (document.getElementById('emailFieldFrequency') || {}).value || strategy.frequency;
+
+  var title = '[Email] ' + info.name + ' — ' + tpl.name + ': ' + editedSubject.replace(/[^\w\s\-]/g, '').trim().substring(0, 60);
+
+  fetch('/api/create-task', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: title,
+      status: 'A Fazer',
+      squad: 'Content Squad',
+      responsavel: 'AIOX Email Agent',
+      prioridade: 'Media',
+      projeto: info.name
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success && data.pageId) {
+      var comment = 'DIRECIONAMENTO EMAIL MARKETING\n\nCliente: ' + info.name + '\nTipo: ' + tpl.name + '\n\nAssunto: ' + editedSubject + '\n\nCopy:\n' + editedCopy + '\n\nCTA: ' + editedCta + '\n\nSegmentacao: ' + editedSegmentation + '\nHorario: ' + editedSchedule + '\nFrequencia: ' + editedFrequency + '\n\nPlataforma: EDRONE';
+      return fetch('/api/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pageId: data.pageId, comment: '@AIOX Email Marketing — ' + comment })
+      }).then(function() { return data; });
+    }
+    return data;
+  })
+  .then(function(data) {
+    if (data.success) {
+      if (btn) { btn.textContent = '✓ Demanda publicada no Notion AIOX!'; btn.style.background = '#34C759'; }
+      if (status) status.textContent = 'Card criado no Notion AIOX com sucesso.';
+    } else {
+      if (btn) { btn.textContent = '❌ Erro — Tentar novamente'; btn.style.pointerEvents = ''; btn.style.opacity = ''; btn.style.background = '#FF5252'; }
+      if (status) status.textContent = 'Erro: ' + (data.error || 'falha');
+    }
+  })
+  .catch(function(err) {
+    if (btn) { btn.textContent = '❌ Erro de conexao'; btn.style.pointerEvents = ''; btn.style.opacity = ''; btn.style.background = '#FF5252'; }
   });
 }
 
