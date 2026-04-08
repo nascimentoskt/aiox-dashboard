@@ -2345,7 +2345,7 @@ body {
               <thead>
                 <tr>
                   <th onclick="sortFinTable('tabelaReceitas', 0, 'text', this)">Status <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
-                  <th onclick="sortFinTable('tabelaReceitas', 1, 'text', this)">Nome <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
+                  <th onclick="sortFinTable('tabelaReceitas', 1, 'text', this)">Cliente <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                   <th onclick="sortFinTable('tabelaReceitas', 2, 'text', this)">Modelo <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                   <th onclick="sortFinTable('tabelaReceitas', 3, 'number', this)">Valor <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
                   <th onclick="sortFinTable('tabelaReceitas', 4, 'text', this)">Vencimento <span class="sort-icon">&#x25B2;&#x25BC;</span></th>
@@ -3242,7 +3242,7 @@ function renderFinReceitas() {
   for (var i = 0; i < items.length; i++) {
     var r = items[i];
     var pageId = r.id || r.pageId || '';
-    var nome = r.nome || r.cliente || r.registro || '';
+    var nome = r.cliente || r.nome || r.registro || '';
     var modelo = r.modelo || '';
     var valor = r.receita || r.valor || 0;
     var venc = r.vencimento || '';
@@ -3250,7 +3250,7 @@ function renderFinReceitas() {
     var status = r.status || 'Pendente';
     html += '<tr data-type="receita" data-page-id="' + pageId + '" data-index="' + i + '">';
     html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(status) + '</td>';
-    html += '<td class="fin-editable" data-field="nome"><strong>' + nome + '</strong></td>';
+    html += '<td class="fin-editable" data-field="cliente"><strong>' + nome + '</strong></td>';
     html += '<td class="fin-editable" data-field="modelo">' + modelo + '</td>';
     html += '<td class="fin-editable" data-field="valor" data-value="' + valor + '">' + (valor > 0 ? fmt(valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
     html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(venc) + '</td>';
