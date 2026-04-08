@@ -2344,6 +2344,76 @@ body {
   .kanban-top-row { flex-direction: column; align-items: flex-start; }
 }
 
+/* ========== EMAIL MARKETING PANEL ========== */
+.email-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.email-kpi { background:var(--surface); border-radius:var(--radius); padding:20px; border:1px solid var(--border-light); text-align:center; transition:all var(--transition); }
+.email-kpi:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.email-kpi-value { font-size:28px; font-weight:800; color:var(--blue); margin-bottom:2px; }
+.email-kpi-label { font-size:10px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; }
+.email-grid { display:grid; grid-template-columns:340px 1fr; gap:24px; margin-bottom:32px; }
+.email-clients-list { display:flex; flex-direction:column; gap:12px; }
+.email-client-card { background:var(--surface); border-radius:var(--radius); padding:18px; border:1px solid var(--border-light); cursor:pointer; transition:all var(--transition); position:relative; }
+.email-client-card:hover { box-shadow:var(--shadow-hover); transform:translateX(3px); }
+.email-client-card.active { border-color:var(--blue); box-shadow:0 0 0 2px rgba(0,136,255,0.15); }
+.email-client-top { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.email-client-avatar { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; flex-shrink:0; }
+.email-client-name { font-size:14px; font-weight:700; color:var(--navy); }
+.email-client-segment { font-size:11px; color:var(--text-secondary); }
+.email-client-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.email-meta-tag { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; background:rgba(0,136,255,0.06); color:var(--blue); }
+.email-client-btn { width:100%; padding:10px; border:none; border-radius:var(--radius-sm); background:var(--blue); color:#fff; font-family:'Sora',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all var(--transition); }
+.email-client-btn:hover { background:var(--blue-light); }
+.email-client-btn.secondary { background:transparent; border:1.5px solid var(--blue); color:var(--blue); }
+.email-client-btn.secondary:hover { background:rgba(0,136,255,0.06); }
+
+.email-result { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border-light); overflow:hidden; }
+.email-result-header { padding:20px 24px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center; }
+.email-result-title { font-size:15px; font-weight:700; color:var(--navy); }
+.email-result-body { padding:24px; }
+.email-result-empty { padding:60px 24px; text-align:center; color:var(--text-secondary); font-size:13px; }
+.email-result-empty svg { margin-bottom:16px; opacity:0.3; }
+
+.email-field { margin-bottom:20px; }
+.email-field-label { font-size:10px; font-weight:700; color:var(--blue); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+.email-field-value { font-size:13px; color:var(--text-primary); line-height:1.7; }
+.email-field-value.highlight { background:#F8F9FB; padding:16px; border-radius:var(--radius-sm); border-left:3px solid var(--blue); }
+
+.email-type-tag { display:inline-block; font-size:10px; font-weight:700; padding:4px 12px; border-radius:100px; }
+.email-type-tag.promo { background:rgba(255,59,48,0.08); color:#D32F2F; }
+.email-type-tag.nurture { background:rgba(0,136,255,0.08); color:#0088FF; }
+.email-type-tag.launch { background:rgba(156,39,176,0.08); color:#9C27B0; }
+.email-type-tag.reactivate { background:rgba(255,179,0,0.08); color:#E6A200; }
+.email-type-tag.seasonal { background:rgba(0,200,83,0.08); color:#2E7D32; }
+
+.email-copy-preview { background:#1A2744; color:#fff; border-radius:var(--radius); padding:24px; margin:12px 0; font-size:13px; line-height:1.8; }
+.email-copy-subject { font-size:15px; font-weight:700; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.1); }
+.email-copy-cta { display:inline-block; margin-top:16px; padding:10px 28px; background:var(--blue); color:#fff; border-radius:var(--radius-sm); font-weight:700; font-size:13px; }
+
+.email-templates { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px; }
+.email-tpl-card { background:var(--surface); border:1.5px solid var(--border-light); border-radius:var(--radius-sm); padding:16px; cursor:pointer; transition:all var(--transition); text-align:center; }
+.email-tpl-card:hover { border-color:var(--blue); background:rgba(0,136,255,0.02); }
+.email-tpl-card.active { border-color:var(--blue); background:rgba(0,136,255,0.04); box-shadow:0 0 0 2px rgba(0,136,255,0.1); }
+.email-tpl-icon { font-size:24px; margin-bottom:8px; }
+.email-tpl-name { font-size:12px; font-weight:700; color:var(--navy); margin-bottom:2px; }
+.email-tpl-desc { font-size:10px; color:var(--text-secondary); }
+
+.email-history { margin-top:32px; }
+.email-history-title { font-size:14px; font-weight:700; color:var(--navy); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.email-history-list { display:flex; flex-direction:column; gap:10px; }
+.email-history-item { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; transition:all var(--transition); }
+.email-history-item:hover { box-shadow:var(--shadow-card); }
+.email-history-left { display:flex; align-items:center; gap:12px; }
+.email-history-avatar { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; flex-shrink:0; }
+.email-history-info { }
+.email-history-name { font-size:12px; font-weight:600; color:var(--navy); }
+.email-history-date { font-size:10px; color:var(--text-secondary); }
+.email-history-type { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; }
+
+@media (max-width:900px) {
+  .email-grid { grid-template-columns:1fr; }
+  .email-kpi-row { grid-template-columns:repeat(2,1fr); }
+  .email-templates { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
@@ -2391,6 +2461,12 @@ body {
     <a href="#financeiro" data-nav="financeiro">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       Financeiro
+    </a>
+
+    <div class="nav-section-label">Ferramentas</div>
+    <a href="#email-marketing" data-nav="email-marketing">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Email Marketing
     </a>
 
     <div class="nav-section-label">Squad Categories</div>
@@ -2946,6 +3022,186 @@ body {
         </div>
       </div>
 
+    </section>
+
+    <!-- EMAIL MARKETING SECTION -->
+    <section class="section-wrapper" id="email-marketing">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="accent-dot"></span>
+          Email Marketing
+        </div>
+        <div class="section-badge" id="emailBadge">5 clientes ativos</div>
+      </div>
+
+      <!-- Client Filter -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+        <button class="fin-period-btn active" onclick="switchEmailClient('todos', this)">Todos</button>
+        <button class="fin-period-btn" onclick="switchEmailClient('luzzoo', this)">Luzzoo</button>
+        <button class="fin-period-btn" onclick="switchEmailClient('mermaid', this)">Mermaid</button>
+        <button class="fin-period-btn" onclick="switchEmailClient('moom', this)">Moom</button>
+        <button class="fin-period-btn" onclick="switchEmailClient('encanto', this)">Encanto</button>
+        <button class="fin-period-btn" onclick="switchEmailClient('1pra1', this)">1pra1</button>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="email-kpi-row">
+        <div class="email-kpi animate-in">
+          <div class="email-kpi-value" id="emailKpiCampanhas">0</div>
+          <div class="email-kpi-label">Campanhas Ativas</div>
+        </div>
+        <div class="email-kpi animate-in">
+          <div class="email-kpi-value" id="emailKpiGerados">0</div>
+          <div class="email-kpi-label">Emails Gerados</div>
+        </div>
+        <div class="email-kpi animate-in">
+          <div class="email-kpi-value" id="emailKpiClientes">5</div>
+          <div class="email-kpi-label">Clientes Ativos</div>
+        </div>
+        <div class="email-kpi animate-in">
+          <div class="email-kpi-value" id="emailKpiTaxa">--</div>
+          <div class="email-kpi-label">Taxa Media Abertura</div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="email-grid">
+
+        <!-- Left: Client Cards -->
+        <div class="email-clients-list" id="emailClientsList">
+          <div class="email-client-card active" data-client="luzzoo" onclick="selectEmailClient('luzzoo')">
+            <div class="email-client-top">
+              <div class="email-client-avatar" style="background:linear-gradient(135deg,#0088FF,#00BCD4)">L</div>
+              <div>
+                <div class="email-client-name">Luzzoo</div>
+                <div class="email-client-segment">Fitness / Esportivo</div>
+              </div>
+            </div>
+            <div class="email-client-meta">
+              <span class="email-meta-tag">E-commerce</span>
+              <span class="email-meta-tag">Marketplace</span>
+              <span class="email-meta-tag">DTC</span>
+            </div>
+            <button class="email-client-btn" onclick="event.stopPropagation(); generateEmailStrategy('luzzoo')">Gerar Direcionamento</button>
+          </div>
+
+          <div class="email-client-card" data-client="mermaid" onclick="selectEmailClient('mermaid')">
+            <div class="email-client-top">
+              <div class="email-client-avatar" style="background:linear-gradient(135deg,#00BCD4,#26C6DA)">M</div>
+              <div>
+                <div class="email-client-name">Mermaid</div>
+                <div class="email-client-segment">Moda Praia</div>
+              </div>
+            </div>
+            <div class="email-client-meta">
+              <span class="email-meta-tag">E-commerce</span>
+              <span class="email-meta-tag">Sazonal</span>
+            </div>
+            <button class="email-client-btn" onclick="event.stopPropagation(); generateEmailStrategy('mermaid')">Gerar Direcionamento</button>
+          </div>
+
+          <div class="email-client-card" data-client="moom" onclick="selectEmailClient('moom')">
+            <div class="email-client-top">
+              <div class="email-client-avatar" style="background:linear-gradient(135deg,#E91E63,#F06292)">M</div>
+              <div>
+                <div class="email-client-name">Moom</div>
+                <div class="email-client-segment">Moda Feminina</div>
+              </div>
+            </div>
+            <div class="email-client-meta">
+              <span class="email-meta-tag">E-commerce</span>
+              <span class="email-meta-tag">Fashion</span>
+            </div>
+            <button class="email-client-btn" onclick="event.stopPropagation(); generateEmailStrategy('moom')">Gerar Direcionamento</button>
+          </div>
+
+          <div class="email-client-card" data-client="encanto" onclick="selectEmailClient('encanto')">
+            <div class="email-client-top">
+              <div class="email-client-avatar" style="background:linear-gradient(135deg,#9C27B0,#BA68C8)">E</div>
+              <div>
+                <div class="email-client-name">Encanto</div>
+                <div class="email-client-segment">Beleza / Cosmeticos</div>
+              </div>
+            </div>
+            <div class="email-client-meta">
+              <span class="email-meta-tag">E-commerce</span>
+              <span class="email-meta-tag">Recorrencia</span>
+            </div>
+            <button class="email-client-btn" onclick="event.stopPropagation(); generateEmailStrategy('encanto')">Gerar Direcionamento</button>
+          </div>
+
+          <div class="email-client-card" data-client="1pra1" onclick="selectEmailClient('1pra1')">
+            <div class="email-client-top">
+              <div class="email-client-avatar" style="background:linear-gradient(135deg,#FFB300,#FFA000)">1</div>
+              <div>
+                <div class="email-client-name">1pra1</div>
+                <div class="email-client-segment">Investimentos / Fintech</div>
+              </div>
+            </div>
+            <div class="email-client-meta">
+              <span class="email-meta-tag">SaaS</span>
+              <span class="email-meta-tag">Fintech</span>
+              <span class="email-meta-tag">B2C</span>
+            </div>
+            <button class="email-client-btn" onclick="event.stopPropagation(); generateEmailStrategy('1pra1')">Gerar Direcionamento</button>
+          </div>
+        </div>
+
+        <!-- Right: Result Panel -->
+        <div>
+          <!-- Templates -->
+          <div style="margin-bottom:20px;">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;">Tipo de Campanha</div>
+            <div class="email-templates" id="emailTemplates">
+              <div class="email-tpl-card active" data-type="promo" onclick="selectEmailTemplate('promo', this)">
+                <div class="email-tpl-icon">&#x1F525;</div>
+                <div class="email-tpl-name">Promocional</div>
+                <div class="email-tpl-desc">Descontos, ofertas e urgencia</div>
+              </div>
+              <div class="email-tpl-card" data-type="nurture" onclick="selectEmailTemplate('nurture', this)">
+                <div class="email-tpl-icon">&#x1F331;</div>
+                <div class="email-tpl-name">Nurturing</div>
+                <div class="email-tpl-desc">Educacao e relacionamento</div>
+              </div>
+              <div class="email-tpl-card" data-type="launch" onclick="selectEmailTemplate('launch', this)">
+                <div class="email-tpl-icon">&#x1F680;</div>
+                <div class="email-tpl-name">Lancamento</div>
+                <div class="email-tpl-desc">Novos produtos e colecoes</div>
+              </div>
+              <div class="email-tpl-card" data-type="reactivate" onclick="selectEmailTemplate('reactivate', this)">
+                <div class="email-tpl-icon">&#x1F504;</div>
+                <div class="email-tpl-name">Reativacao</div>
+                <div class="email-tpl-desc">Clientes inativos e carrinho</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="email-result" id="emailResultPanel">
+            <div class="email-result-header">
+              <div class="email-result-title" id="emailResultTitle">Direcionamento</div>
+              <button class="fin-action-btn green" id="emailGenerateBtn" onclick="generateCurrentEmail()" style="padding:8px 18px;font-size:11px;">Gerar com IA</button>
+            </div>
+            <div class="email-result-body" id="emailResultBody">
+              <div class="email-result-empty">
+                <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <div>Selecione um cliente e tipo de campanha para gerar o direcionamento</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="email-history">
+        <div class="email-history-title">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Historico de Direcionamentos
+        </div>
+        <div class="email-history-list" id="emailHistoryList">
+          <div style="text-align:center;color:var(--text-secondary);font-size:13px;padding:24px;">Nenhum direcionamento gerado ainda</div>
+        </div>
+      </div>
     </section>
 
     <!-- SQUADS SECTION -->
@@ -5689,6 +5945,345 @@ function checkLoginPassword() {
     input.style.borderColor = '#F44336';
     setTimeout(function() { input.style.borderColor = '#E0E0E0'; if (error) error.textContent = ''; }, 2000);
   }
+}
+
+// ========== EMAIL MARKETING PANEL ==========
+var emailClients = {
+  luzzoo: {
+    name: 'Luzzoo', segment: 'Fitness / Esportivo', color: '#0088FF',
+    audience: 'Praticantes de academia, atletas amadores, 18-45 anos',
+    products: 'Bermudas, camisetas dry fit, calcas, shorts',
+    tone: 'Energetico, motivacional, direto'
+  },
+  mermaid: {
+    name: 'Mermaid', segment: 'Moda Praia', color: '#00BCD4',
+    audience: 'Mulheres 20-40, lifestyle praia, verao',
+    products: 'Biquinis, saidas de praia, acessorios',
+    tone: 'Leve, aspiracional, feminino'
+  },
+  moom: {
+    name: 'Moom', segment: 'Moda Feminina', color: '#E91E63',
+    audience: 'Mulheres 22-45, moda casual e elegante',
+    products: 'Vestidos, conjuntos, blusas, calcas',
+    tone: 'Sofisticado, empoderado, moderno'
+  },
+  encanto: {
+    name: 'Encanto', segment: 'Beleza / Cosmeticos', color: '#9C27B0',
+    audience: 'Mulheres 18-50, skincare e maquiagem',
+    products: 'Cremes, maquiagem, tratamentos, kits',
+    tone: 'Cuidadoso, sensorial, confiavel'
+  },
+  '1pra1': {
+    name: '1pra1', segment: 'Investimentos / Fintech', color: '#FFB300',
+    audience: 'Investidores iniciantes e intermediarios, 25-50 anos',
+    products: 'Plataforma de investimento, assessoria',
+    tone: 'Confiavel, educativo, transparente'
+  }
+};
+
+var emailTemplates = {
+  promo: {
+    name: 'Promocional', icon: '🔥',
+    strategies: {
+      luzzoo: {
+        subject: '⚡ 3 por R$99 — So ate meia-noite',
+        segmentation: 'Compradores recorrentes + carrinho abandonado ultimos 30 dias',
+        copy: 'Fala, atleta! Voce ja conhece a qualidade Luzzoo — agora imagina levar 3 pecas por apenas R$99. Bermuda Elastic, Camiseta Dry Fit, Calca Jogger... monta seu kit de treino completo. Mas corre: essa oferta expira a meia-noite.',
+        cta: 'MONTAR MEU KIT',
+        schedule: 'Terca ou quinta, 19h (pos-treino)',
+        frequency: '2x por semana em periodo promocional'
+      },
+      mermaid: {
+        subject: '🌊 Liquidacao de verao — ate 50% OFF em biquinis',
+        segmentation: 'Base completa + leads que visitaram nos ultimos 60 dias',
+        copy: 'O verao esta chegando e a Mermaid preparou descontos de ate 50% na colecao inteira. Biquinis, saidas de praia e acessorios — tudo com aquele caimento que so a Mermaid tem. Aproveita antes que esgote!',
+        cta: 'VER OFERTAS',
+        schedule: 'Sexta, 11h (pre-fim de semana)',
+        frequency: '1x por semana, intensificar em nov-fev'
+      },
+      moom: {
+        subject: '✨ Flash Sale — Vestidos a partir de R$79',
+        segmentation: 'Compradoras frequentes + aniversariantes do mes',
+        copy: 'Ei, fashionista! A Moom selecionou os vestidos mais desejados da temporada com precos especiais. Elegancia nao precisa custar caro — e a prova esta aqui.',
+        cta: 'GARANTIR O MEU',
+        schedule: 'Segunda, 10h (inicio de semana)',
+        frequency: '1-2x por semana'
+      },
+      encanto: {
+        subject: '💜 Compre 2 e leve 3 — Skincare completo',
+        segmentation: 'Clientes com compra >60 dias (recompra) + leads quentes',
+        copy: 'Seu ritual de beleza merece um upgrade. Na Encanto, comprando 2 produtos de skincare voce leva o 3o de presente. Hidratante, serum, protetor — monte sua rotina completa.',
+        cta: 'MONTAR MINHA ROTINA',
+        schedule: 'Quarta, 20h (momento self-care)',
+        frequency: '1x por semana'
+      },
+      '1pra1': {
+        subject: '📈 Taxa especial: CDB 15% a.a. so essa semana',
+        segmentation: 'Usuarios com saldo parado + leads de webinar',
+        copy: 'Seu dinheiro pode render mais. Essa semana, a 1pra1 esta oferecendo CDB com taxa especial de 15% ao ano — muito acima da media do mercado. Investimento minimo de R$100, liquidez diaria.',
+        cta: 'INVESTIR AGORA',
+        schedule: 'Terca, 8h (abertura do mercado)',
+        frequency: '1x por semana, max 2x'
+      }
+    }
+  },
+  nurture: {
+    name: 'Nurturing', icon: '🌱',
+    strategies: {
+      luzzoo: {
+        subject: '💪 3 exercicios que voce esta fazendo errado (e como corrigir)',
+        segmentation: 'Leads novos + compradores unicos (1 compra)',
+        copy: 'A maioria das pessoas comete esses 3 erros no treino e nem percebe. Preparamos um guia rapido para voce corrigir agora e sentir a diferenca ja no proximo treino. Ah, e a roupa certa faz diferenca sim — a Luzzoo sabe disso.',
+        cta: 'LER O GUIA COMPLETO',
+        schedule: 'Segunda, 7h (motivacao de inicio de semana)',
+        frequency: '1x por semana, sequencia de 4 emails'
+      },
+      mermaid: {
+        subject: '🐚 5 destinos de praia que voce precisa conhecer em 2026',
+        segmentation: 'Base engajada (abriu ultimos 3 emails)',
+        copy: 'Sonhando com a proxima viagem? Separamos 5 praias incriveis que estao bombando esse ano — de Jeri a Fernando de Noronha. E claro, dicas de looks para arrasar em cada destino.',
+        cta: 'DESCOBRIR OS DESTINOS',
+        schedule: 'Quinta, 12h (pausa do almoco)',
+        frequency: '1x por semana'
+      },
+      moom: {
+        subject: '👗 Como montar 5 looks com apenas 3 pecas',
+        segmentation: 'Leads que nao compraram + base engajada',
+        copy: 'Menos e mais. Com apenas 3 pecas-chave da Moom voce monta 5 looks diferentes — do escritorio ao happy hour. Descubra como a moda inteligente funciona.',
+        cta: 'VER AS COMBINACOES',
+        schedule: 'Quarta, 18h (planejamento de looks)',
+        frequency: '1x por semana, sequencia de 3 emails'
+      },
+      encanto: {
+        subject: '🧴 Sua rotina de skincare em 3 passos simples',
+        segmentation: 'Leads novos + quem comprou apenas 1 produto',
+        copy: 'Cuidar da pele nao precisa ser complicado. Em apenas 3 passos (limpeza, tratamento e protecao) voce ja ve resultados. Descubra qual produto da Encanto e ideal para cada etapa.',
+        cta: 'DESCOBRIR MINHA ROTINA',
+        schedule: 'Domingo, 10h (dia de autocuidado)',
+        frequency: '1x por semana, sequencia de 5 emails'
+      },
+      '1pra1': {
+        subject: '📊 Quanto seu dinheiro rendeu esse mes? (Comparativo)',
+        segmentation: 'Usuarios ativos + leads educacionais',
+        copy: 'Poupanca rendeu 0,6%. CDB medio rendeu 1,0%. E na 1pra1? Veja o comparativo completo e entenda por que milhares de brasileiros estao migrando seus investimentos.',
+        cta: 'VER COMPARATIVO',
+        schedule: 'Quarta, 9h (meio da semana)',
+        frequency: '1x por semana'
+      }
+    }
+  },
+  launch: {
+    name: 'Lancamento', icon: '🚀',
+    strategies: {
+      luzzoo: {
+        subject: '🆕 NOVA Linha Tech — Tecido que seca em 30 segundos',
+        segmentation: 'VIPs (3+ compras) + lista de espera + base completa',
+        copy: 'Apresentamos a Linha Tech da Luzzoo. Tecido com secagem ultra-rapida, elastano premium e acabamento seamless. Desenvolvida para quem leva o treino a serio. Primeiros 100 pedidos ganham frete gratis.',
+        cta: 'CONHECER A LINHA TECH',
+        schedule: 'Terca, 10h (lancamento mid-week)',
+        frequency: 'Sequencia: teaser (D-3) + lancamento (D0) + lembrete (D+2)'
+      },
+      mermaid: {
+        subject: '🌺 Colecao Verao 2026 — Preview exclusivo para voce',
+        segmentation: 'VIPs + clientes recorrentes',
+        copy: 'Antes de todo mundo, voce ve primeiro. A nova colecao Verao 2026 da Mermaid chegou com estampas exclusivas, tecidos sustentaveis e modelagens que valorizam todos os corpos. Acesso antecipado por 48h.',
+        cta: 'VER EM PRIMEIRA MAO',
+        schedule: 'Segunda, 9h (exclusividade)',
+        frequency: 'Sequencia: teaser + lancamento + ultimas pecas'
+      },
+      moom: {
+        subject: '✨ Capsule Collection — 10 pecas, infinitas possibilidades',
+        segmentation: 'Base completa com segmentacao por estilo',
+        copy: 'A nova Capsule Collection da Moom tem 10 pecas que combinam entre si em mais de 30 looks diferentes. Minimalismo com personalidade — exatamente o que voce precisa.',
+        cta: 'EXPLORAR A COLECAO',
+        schedule: 'Quinta, 19h (pos-trabalho)',
+        frequency: 'Sequencia de 3 emails em 7 dias'
+      },
+      encanto: {
+        subject: '🔬 NOVO Serum Vitamina C — Resultados em 7 dias',
+        segmentation: 'Compradoras de skincare + leads interessados em anti-aging',
+        copy: 'Depois de 1 ano de desenvolvimento, a Encanto lanca o Serum Vitamina C com concentracao de 20%. Testes clinicos mostram resultados visiveis em apenas 7 dias. Lote inaugural com 20% OFF.',
+        cta: 'GARANTIR COM DESCONTO',
+        schedule: 'Terca, 20h (rotina noturna)',
+        frequency: 'Sequencia: teaser + lancamento + depoimentos'
+      },
+      '1pra1': {
+        subject: '🎯 Nova funcionalidade: Investimento automatico inteligente',
+        segmentation: 'Usuarios ativos + usuarios dormentes (reativacao)',
+        copy: 'Agora a 1pra1 investe por voce. Configure seus objetivos, defina o valor mensal e nosso algoritmo distribui automaticamente entre os melhores ativos. Comece com R$50/mes.',
+        cta: 'ATIVAR INVESTIMENTO AUTOMATICO',
+        schedule: 'Segunda, 8h (inicio de semana produtivo)',
+        frequency: 'Sequencia: anuncio + tutorial + case de sucesso'
+      }
+    }
+  },
+  reactivate: {
+    name: 'Reativacao', icon: '🔄',
+    strategies: {
+      luzzoo: {
+        subject: '😢 Sentimos sua falta — 20% OFF pra voltar',
+        segmentation: 'Clientes inativos >90 dias + carrinho abandonado >7 dias',
+        copy: 'Faz tempo que voce nao aparece por aqui! A Luzzoo tem novidades que voce precisa ver. E pra facilitar, separamos um cupom exclusivo de 20% de desconto. Valido por 48h — so pra voce.',
+        cta: 'USAR MEU CUPOM',
+        schedule: 'Sabado, 10h (momento relaxado)',
+        frequency: 'Sequencia: saudade (D0) + lembrete (D+3) + ultima chance (D+6)'
+      },
+      mermaid: {
+        subject: '🌊 Ei, o verao esta batendo na porta — volta pra Mermaid?',
+        segmentation: 'Clientes que compraram no verao anterior + inativos >120 dias',
+        copy: 'O sol ja esta mais forte, a praia esta chamando... e a Mermaid preparou novidades incriveis pra essa temporada. Como voce ja e da casa, ganha 15% na volta.',
+        cta: 'VOLTAR COM 15% OFF',
+        schedule: 'Sexta, 14h (clima de fim de semana)',
+        frequency: 'Sequencia de 3 emails em 10 dias'
+      },
+      moom: {
+        subject: '💌 Faz tempo! Separamos pecas que combinam com voce',
+        segmentation: 'Inativas >60 dias + baseado em historico de compras',
+        copy: 'Com base no seu estilo, a Moom selecionou pecas que sao a sua cara. E pra tornar a volta ainda mais especial, frete gratis no seu proximo pedido.',
+        cta: 'VER SELECAO PERSONALIZADA',
+        schedule: 'Quarta, 17h',
+        frequency: 'Sequencia: personalizacao + oferta + urgencia'
+      },
+      encanto: {
+        subject: '⏰ Hora de repor? Seus produtos favoritos com 25% OFF',
+        segmentation: 'Clientes com ultima compra >ciclo medio de recompra',
+        copy: 'Se voce seguiu direitinho a rotina, seus produtos da Encanto devem estar acabando. Hora de repor! E com 25% de desconto nos seus favoritos, fica ainda melhor.',
+        cta: 'REPOR MEUS PRODUTOS',
+        schedule: 'Terca, 20h',
+        frequency: 'Automatico baseado em ciclo de recompra (30-60-90 dias)'
+      },
+      '1pra1': {
+        subject: '📊 Seu dinheiro esta parado — veja quanto voce deixou de ganhar',
+        segmentation: 'Usuarios que pararam de investir >60 dias',
+        copy: 'Nos ultimos 60 dias, quem manteve investimentos na 1pra1 ganhou em media 2,4% de rendimento. Seu saldo parado rendeu 0%. Veja simulacao personalizada de quanto voce deixou na mesa.',
+        cta: 'VER MINHA SIMULACAO',
+        schedule: 'Segunda, 9h',
+        frequency: 'Sequencia: impacto (D0) + educacao (D+4) + oferta (D+7)'
+      }
+    }
+  }
+};
+
+var currentEmailClient = 'luzzoo';
+var currentEmailType = 'promo';
+var emailHistory = [];
+var emailCampaignCount = 0;
+
+function switchEmailClient(client, btn) {
+  var btns = document.querySelectorAll('#email-marketing .fin-period-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  if (btn) btn.classList.add('active');
+
+  var cards = document.querySelectorAll('.email-client-card');
+  for (var j = 0; j < cards.length; j++) {
+    if (client === 'todos') { cards[j].style.display = ''; }
+    else { cards[j].style.display = cards[j].dataset.client === client ? '' : 'none'; }
+  }
+  if (client !== 'todos') selectEmailClient(client);
+}
+
+function selectEmailClient(client) {
+  currentEmailClient = client;
+  document.querySelectorAll('.email-client-card').forEach(function(c) {
+    c.classList.toggle('active', c.dataset.client === client);
+  });
+  var info = emailClients[client];
+  if (info) {
+    document.getElementById('emailResultTitle').textContent = 'Direcionamento — ' + info.name;
+  }
+}
+
+function selectEmailTemplate(type, el) {
+  currentEmailType = type;
+  document.querySelectorAll('.email-tpl-card').forEach(function(c) { c.classList.remove('active'); });
+  if (el) el.classList.add('active');
+}
+
+function generateCurrentEmail() {
+  generateEmailStrategy(currentEmailClient);
+}
+
+function generateEmailStrategy(client) {
+  var tpl = emailTemplates[currentEmailType];
+  if (!tpl || !tpl.strategies[client]) return;
+
+  var strategy = tpl.strategies[client];
+  var info = emailClients[client];
+  selectEmailClient(client);
+
+  var body = document.getElementById('emailResultBody');
+  document.getElementById('emailResultTitle').textContent = 'Direcionamento — ' + info.name;
+
+  var typeClass = currentEmailType === 'promo' ? 'promo' : currentEmailType === 'nurture' ? 'nurture' : currentEmailType === 'launch' ? 'launch' : 'reactivate';
+
+  var html = '';
+  html += '<div class="email-field"><div class="email-field-label">Tipo de Campanha</div>';
+  html += '<div class="email-field-value"><span class="email-type-tag ' + typeClass + '">' + tpl.icon + ' ' + tpl.name + '</span></div></div>';
+
+  html += '<div class="email-field"><div class="email-field-label">Segmentacao</div>';
+  html += '<div class="email-field-value highlight">' + strategy.segmentation + '</div></div>';
+
+  html += '<div class="email-field"><div class="email-field-label">Publico-alvo</div>';
+  html += '<div class="email-field-value">' + info.audience + '</div></div>';
+
+  html += '<div class="email-field"><div class="email-field-label">Preview do Email</div>';
+  html += '<div class="email-copy-preview">';
+  html += '<div class="email-copy-subject">' + strategy.subject + '</div>';
+  html += strategy.copy;
+  html += '<br><span class="email-copy-cta">' + strategy.cta + '</span>';
+  html += '</div></div>';
+
+  html += '<div class="email-field"><div class="email-field-label">Horario Recomendado</div>';
+  html += '<div class="email-field-value">' + strategy.schedule + '</div></div>';
+
+  html += '<div class="email-field"><div class="email-field-label">Frequencia</div>';
+  html += '<div class="email-field-value">' + strategy.frequency + '</div></div>';
+
+  html += '<div class="email-field"><div class="email-field-label">Tom de Voz</div>';
+  html += '<div class="email-field-value">' + info.tone + '</div></div>';
+
+  body.innerHTML = html;
+
+  // Update KPIs
+  emailCampaignCount++;
+  document.getElementById('emailKpiCampanhas').textContent = emailCampaignCount;
+  document.getElementById('emailKpiGerados').textContent = emailHistory.length + 1;
+
+  // Add to history
+  emailHistory.unshift({
+    client: client,
+    type: currentEmailType,
+    typeName: tpl.name,
+    subject: strategy.subject,
+    date: new Date()
+  });
+  renderEmailHistory();
+}
+
+function renderEmailHistory() {
+  var list = document.getElementById('emailHistoryList');
+  if (!list || emailHistory.length === 0) return;
+
+  var html = '';
+  var max = Math.min(emailHistory.length, 10);
+  for (var i = 0; i < max; i++) {
+    var h = emailHistory[i];
+    var info = emailClients[h.client] || {};
+    var timeStr = h.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    var dateStr = h.date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    var typeClass = h.type === 'promo' ? 'promo' : h.type === 'nurture' ? 'nurture' : h.type === 'launch' ? 'launch' : 'reactivate';
+
+    html += '<div class="email-history-item">';
+    html += '<div class="email-history-left">';
+    html += '<div class="email-history-avatar" style="background:' + (info.color || '#0088FF') + '">' + (info.name || '?')[0] + '</div>';
+    html += '<div class="email-history-info">';
+    html += '<div class="email-history-name">' + (info.name || h.client) + ' — ' + h.subject + '</div>';
+    html += '<div class="email-history-date">' + dateStr + ' as ' + timeStr + '</div>';
+    html += '</div></div>';
+    html += '<span class="email-type-tag ' + typeClass + '">' + h.typeName + '</span>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
 }
 
 // Show login on page load
