@@ -549,10 +549,9 @@ body {
 .section-wrapper { position: relative; }
 
 /* Tab-based navigation — only active section visible */
-.content > section, .content > .section-wrapper, .content > .stats-bar { display: none !important; }
+.content > section, .content > .section-wrapper { display: none !important; }
 .content > .brush-decoration { display: none; }
-section.active-section, .section-wrapper.active-section { display: block !important; }
-.stats-bar.active-section { display: grid !important; }
+.section-wrapper.active-section { display: block !important; }
 .active-section { animation: fadeSection 0.3s ease; }
 @keyframes fadeSection { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .section-wrapper .brush-bg {
@@ -1354,8 +1353,16 @@ section.active-section, .section-wrapper.active-section { display: block !import
       <path d="M0 100 C100 20, 200 180, 300 100 S500 20, 600 100" stroke="#0088FF" stroke-width="60" stroke-linecap="round" fill="none"/>
     </svg>
 
-    <!-- STATS BAR -->
-    <section class="stats-bar" id="dashboard">
+    <!-- DASHBOARD -->
+    <section class="section-wrapper" id="dashboard">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="accent-dot"></span>
+          Dashboard
+        </div>
+        <div class="section-badge">Visao geral</div>
+      </div>
+      <div class="stats-bar">
       <div class="stat-card animate-in">
         <div class="stat-icon">
           <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
@@ -1383,6 +1390,7 @@ section.active-section, .section-wrapper.active-section { display: block !import
         </div>
         <div class="stat-number">18</div>
         <div class="stat-label">Checklists</div>
+      </div>
       </div>
     </section>
 
@@ -1993,7 +2001,7 @@ sidebarOverlay.addEventListener('click', () => {
 // Tab-based navigation — show/hide sections
 function showSection(sectionId) {
   // Hide all sections
-  document.querySelectorAll('.content > section, .content > .section-wrapper, .content > .stats-bar').forEach(s => {
+  document.querySelectorAll('.content > section, .content > .section-wrapper').forEach(s => {
     s.classList.remove('active-section');
   });
   // Show target
@@ -2020,8 +2028,8 @@ document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(a => {
   });
 });
 
-// Show kanban by default on load
-showSection('kanban');
+// Show dashboard by default on load
+showSection('dashboard');
 
 // ========== DRAG & DROP KANBAN ==========
 let draggedCard = null;
