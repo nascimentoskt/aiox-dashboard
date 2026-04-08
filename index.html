@@ -1408,6 +1408,8 @@ body {
       <div style="display:flex;gap:8px;margin-bottom:20px;">
         <button class="fin-period-btn active" id="btnAiox" onclick="switchKanban('aiox')">AIOX</button>
         <button class="fin-period-btn" id="btnLuzzoo" onclick="switchKanban('luzzoo')">Luzzoo</button>
+        <button class="fin-period-btn" id="btnImpulso" onclick="switchKanban('impulso')">Impulso</button>
+        <button class="fin-period-btn" id="btn1pra1" onclick="switchKanban('1pra1')">1pra1</button>
       </div>
 
       <div class="kanban-wrapper">
@@ -1691,9 +1693,16 @@ body {
         <div class="section-badge" id="aprovacaoBadge">Pendentes de revisao</div>
       </div>
 
+      <!-- Filtro por kanban -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="fin-period-btn active" id="btnAprovAll" onclick="switchAprovacao('todos', this)">Todos</button>
+        <button class="fin-period-btn" onclick="switchAprovacao('aiox', this)">AIOX</button>
+        <button class="fin-period-btn" onclick="switchAprovacao('luzzoo', this)">Luzzoo</button>
+        <button class="fin-period-btn" onclick="switchAprovacao('impulso', this)">Impulso</button>
+        <button class="fin-period-btn" onclick="switchAprovacao('1pra1', this)">1pra1</button>
+      </div>
       <!-- Filtro por projeto -->
       <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;" id="aprovacaoFilters">
-        <button class="fin-period-btn active" onclick="filterAprovacao('todos', this)">Todos</button>
       </div>
 
       <div class="aprovacao-list" id="aprovacaoList">
@@ -2351,89 +2360,85 @@ async function syncFromNotion() {
   }
 }
 
-// ========== KANBAN SOURCE SWITCH ==========
-let currentKanbanSource = 'aiox';
+// ========== KANBAN SOURCE SWITCH (4 sources) ==========
+var currentKanbanSource = 'aiox';
+var kanbanSources = ['aiox', 'luzzoo', 'impulso', '1pra1'];
+var kanbanApiMap = { aiox: '/api/notion', luzzoo: '/api/luzzoo', impulso: '/api/impulso', '1pra1': '/api/1pra1' };
+var kanbanLabels = { aiox: 'AIOX', luzzoo: 'Luzzoo', impulso: 'Impulso', '1pra1': '1pra1' };
 
 async function switchKanban(source) {
   currentKanbanSource = source;
-
-  // Update buttons
+  kanbanSources.forEach(function(s) {
+    var btn = document.getElementById('btn' + s.charAt(0).toUpperCase() + s.slice(1));
+    if (!btn) btn = document.getElementById('btn' + s);
+    if (btn) btn.classList.toggle('active', s === source);
+  });
+  // Fix specific button IDs
   document.getElementById('btnAiox').classList.toggle('active', source === 'aiox');
   document.getElementById('btnLuzzoo').classList.toggle('active', source === 'luzzoo');
+  document.getElementById('btnImpulso').classList.toggle('active', source === 'impulso');
+  document.getElementById('btn1pra1').classList.toggle('active', source === '1pra1');
 
-  const badge = document.getElementById('kanbanBadge');
+  var badge = document.getElementById('kanbanBadge');
+  if (badge) badge.textContent = 'Sincronizando ' + kanbanLabels[source] + '...';
 
   if (source === 'aiox') {
-    if (badge) badge.textContent = 'Sincronizando AIOX...';
     syncFromNotion();
   } else {
-    if (badge) badge.textContent = 'Sincronizando Luzzoo...';
-    await syncFromLuzzoo();
+    await syncExternalKanban(source);
   }
 }
 
-async function syncFromLuzzoo() {
+async function syncExternalKanban(source) {
   try {
-    const res = await fetch('/api/luzzoo');
+    var res = await fetch(kanbanApiMap[source]);
     if (!res.ok) throw new Error('API error');
-    const data = await res.json();
-
-    const board = document.getElementById('kanbanBoard');
+    var data = await res.json();
+    var board = document.getElementById('kanbanBoard');
     if (!board || !data.columns) return;
 
-    const colColors = {
-      'aprovar': '#F44336',
-      'nao-iniciado': '#8b8fa3',
-      'planejamento': '#FFB300',
-      'espera': '#FF9800',
-      'producao': '#9C27B0',
-      'continuas': '#0088FF',
-      'concluido': '#00C853'
-    };
+    var html = '';
+    for (var i = 0; i < data.columns.length; i++) {
+      var col = data.columns[i];
+      var colColor = col.color || '#1A2744';
+      html += '<div class="kanban-column" style="min-width:240px;width:240px;">';
+      html += '<div class="kanban-col-header" style="background:' + colColor + '">';
+      html += '<span class="kanban-col-title">' + col.title + '</span>';
+      html += '<span class="kanban-col-count">' + col.cards.length + '</span>';
+      html += '</div><div class="kanban-col-body" data-status="' + col.id + '">';
+      for (var j = 0; j < col.cards.length; j++) {
+        var card = col.cards[j];
+        var avatar = card.pessoa ? card.pessoa.charAt(0).toUpperCase() : '?';
+        html += '<div class="kanban-card" style="border-left:3px solid ' + colColor + '">';
+        html += '<div class="kanban-card-title">' + card.title + '</div>';
+        html += '<div class="kanban-card-tags">';
+        if (card.tipo) html += '<span class="kanban-tag squad">' + card.tipo + '</span>';
+        if (card.canal) html += '<span class="kanban-tag" style="background:rgba(0,136,255,.1);color:#0088FF">' + card.canal + '</span>';
+        if (card.setor) html += '<span class="kanban-tag" style="background:rgba(156,39,176,.1);color:#9C27B0">' + card.setor + '</span>';
+        if (card.cliente) html += '<span class="kanban-tag" style="background:rgba(0,200,83,.1);color:#00873E">' + card.cliente + '</span>';
+        if (card.priority) html += '<span class="kanban-tag" style="background:rgba(255,0,0,.08);color:#CC0000">' + card.priority + '</span>';
+        html += '</div><div class="kanban-card-footer"><div class="kanban-responsavel">';
+        html += '<div class="avatar">' + avatar + '</div>' + (card.pessoa || 'Sem responsavel');
+        html += '</div></div></div>';
+      }
+      html += '</div></div>';
+    }
+    board.innerHTML = html;
 
-    board.innerHTML = data.columns.map(col => `
-      <div class="kanban-column" style="min-width:240px;width:240px;">
-        <div class="kanban-col-header" style="background:${colColors[col.id] || '#1A2744'}">
-          <span class="kanban-col-title">${col.title}</span>
-          <span class="kanban-col-count">${col.cards.length}</span>
-        </div>
-        <div class="kanban-col-body" data-status="${col.id}">
-          ${col.cards.map(card => `
-            <div class="kanban-card" style="border-left:3px solid ${colColors[col.id] || '#0088FF'}">
-              <div class="kanban-card-title">${card.title}</div>
-              <div class="kanban-card-tags">
-                ${card.tipo ? `<span class="kanban-tag squad">${card.tipo}</span>` : ''}
-                ${card.canal ? `<span class="kanban-tag" style="background:rgba(0,136,255,.1);color:#0088FF">${card.canal}</span>` : ''}
-                ${card.setor ? `<span class="kanban-tag" style="background:rgba(156,39,176,.1);color:#9C27B0">${card.setor}</span>` : ''}
-                ${card.priority ? `<span class="kanban-tag priority-${card.priority.toLowerCase()}">${card.priority}</span>` : ''}
-              </div>
-              <div class="kanban-card-footer">
-                <div class="kanban-responsavel">
-                  <div class="avatar">${card.pessoa ? card.pessoa[0].toUpperCase() : '?'}</div>
-                  ${card.pessoa || 'Sem responsavel'}
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `).join('');
-
-    const badge = document.getElementById('kanbanBadge');
-    if (badge) badge.textContent = `Luzzoo · ${data.totalCards} tasks · ${new Date(data.lastSync).toLocaleTimeString('pt-BR')}`;
-
+    var badge = document.getElementById('kanbanBadge');
+    if (badge) badge.textContent = kanbanLabels[source] + ' · ' + data.totalCards + ' tasks · ' + new Date(data.lastSync).toLocaleTimeString('pt-BR');
   } catch (err) {
-    console.log('[AIOX] Luzzoo sync failed:', err.message);
-    const badge = document.getElementById('kanbanBadge');
-    if (badge) badge.textContent = 'Luzzoo · erro de sync';
+    console.log('[AIOX] ' + source + ' sync failed:', err.message);
+    var badge = document.getElementById('kanbanBadge');
+    if (badge) badge.textContent = kanbanLabels[source] + ' · erro de sync';
   }
 }
 
 // Auto-sync current source on load and every 60 seconds
 syncFromNotion();
-setInterval(() => {
+setInterval(function() {
   if (currentKanbanSource === 'aiox') syncFromNotion();
-  else syncFromLuzzoo();
+  else syncExternalKanban(currentKanbanSource);
 }, 60000);
 
 // ========== FINANCIAL PERIOD FILTER ==========
@@ -3249,36 +3254,87 @@ function renderAprovacaoCards() {
   listEl.innerHTML = html;
 }
 
-async function loadAprovacao() {
-  try {
-    const res = await fetch('/api/notion');
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
+var currentAprovacaoSource = 'todos';
+var allReviewBySource = {};
 
-    let reviewCards = [];
+function switchAprovacao(source, btn) {
+  currentAprovacaoSource = source;
+  document.querySelectorAll('#aprovacao .fin-period-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+
+  if (source === 'todos') {
+    var merged = [];
+    Object.keys(allReviewBySource).forEach(function(k) { merged = merged.concat(allReviewBySource[k]); });
+    allReviewCards = merged;
+  } else {
+    allReviewCards = allReviewBySource[source] || [];
+  }
+
+  // Build project sub-filters
+  var projetoSet = {};
+  allReviewCards.forEach(function(c) { if (c.projeto) projetoSet[c.projeto] = true; });
+  var projetos = Object.keys(projetoSet).sort();
+  var filtersEl = document.getElementById('aprovacaoFilters');
+  if (filtersEl) {
+    var fhtml = '<button class="fin-period-btn active" onclick="filterAprovacao(\'todos\', this)">Todos Projetos</button>';
+    projetos.forEach(function(p) {
+      fhtml += '<button class="fin-period-btn" onclick="filterAprovacao(\'' + p + '\', this)">' + p + '</button>';
+    });
+    filtersEl.innerHTML = fhtml;
+  }
+
+  currentAprovacaoFilter = 'todos';
+  renderAprovacaoCards();
+}
+
+async function fetchReviewCards(apiUrl, sourceName) {
+  try {
+    var res = await fetch(apiUrl);
+    if (!res.ok) return [];
+    var data = await res.json();
+    var cards = [];
     if (data.columns) {
-      data.columns.forEach(col => {
-        if (col.id === 'review' || col.title === 'Em Revisao' || col.title === 'Em Revisão') {
-          reviewCards = reviewCards.concat(col.cards);
+      data.columns.forEach(function(col) {
+        var t = col.title.toLowerCase();
+        if (t.indexOf('revisao') >= 0 || t.indexOf('revisão') >= 0 || t.indexOf('aprovac') >= 0 || col.id === 'review' || col.id === 'aprovacao') {
+          col.cards.forEach(function(c) { c._source = sourceName; });
+          cards = cards.concat(col.cards);
         }
       });
     }
+    return cards;
+  } catch (e) { return []; }
+}
 
-    reviewCards.sort((a, b) => {
-      const dateA = a.lastEdited ? new Date(a.lastEdited) : 0;
-      const dateB = b.lastEdited ? new Date(b.lastEdited) : 0;
-      return dateA - dateB;
+async function loadAprovacao() {
+  try {
+    var results = await Promise.all([
+      fetchReviewCards('/api/notion', 'aiox'),
+      fetchReviewCards('/api/luzzoo', 'luzzoo'),
+      fetchReviewCards('/api/impulso', 'impulso'),
+      fetchReviewCards('/api/1pra1', '1pra1')
+    ]);
+
+    allReviewBySource = { aiox: results[0], luzzoo: results[1], impulso: results[2], '1pra1': results[3] };
+
+    // Merge all
+    var merged = [];
+    results.forEach(function(r) { merged = merged.concat(r); });
+    merged.sort(function(a, b) {
+      var da = a.lastEdited ? new Date(a.lastEdited) : 0;
+      var db = b.lastEdited ? new Date(b.lastEdited) : 0;
+      return da - db;
     });
 
-    allReviewCards = reviewCards;
+    allReviewCards = merged;
 
-    // Build project filter buttons
+    // Build project sub-filters
     var projetoSet = {};
-    reviewCards.forEach(function(c) { if (c.projeto) projetoSet[c.projeto] = true; });
+    merged.forEach(function(c) { if (c.projeto) projetoSet[c.projeto] = true; });
     var projetos = Object.keys(projetoSet).sort();
     var filtersEl = document.getElementById('aprovacaoFilters');
-    if (filtersEl) {
-      var fhtml = '<button class="fin-period-btn active" onclick="filterAprovacao(\'todos\', this)">Todos</button>';
+    if (filtersEl && projetos.length > 0) {
+      var fhtml = '<button class="fin-period-btn active" onclick="filterAprovacao(\'todos\', this)">Todos Projetos</button>';
       projetos.forEach(function(p) {
         fhtml += '<button class="fin-period-btn" onclick="filterAprovacao(\'' + p + '\', this)">' + p + '</button>';
       });
@@ -3286,18 +3342,9 @@ async function loadAprovacao() {
     }
 
     renderAprovacaoCards();
-
-    console.log('[AIOX] Aprovacao loaded:', reviewCards.length, 'cards em revisao');
+    console.log('[AIOX] Aprovacao loaded from 4 sources:', merged.length, 'cards total');
   } catch (err) {
     console.log('[AIOX] Aprovacao load failed:', err.message);
-    const listEl = document.getElementById('aprovacaoList');
-    if (listEl) {
-      listEl.innerHTML = `
-        <div class="aprovacao-empty">
-          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-          <div>Erro ao carregar cards. Tente novamente.</div>
-        </div>`;
-    }
   }
 }
 
