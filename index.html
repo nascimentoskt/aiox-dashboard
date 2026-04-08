@@ -389,7 +389,7 @@ body {
 .kanban-col-body {
   background: #F6F7F9;
   padding: 10px;
-  flex: 1;
+  max-height: 45vh;
   min-height: 120px;
   display: flex; flex-direction: column; gap: 10px;
   transition: background var(--transition);
@@ -405,21 +405,21 @@ body {
 .kanban-card {
   background: var(--surface);
   border-radius: var(--radius-sm);
-  padding: 0;
+  padding: 14px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   border: 1px solid var(--border-light);
   cursor: grab;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
 }
 .kanban-card-bar {
   height: 3px; width: 100%;
   background: #8b8fa3;
   border-radius: 8px 8px 0 0;
+  display: none; /* Hidden - using border-left instead */
 }
 .kanban-card-inner {
-  padding: 14px;
+  padding: 0; /* Content renders directly in card */
 }
 .kanban-card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
@@ -2023,7 +2023,7 @@ body {
 
 /* CHANGE 1: Column body scroll limit */
 .kanban-col-body {
-  max-height: 480px;
+  max-height: 45vh;
   overflow-y: auto;
 }
 .kanban-col-body::-webkit-scrollbar { width: 5px; }
