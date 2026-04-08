@@ -549,9 +549,10 @@ body {
 .section-wrapper { position: relative; }
 
 /* Tab-based navigation — only active section visible */
-.main > section, .main > .section-wrapper { display: none; }
-.main > section.active-section, .main > .section-wrapper.active-section { display: block; }
-.main > .stats-bar.active-section { display: grid; }
+.content > section, .content > .section-wrapper, .content > .stats-bar { display: none !important; }
+.content > .brush-decoration { display: none; }
+section.active-section, .section-wrapper.active-section { display: block !important; }
+.stats-bar.active-section { display: grid !important; }
 .active-section { animation: fadeSection 0.3s ease; }
 @keyframes fadeSection { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .section-wrapper .brush-bg {
@@ -1986,7 +1987,7 @@ sidebarOverlay.addEventListener('click', () => {
 // Tab-based navigation — show/hide sections
 function showSection(sectionId) {
   // Hide all sections
-  document.querySelectorAll('.main > section, .main > .section-wrapper').forEach(s => {
+  document.querySelectorAll('.content > section, .content > .section-wrapper, .content > .stats-bar').forEach(s => {
     s.classList.remove('active-section');
   });
   // Show target
