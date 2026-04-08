@@ -2018,6 +2018,333 @@ body {
   .dash-quick-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash-quick-btn { padding: 14px 8px; }
 }
+
+/* ========== KANBAN ENHANCEMENTS ========== */
+
+/* CHANGE 1: Column body scroll limit */
+.kanban-col-body {
+  max-height: 480px;
+  overflow-y: auto;
+}
+.kanban-col-body::-webkit-scrollbar { width: 5px; }
+.kanban-col-body::-webkit-scrollbar-track { background: transparent; }
+.kanban-col-body::-webkit-scrollbar-thumb { background: #D0D4DC; border-radius: 4px; }
+.kanban-col-body::-webkit-scrollbar-thumb:hover { background: #0088FF80; }
+
+/* CHANGE 2: Metrics bar */
+.kanban-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.kanban-metric-card {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-card);
+  border-left: 3px solid var(--blue);
+  text-align: center;
+}
+.kanban-metric-card:nth-child(1) { border-left-color: #00BCD4; }
+.kanban-metric-card:nth-child(2) { border-left-color: #FFB300; }
+.kanban-metric-card:nth-child(3) { border-left-color: var(--blue); }
+.kanban-metric-card:nth-child(4) { border-left-color: #8b8fa3; }
+.kanban-metric-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.2;
+}
+.kanban-metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* CHANGE 3: Nova Demanda button + Modal */
+.kanban-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.kanban-top-row .kanban-source-filters {
+  margin-bottom: 0;
+}
+.kanban-nova-btn {
+  padding: 7px 20px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 8px rgba(0,136,255,0.25);
+}
+.kanban-nova-btn:hover {
+  background: #0070DD;
+  box-shadow: 0 4px 12px rgba(0,136,255,0.35);
+}
+
+.kanban-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,39,68,0.65);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.kanban-modal-overlay.open { display: flex; }
+.kanban-modal {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 32px;
+  width: 520px;
+  max-width: 90vw;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.kanban-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kanban-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--offwhite);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--chumbo);
+  transition: all 0.2s;
+}
+.kanban-modal-close:hover { background: #FF5252; color: #fff; }
+.kanban-modal-field {
+  margin-bottom: 16px;
+}
+.kanban-modal-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b8fa3;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.kanban-modal-field input,
+.kanban-modal-field select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(26,39,68,0.12);
+  font-size: 14px;
+  font-family: 'Sora', sans-serif;
+  color: var(--chumbo);
+  background: var(--offwhite);
+  transition: border-color 0.2s;
+}
+.kanban-modal-field input:focus,
+.kanban-modal-field select:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.kanban-modal-submit {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.kanban-modal-submit:hover { background: #0070DD; }
+.kanban-modal-msg {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* CHANGE 4 & 5: Ranking + Chat grid */
+.kanban-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+.kanban-ranking,
+.kanban-chat-panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+.kanban-ranking h3,
+.kanban-chat-panel h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 20px;
+}
+.kanban-ranking-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.kanban-ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.kanban-ranking-label {
+  width: 120px;
+  min-width: 120px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kanban-ranking-label .avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0088FF 0%, #00BCD4 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.kanban-ranking-track {
+  flex: 1;
+  height: 28px;
+  background: var(--offwhite);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.kanban-ranking-fill {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  transition: width 1s ease;
+  min-width: 40px;
+  background: linear-gradient(90deg, #0088FF, #3AA8FF);
+}
+.kanban-ranking-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b8fa3;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* Chat panel mockup */
+.kanban-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+}
+.kanban-chat-messages {
+  flex: 1;
+  background: var(--offwhite);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.kanban-chat-input-row {
+  display: flex;
+  gap: 8px;
+}
+.kanban-chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(26,39,68,0.12);
+  font-size: 13px;
+  font-family: 'Sora', sans-serif;
+  color: var(--chumbo);
+  background: var(--offwhite);
+  transition: border-color 0.2s;
+}
+.kanban-chat-input:focus { outline: none; border-color: var(--blue); }
+.kanban-chat-send {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.kanban-chat-badge {
+  display: inline-block;
+  background: rgba(0,136,255,0.08);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 900px) {
+  .kanban-metrics { grid-template-columns: repeat(2, 1fr); }
+  .kanban-bottom-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .kanban-metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kanban-top-row { flex-direction: column; align-items: flex-start; }
+}
+
 </style>
 </head>
 <body>
@@ -2249,12 +2576,35 @@ body {
         <div class="section-badge" id="kanbanBadge">AIOX</div>
       </div>
 
-      <!-- Kanban Source Filter -->
-      <div class="kanban-source-filters">
-        <button class="kanban-source-btn active" id="btnAiox" onclick="switchKanban('aiox')">AIOX</button>
-        <button class="kanban-source-btn" id="btnLuzzoo" onclick="switchKanban('luzzoo')">Luzzoo</button>
-        <button class="kanban-source-btn" id="btnImpulso" onclick="switchKanban('impulso')">Impulso</button>
-        <button class="kanban-source-btn" id="btn1pra1" onclick="switchKanban('1pra1')">1pra1</button>
+      <!-- Kanban Source Filter + Nova Demanda -->
+      <div class="kanban-top-row">
+        <div class="kanban-source-filters">
+          <button class="kanban-source-btn active" id="btnAiox" onclick="switchKanban('aiox')">AIOX</button>
+          <button class="kanban-source-btn" id="btnLuzzoo" onclick="switchKanban('luzzoo')">Luzzoo</button>
+          <button class="kanban-source-btn" id="btnImpulso" onclick="switchKanban('impulso')">Impulso</button>
+          <button class="kanban-source-btn" id="btn1pra1" onclick="switchKanban('1pra1')">1pra1</button>
+        </div>
+        <button class="kanban-nova-btn" onclick="openKanbanModal()">+ Nova Demanda</button>
+      </div>
+
+      <!-- Kanban Metrics Bar -->
+      <div class="kanban-metrics" id="kanbanMetrics">
+        <div class="kanban-metric-card">
+          <div class="kanban-metric-value" id="km-aprovar">0</div>
+          <div class="kanban-metric-label">Aprovar</div>
+        </div>
+        <div class="kanban-metric-card">
+          <div class="kanban-metric-value" id="km-semana">0</div>
+          <div class="kanban-metric-label">A Concluir na Semana</div>
+        </div>
+        <div class="kanban-metric-card">
+          <div class="kanban-metric-value" id="km-producao">0</div>
+          <div class="kanban-metric-label">Em Producao</div>
+        </div>
+        <div class="kanban-metric-card">
+          <div class="kanban-metric-value" id="km-espera">0</div>
+          <div class="kanban-metric-label">Em Espera</div>
+        </div>
       </div>
 
       <div class="kanban-wrapper">
@@ -2505,6 +2855,98 @@ body {
 
         </div>
       </div>
+
+      <!-- Ranking + Chat Grid -->
+      <div class="kanban-bottom-grid">
+        <div class="kanban-ranking">
+          <h3>Demandas Concluidas por Pessoa</h3>
+          <div class="kanban-ranking-chart" id="kanbanRankingChart">
+            <div style="color:var(--text-secondary);font-size:13px;padding:20px 0;text-align:center;">Carregando dados...</div>
+          </div>
+        </div>
+        <div class="kanban-chat-panel">
+          <h3>Assistente AIOX</h3>
+          <span class="kanban-chat-badge">EM BREVE</span>
+          <div class="kanban-chat-container">
+            <div class="kanban-chat-messages">
+              Em breve: converse com o AIOX diretamente do painel para solicitar analises, relatorios e acoes.
+            </div>
+            <div class="kanban-chat-input-row">
+              <input type="text" class="kanban-chat-input" placeholder="Pergunte algo ao AIOX..." disabled>
+              <button class="kanban-chat-send" disabled>Enviar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nova Demanda Modal -->
+      <div class="kanban-modal-overlay" id="kanbanModalOverlay" onclick="if(event.target===this)closeKanbanModal()">
+        <div class="kanban-modal">
+          <div class="kanban-modal-title">
+            <span id="kanbanModalTitle">Nova Demanda</span>
+            <button class="kanban-modal-close" onclick="closeKanbanModal()">&times;</button>
+          </div>
+          <div id="kanbanModalBody">
+            <form id="kanbanModalForm" onsubmit="submitKanbanModal(event)">
+              <div class="kanban-modal-field">
+                <label>Titulo *</label>
+                <input type="text" id="km-titulo" required placeholder="Titulo da demanda">
+              </div>
+              <div class="kanban-modal-field">
+                <label>Status</label>
+                <select id="km-status">
+                  <option value="Backlog">Backlog</option>
+                  <option value="A Fazer" selected>A Fazer</option>
+                  <option value="Em andamento">Em andamento</option>
+                  <option value="Em Revisao">Em Revisao</option>
+                </select>
+              </div>
+              <div class="kanban-modal-field">
+                <label>Squad</label>
+                <select id="km-squad">
+                  <option value="">Selecione...</option>
+                  <option value="AIOX Core">AIOX Core</option>
+                  <option value="Content Squad">Content Squad</option>
+                  <option value="Traffic Masters">Traffic Masters</option>
+                  <option value="Copy Squad">Copy Squad</option>
+                  <option value="Brand Squad">Brand Squad</option>
+                  <option value="Design Squad">Design Squad</option>
+                  <option value="Data Squad">Data Squad</option>
+                </select>
+              </div>
+              <div class="kanban-modal-field">
+                <label>Responsavel</label>
+                <input type="text" id="km-responsavel" placeholder="Nome do responsavel">
+              </div>
+              <div class="kanban-modal-field">
+                <label>Prioridade</label>
+                <select id="km-prioridade">
+                  <option value="Media" selected>Media</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Baixa">Baixa</option>
+                </select>
+              </div>
+              <div class="kanban-modal-field">
+                <label>Projeto</label>
+                <select id="km-projeto">
+                  <option value="">Selecione...</option>
+                  <option value="Impulso">Impulso</option>
+                  <option value="Luzzoo">Luzzoo</option>
+                  <option value="1pra1">1pra1</option>
+                  <option value="Moom">Moom</option>
+                  <option value="Mermaid">Mermaid</option>
+                  <option value="Encanto">Encanto</option>
+                  <option value="Black">Black</option>
+                  <option value="Jornal do Cartman">Jornal do Cartman</option>
+                  <option value="True">True</option>
+                </select>
+              </div>
+              <button type="submit" class="kanban-modal-submit" id="kanbanModalSubmit">Criar Demanda</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- SQUADS SECTION -->
@@ -5246,6 +5688,271 @@ function checkLoginPassword() {
 
 // Show login on page load
 showLoginOverlay();
+
+// ========== KANBAN ENHANCEMENTS ==========
+
+// --- CHANGE 2: Update kanban metrics ---
+function updateKanbanMetrics() {
+  var board = document.getElementById('kanbanBoard');
+  if (!board) return;
+
+  var cols = board.querySelectorAll('.kanban-col-body');
+  var aprovar = 0;
+  var semana = 0;
+  var producao = 0;
+  var espera = 0;
+
+  for (var i = 0; i < cols.length; i++) {
+    var status = cols[i].getAttribute('data-status') || '';
+    var cardCount = cols[i].querySelectorAll('.kanban-card').length;
+    var statusLower = status.toLowerCase();
+
+    if (statusLower === 'revisao' || statusLower === 'review' || statusLower === 'em revisao' || statusLower === 'em revisão') {
+      aprovar += cardCount;
+    }
+    if (statusLower === 'afazer' || statusLower === 'todo' || statusLower === 'a fazer') {
+      semana += cardCount;
+    }
+    if (statusLower === 'progresso' || statusLower === 'progress' || statusLower === 'em progresso' || statusLower === 'em andamento') {
+      producao += cardCount;
+    }
+    if (statusLower === 'backlog') {
+      espera += cardCount;
+    }
+  }
+
+  var elAprovar = document.getElementById('km-aprovar');
+  var elSemana = document.getElementById('km-semana');
+  var elProducao = document.getElementById('km-producao');
+  var elEspera = document.getElementById('km-espera');
+
+  if (elAprovar) elAprovar.textContent = aprovar;
+  if (elSemana) elSemana.textContent = semana;
+  if (elProducao) elProducao.textContent = producao;
+  if (elEspera) elEspera.textContent = espera;
+}
+
+// --- CHANGE 4: Ranking chart ---
+function updateKanbanRanking() {
+  var board = document.getElementById('kanbanBoard');
+  var container = document.getElementById('kanbanRankingChart');
+  if (!board || !container) return;
+
+  // Find done/concluido columns
+  var doneCards = [];
+  var cols = board.querySelectorAll('.kanban-col-body');
+  for (var i = 0; i < cols.length; i++) {
+    var status = (cols[i].getAttribute('data-status') || '').toLowerCase();
+    if (status === 'concluido' || status === 'done' || status === 'concluído') {
+      var cards = cols[i].querySelectorAll('.kanban-card');
+      for (var j = 0; j < cards.length; j++) {
+        doneCards.push(cards[j]);
+      }
+    }
+  }
+
+  // Count by responsavel
+  var byPerson = {};
+  for (var k = 0; k < doneCards.length; k++) {
+    var respEl = doneCards[k].querySelector('.kanban-responsavel');
+    var name = 'Sem responsavel';
+    if (respEl) {
+      name = respEl.textContent.trim();
+    }
+    byPerson[name] = (byPerson[name] || 0) + 1;
+  }
+
+  // Sort descending
+  var items = [];
+  var keys = Object.keys(byPerson);
+  for (var m = 0; m < keys.length; m++) {
+    items.push({ nome: keys[m], count: byPerson[keys[m]] });
+  }
+  items.sort(function(a, b) { return b.count - a.count; });
+
+  if (items.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-secondary);font-size:13px;padding:20px 0;text-align:center;">Nenhuma demanda concluida encontrada</div>';
+    return;
+  }
+
+  var maxVal = items[0].count;
+  var html = '';
+  var blueGradients = [
+    'linear-gradient(90deg, #0088FF, #3AA8FF)',
+    'linear-gradient(90deg, #0070DD, #0088FF)',
+    'linear-gradient(90deg, #005BB5, #0070DD)',
+    'linear-gradient(90deg, #004A99, #005BB5)',
+    'linear-gradient(90deg, #003D80, #004A99)'
+  ];
+
+  for (var n = 0; n < items.length; n++) {
+    var pct = maxVal > 0 ? Math.round((items[n].count / maxVal) * 100) : 0;
+    var initial = items[n].nome.charAt(0).toUpperCase();
+    var gradient = blueGradients[n % blueGradients.length];
+    html += '<div class="kanban-ranking-item">';
+    html += '<div class="kanban-ranking-label">';
+    html += '<div class="avatar">' + initial + '</div>';
+    html += items[n].nome;
+    html += '</div>';
+    html += '<div class="kanban-ranking-track">';
+    html += '<div class="kanban-ranking-fill" style="width:' + pct + '%;background:' + gradient + '">' + items[n].count + '</div>';
+    html += '</div>';
+    html += '<div class="kanban-ranking-value">' + items[n].count + ' tarefas</div>';
+    html += '</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// --- Patch syncFromNotion and syncExternalKanban to update metrics + ranking ---
+var _origSyncFromNotion = syncFromNotion;
+syncFromNotion = async function() {
+  await _origSyncFromNotion();
+  updateKanbanMetrics();
+  updateKanbanRanking();
+};
+
+var _origSyncExternalKanban = syncExternalKanban;
+syncExternalKanban = async function(source) {
+  await _origSyncExternalKanban(source);
+  updateKanbanMetrics();
+  updateKanbanRanking();
+};
+
+// Also update on initial static content
+setTimeout(function() {
+  updateKanbanMetrics();
+  updateKanbanRanking();
+}, 500);
+
+// --- CHANGE 3: Nova Demanda Modal ---
+function openKanbanModal() {
+  var overlay = document.getElementById('kanbanModalOverlay');
+  var body = document.getElementById('kanbanModalBody');
+  var title = document.getElementById('kanbanModalTitle');
+
+  if (currentKanbanSource !== 'aiox') {
+    // Non-AIOX sources: show message
+    if (title) title.textContent = 'Nova Demanda - ' + kanbanLabels[currentKanbanSource];
+    if (body) {
+      body.innerHTML = '<div class="kanban-modal-msg">'
+        + 'Crie diretamente no Notion para o projeto <strong>' + kanbanLabels[currentKanbanSource] + '</strong>.<br><br>'
+        + 'A criacao de tarefas pelo painel esta disponivel apenas para o kanban AIOX.'
+        + '</div>'
+        + '<button class="kanban-modal-submit" onclick="closeKanbanModal()" style="background:#8b8fa3;">Fechar</button>';
+    }
+  } else {
+    // AIOX source: show full form
+    if (title) title.textContent = 'Nova Demanda';
+    if (body) {
+      body.innerHTML = '<form id="kanbanModalForm" onsubmit="submitKanbanModal(event)">'
+        + '<div class="kanban-modal-field"><label>Titulo *</label>'
+        + '<input type="text" id="km-titulo" required placeholder="Titulo da demanda"></div>'
+        + '<div class="kanban-modal-field"><label>Status</label>'
+        + '<select id="km-status">'
+        + '<option value="Backlog">Backlog</option>'
+        + '<option value="A Fazer" selected>A Fazer</option>'
+        + '<option value="Em andamento">Em andamento</option>'
+        + '<option value="Em Revisao">Em Revisao</option>'
+        + '</select></div>'
+        + '<div class="kanban-modal-field"><label>Squad</label>'
+        + '<select id="km-squad">'
+        + '<option value="">Selecione...</option>'
+        + '<option value="AIOX Core">AIOX Core</option>'
+        + '<option value="Content Squad">Content Squad</option>'
+        + '<option value="Traffic Masters">Traffic Masters</option>'
+        + '<option value="Copy Squad">Copy Squad</option>'
+        + '<option value="Brand Squad">Brand Squad</option>'
+        + '<option value="Design Squad">Design Squad</option>'
+        + '<option value="Data Squad">Data Squad</option>'
+        + '</select></div>'
+        + '<div class="kanban-modal-field"><label>Responsavel</label>'
+        + '<input type="text" id="km-responsavel" placeholder="Nome do responsavel"></div>'
+        + '<div class="kanban-modal-field"><label>Prioridade</label>'
+        + '<select id="km-prioridade">'
+        + '<option value="Media" selected>Media</option>'
+        + '<option value="Alta">Alta</option>'
+        + '<option value="Baixa">Baixa</option>'
+        + '</select></div>'
+        + '<div class="kanban-modal-field"><label>Projeto</label>'
+        + '<select id="km-projeto">'
+        + '<option value="">Selecione...</option>'
+        + '<option value="Impulso">Impulso</option>'
+        + '<option value="Luzzoo">Luzzoo</option>'
+        + '<option value="1pra1">1pra1</option>'
+        + '<option value="Moom">Moom</option>'
+        + '<option value="Mermaid">Mermaid</option>'
+        + '<option value="Encanto">Encanto</option>'
+        + '<option value="Black">Black</option>'
+        + '<option value="Jornal do Cartman">Jornal do Cartman</option>'
+        + '<option value="True">True</option>'
+        + '</select></div>'
+        + '<button type="submit" class="kanban-modal-submit" id="kanbanModalSubmit">Criar Demanda</button>'
+        + '</form>';
+    }
+  }
+
+  if (overlay) overlay.classList.add('open');
+}
+
+function closeKanbanModal() {
+  var overlay = document.getElementById('kanbanModalOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function submitKanbanModal(e) {
+  e.preventDefault();
+
+  var titulo = document.getElementById('km-titulo');
+  var status = document.getElementById('km-status');
+  var squad = document.getElementById('km-squad');
+  var responsavel = document.getElementById('km-responsavel');
+  var prioridade = document.getElementById('km-prioridade');
+  var projeto = document.getElementById('km-projeto');
+
+  if (!titulo || !titulo.value.trim()) return;
+
+  var payload = {
+    titulo: titulo.value.trim(),
+    status: status ? status.value : 'A Fazer',
+    squad: squad ? squad.value : '',
+    responsavel: responsavel ? responsavel.value.trim() : '',
+    prioridade: prioridade ? prioridade.value : 'Media',
+    projeto: projeto ? projeto.value : ''
+  };
+
+  var submitBtn = document.getElementById('kanbanModalSubmit');
+  if (submitBtn) {
+    submitBtn.textContent = 'Criando...';
+    submitBtn.disabled = true;
+  }
+
+  fetch('/api/create-task', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.error) {
+      alert('Erro ao criar demanda: ' + data.error);
+      if (submitBtn) { submitBtn.textContent = 'Criar Demanda'; submitBtn.disabled = false; }
+      return;
+    }
+    closeKanbanModal();
+    // Reload kanban
+    if (currentKanbanSource === 'aiox') {
+      syncFromNotion();
+    } else {
+      syncExternalKanban(currentKanbanSource);
+    }
+  })
+  .catch(function(err) {
+    console.log('[AIOX] Create task failed:', err);
+    alert('Erro ao criar demanda. Tente novamente.');
+    if (submitBtn) { submitBtn.textContent = 'Criar Demanda'; submitBtn.disabled = false; }
+  });
+}
 
 </script>
 </body>
