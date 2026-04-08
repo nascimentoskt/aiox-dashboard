@@ -33,11 +33,17 @@ module.exports = async function handler(req, res) {
     const lucro = receita - custos;
 
     const now = new Date();
-    const defaultMesAno = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+    const mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const defaultMesAno = mesNomes[now.getMonth()] + '/' + now.getFullYear();
+
+    var registroNome = nome;
+    if (mesAno && nome.indexOf(mesAno) < 0) {
+      registroNome = nome + ' - ' + mesAno;
+    }
 
     const properties = {
       Registro: {
-        title: [{ text: { content: nome } }]
+        title: [{ text: { content: registroNome } }]
       },
       Cliente: {
         select: { name: cliente || 'Impulso' }

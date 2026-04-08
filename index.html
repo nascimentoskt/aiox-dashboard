@@ -3465,6 +3465,10 @@ function openFinModal(type) {
   html += '<div class="fin-modal-field"><label>Status</label>';
   html += '<select id="fm-status"><option value="Pago">Pago</option><option value="Pendente" selected>Pendente</option><option value="Atrasado">Atrasado</option></select></div>';
   html += '<div class="fin-modal-field"><label>Nome</label><input type="text" id="fm-nome" placeholder="Nome do lancamento" required></div>';
+  html += '<div class="fin-modal-field"><label>Cliente</label>';
+  html += '<select id="fm-cliente"><option value="Impulso">Impulso</option><option value="Luzzoo">Luzzoo</option><option value="1pra1">1pra1</option><option value="Moom">Moom</option><option value="Mermaid">Mermaid</option><option value="Encanto">Encanto</option><option value="Black">Black</option><option value="Jornal do Cartman">Jornal do Cartman</option><option value="True">True</option></select></div>';
+  html += '<div class="fin-modal-field"><label>Mes/Ano</label>';
+  html += '<select id="fm-mesano"><option value="Jan/2026">Jan/2026</option><option value="Fev/2026">Fev/2026</option><option value="Mar/2026">Mar/2026</option><option value="Abr/2026" selected>Abr/2026</option><option value="Mai/2026">Mai/2026</option><option value="Jun/2026">Jun/2026</option></select></div>';
 
   if (type === 'despesa') {
     html += '<div class="fin-modal-field"><label>Categoria</label>';
@@ -3494,6 +3498,8 @@ function submitFinModal(e) {
   var valor = parseFloat(document.getElementById('fm-valor').value) || 0;
   var cnpj = document.getElementById('fm-cnpj').value;
   var vencimento = document.getElementById('fm-vencimento').value;
+  var cliente = document.getElementById('fm-cliente').value;
+  var mesAno = document.getElementById('fm-mesano').value;
   var type = finModalType;
   var categoria = '';
   var modelo = '';
@@ -3524,8 +3530,8 @@ function submitFinModal(e) {
       modelo: modelo,
       cnpj: cnpj,
       vencimento: vencimento,
-      mesAno: finSelectedPeriod !== 'all' ? finSelectedPeriod : '',
-      cliente: nome
+      mesAno: mesAno,
+      cliente: cliente
     })
   })
   .then(function(res) { return res.json(); })
