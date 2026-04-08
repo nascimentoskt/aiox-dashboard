@@ -5255,7 +5255,7 @@ async function fetchReviewCards(apiUrl, sourceName) {
     if (data.columns) {
       data.columns.forEach(function(col) {
         var t = col.title.toLowerCase();
-        if (t.indexOf('revisao') >= 0 || t.indexOf('revisão') >= 0 || t.indexOf('aprovac') >= 0 || col.id === 'review' || col.id === 'aprovacao') {
+        if (t.indexOf('revisao') >= 0 || t.indexOf('revisão') >= 0 || t.indexOf('aprovac') >= 0 || t.indexOf('aprovar') >= 0 || col.id === 'review' || col.id === 'aprovacao' || col.id === 'aprovar') {
           col.cards.forEach(function(c) { c._source = sourceName; });
           cards = cards.concat(col.cards);
         }
@@ -5405,45 +5405,51 @@ function loadDashActivity() {
 }
 
 function loadDashPending() {
-  fetch('/api/notion')
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
+  var reviewIds = ['review','aprovar','aprovacao'];
+  var apis = ['/api/notion', '/api/luzzoo', '/api/impulso', '/api/1pra1'];
+
+  Promise.all(apis.map(function(url) {
+    return fetch(url).then(function(r) { return r.json(); }).catch(function() { return { columns: [] }; });
+  })).then(function(results) {
+    var reviewCards = [];
+    results.forEach(function(data) {
       if (!data || !data.columns) return;
-      var reviewCards = [];
       data.columns.forEach(function(col) {
-        if (col.id === 'review') {
-          col.cards.forEach(function(card) {
-            reviewCards.push(card);
-          });
+        var t = (col.title || '').toLowerCase();
+        if (reviewIds.indexOf(col.id) >= 0 || t.indexOf('revisao') >= 0 || t.indexOf('revisão') >= 0 || t.indexOf('aprovac') >= 0 || t.indexOf('aprovar') >= 0) {
+          col.cards.forEach(function(card) { reviewCards.push(card); });
         }
       });
-      var badge = document.getElementById('dashPendingCount');
-      if (badge) badge.textContent = reviewCards.length;
-      var list = document.getElementById('dashPendingList');
-      if (!list) return;
-      if (reviewCards.length === 0) {
-        list.innerHTML = '<li class="dash-pending-empty">Nenhuma tarefa pendente de revisao</li>';
-        return;
-      }
-      var top = reviewCards.slice(0, 5);
-      var html = '';
-      top.forEach(function(card) {
-        html += '<li class="dash-pending-item">';
-        html += '<div class="dash-pending-info">';
-        html += '<div class="dash-pending-title">' + (card.title || '') + '</div>';
-        html += '<div class="dash-pending-tags">';
-        if (card.squad) html += '<span class="ptag-squad">' + card.squad + '</span>';
-        if (card.responsavel) html += '<span class="ptag-resp">' + card.responsavel + '</span>';
-        html += '</div></div>';
-        html += '<button class="dash-pending-review-btn" onclick="showSection(\'aprovacao\')">Revisar</button>';
-        html += '</li>';
-      });
-      list.innerHTML = html;
-    })
-    .catch(function() {
-      var list = document.getElementById('dashPendingList');
-      if (list) list.innerHTML = '<li class="dash-pending-empty">Erro ao carregar revisoes</li>';
     });
+    var badge = document.getElementById('dashPendingCount');
+    if (badge) badge.textContent = reviewCards.length;
+    var list = document.getElementById('dashPendingList');
+    if (!list) return;
+    if (reviewCards.length === 0) {
+      list.innerHTML = '<li class="dash-pending-empty">Nenhuma tarefa pendente de revisao</li>';
+      return;
+    }
+    var top = reviewCards.slice(0, 5);
+    var html = '';
+    top.forEach(function(card) {
+      var title = card.title || '';
+      var squad = card.squad || card.tipo || '';
+      var resp = card.responsavel || card.pessoa || '';
+      html += '<li class="dash-pending-item">';
+      html += '<div class="dash-pending-info">';
+      html += '<div class="dash-pending-title">' + title + '</div>';
+      html += '<div class="dash-pending-tags">';
+      if (squad) html += '<span class="ptag-squad">' + squad + '</span>';
+      if (resp) html += '<span class="ptag-resp">' + resp + '</span>';
+      html += '</div></div>';
+      html += '<button class="dash-pending-review-btn" onclick="showSection(\'aprovacao\')">Revisar</button>';
+      html += '</li>';
+    });
+    list.innerHTML = html;
+  }).catch(function() {
+    var list = document.getElementById('dashPendingList');
+    if (list) list.innerHTML = '<li class="dash-pending-empty">Erro ao carregar revisoes</li>';
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -5701,21 +5707,26 @@ function updateKanbanMetrics() {
   var producao = 0;
   var espera = 0;
 
+  var reviewIds = ['revisao','review','em revisao','em revisão','aprovar','aprovacao','aprovação'];
+  var todoIds = ['afazer','todo','a fazer','pendente','pronto','pronto p/ produção','pronto-producao'];
+  var progressIds = ['progresso','progress','em progresso','em andamento','producao','produção','em produção','execucao','em execução','planejamento','em planejamento'];
+  var backlogIds = ['backlog','nao-iniciado','não iniciado','espera','em espera','bloqueado','continuas','fixo'];
+
   for (var i = 0; i < cols.length; i++) {
     var status = cols[i].getAttribute('data-status') || '';
     var cardCount = cols[i].querySelectorAll('.kanban-card').length;
     var statusLower = status.toLowerCase();
 
-    if (statusLower === 'revisao' || statusLower === 'review' || statusLower === 'em revisao' || statusLower === 'em revisão') {
+    if (reviewIds.indexOf(statusLower) >= 0) {
       aprovar += cardCount;
     }
-    if (statusLower === 'afazer' || statusLower === 'todo' || statusLower === 'a fazer') {
+    if (todoIds.indexOf(statusLower) >= 0) {
       semana += cardCount;
     }
-    if (statusLower === 'progresso' || statusLower === 'progress' || statusLower === 'em progresso' || statusLower === 'em andamento') {
+    if (progressIds.indexOf(statusLower) >= 0) {
       producao += cardCount;
     }
-    if (statusLower === 'backlog') {
+    if (backlogIds.indexOf(statusLower) >= 0) {
       espera += cardCount;
     }
   }
@@ -5818,11 +5829,8 @@ syncExternalKanban = async function(source) {
   updateKanbanRanking();
 };
 
-// Also update on initial static content
-setTimeout(function() {
-  updateKanbanMetrics();
-  updateKanbanRanking();
-}, 500);
+// Re-run initial sync now that all patches are applied (metrics + ranking + drag-drop)
+syncFromNotion();
 
 // --- CHANGE 3: Nova Demanda Modal ---
 function openKanbanModal() {

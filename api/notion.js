@@ -10,23 +10,37 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
 
   try {
-    const response = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB}/query`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${NOTION_TOKEN}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ page_size: 100 })
-    });
+    // Paginate to get ALL cards
+    let allResults = [];
+    let hasMore = true;
+    let cursor = undefined;
 
-    const data = await response.json();
+    while (hasMore) {
+      const body = { page_size: 100 };
+      if (cursor) body.start_cursor = cursor;
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.message });
+      const response = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB}/query`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${NOTION_TOKEN}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return res.status(response.status).json({ error: data.message });
+      }
+
+      allResults = allResults.concat(data.results);
+      hasMore = data.has_more || false;
+      cursor = data.next_cursor || undefined;
     }
 
-    const cards = data.results.map(page => {
+    const cards = allResults.map(page => {
       const props = page.properties;
       return {
         id: page.id,
@@ -41,12 +55,17 @@ module.exports = async function handler(req, res) {
       };
     });
 
+    // Normalize status: strip accents for matching
+    function normalize(s) {
+      return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    }
+
     const statusMap = {
-      'Não iniciada': 'backlog',
-      'A Fazer': 'todo',
-      'Em andamento': 'progress',
-      'Em Revisao': 'review',
-      'Concluído': 'done'
+      'nao iniciada': 'backlog',
+      'a fazer': 'todo',
+      'em andamento': 'progress',
+      'em revisao': 'review',
+      'concluido': 'done'
     };
 
     const columns = [
@@ -58,7 +77,7 @@ module.exports = async function handler(req, res) {
     ];
 
     cards.forEach(card => {
-      const colId = statusMap[card.status] || 'backlog';
+      const colId = statusMap[normalize(card.status)] || 'backlog';
       const col = columns.find(c => c.id === colId);
       if (col) col.cards.push(card);
     });
