@@ -3192,14 +3192,14 @@ function filterAprovacao(projeto, btn) {
 }
 
 function renderAprovacaoCards() {
-  const filtered = currentAprovacaoFilter === 'todos'
+  var filtered = currentAprovacaoFilter === 'todos'
     ? allReviewCards
-    : allReviewCards.filter(c => (c.projeto || '').toLowerCase() === currentAprovacaoFilter.toLowerCase());
+    : allReviewCards.filter(function(c) { return (c.projeto || '').toLowerCase() === currentAprovacaoFilter.toLowerCase(); });
 
   aprovacaoPendingCount = filtered.length;
   updateAprovacaoCounter();
 
-  const listEl = document.getElementById('aprovacaoList');
+  var listEl = document.getElementById('aprovacaoList');
   if (!listEl) return;
 
   if (filtered.length === 0) {
@@ -3207,38 +3207,38 @@ function renderAprovacaoCards() {
     return;
   }
 
-  listEl.innerHTML = filtered.map((card, idx) => {
-    const num = idx + 1;
-    const title = card.title || 'Sem titulo';
-    const date = card.lastEdited ? new Date(card.lastEdited).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '';
-    const squad = card.squad || '';
-    const squadStyle = getSquadStyle(squad);
-    const responsavel = card.responsavel || '';
-    const projeto = card.projeto || '';
-    const entregavel = card.url || '';
-    const cardId = card.id || ('card-' + idx);
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var card = filtered[i];
+    var num = i + 1;
+    var title = card.title || 'Sem titulo';
+    var date = card.lastEdited ? new Date(card.lastEdited).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '';
+    var squad = card.squad || '';
+    var sStyle = getSquadStyle(squad);
+    var responsavel = card.responsavel || '';
+    var projeto = card.projeto || '';
+    var entregavel = card.url || '';
+    var cardId = card.id || ('card-' + i);
 
-    return `
-      <div class="aprovacao-card" data-card-id="${cardId}" data-projeto="${projeto}">
-        <div class="aprovacao-card-top">
-          <div class="aprovacao-num">${num}</div>
-          <div class="aprovacao-card-info">
-            <div class="aprovacao-card-title">${title}</div>
-            ${date ? '<div class="aprovacao-card-date">' + date + '</div>' : ''}
-          </div>
-        </div>
-        <div class="aprovacao-tags">
-          ${squad ? '<span class="aprovacao-tag-squad" style="background:' + squadStyle.bg + ';color:' + squadStyle.color + '">' + squad + '</span>' : ''}
-          ${projeto ? '<span class="aprovacao-tag-squad" style="background:rgba(0,200,83,.1);color:#00873E">' + projeto + '</span>' : ''}
-          ${responsavel ? '<span class="aprovacao-tag-resp">' + responsavel + '</span>' : ''}
-        </div>
-        ${entregavel ? '<div class="aprovacao-entregavel"><a href="' + entregavel + '" target="_blank" rel="noopener">📎 Ver no Notion</a></div>' : ''}
-        <div class="aprovacao-actions">
-          <button class="aprovacao-btn aprovacao-btn-aprovar" onclick="handleAprovar(\'' + cardId + '\')">✓ APROVAR</button>
-          <button class="aprovacao-btn aprovacao-btn-reprovar" onclick="handleReprovar(\'' + cardId + '\')">✕ REPROVAR</button>
-        </div>
-      </div>`;
-  }).join('');
+    html += '<div class="aprovacao-card" data-card-id="' + cardId + '">';
+    html += '<div class="aprovacao-card-top">';
+    html += '<div class="aprovacao-num">' + num + '</div>';
+    html += '<div class="aprovacao-card-info">';
+    html += '<div class="aprovacao-card-title">' + title + '</div>';
+    if (date) html += '<div class="aprovacao-card-date">' + date + '</div>';
+    html += '</div></div>';
+    html += '<div class="aprovacao-tags">';
+    if (squad) html += '<span class="aprovacao-tag-squad" style="background:' + sStyle.bg + ';color:' + sStyle.color + '">' + squad + '</span>';
+    if (projeto) html += '<span class="aprovacao-tag-squad" style="background:rgba(0,200,83,.1);color:#00873E">' + projeto + '</span>';
+    if (responsavel) html += '<span class="aprovacao-tag-resp">@' + responsavel + '</span>';
+    html += '</div>';
+    if (entregavel) html += '<div class="aprovacao-entregavel"><a href="' + entregavel + '" target="_blank" rel="noopener">📎 Ver no Notion</a></div>';
+    html += '<div class="aprovacao-actions">';
+    html += '<button class="aprovacao-btn aprovacao-btn-aprovar" onclick="handleAprovar(\'' + cardId + '\')">✓ APROVAR</button>';
+    html += '<button class="aprovacao-btn aprovacao-btn-reprovar" onclick="handleReprovar(\'' + cardId + '\')">✕ REPROVAR</button>';
+    html += '</div></div>';
+  }
+  listEl.innerHTML = html;
 }
 
 async function loadAprovacao() {
@@ -3265,11 +3265,16 @@ async function loadAprovacao() {
     allReviewCards = reviewCards;
 
     // Build project filter buttons
-    const projetos = [...new Set(reviewCards.map(c => c.projeto).filter(Boolean))].sort();
-    const filtersEl = document.getElementById('aprovacaoFilters');
+    var projetoSet = {};
+    reviewCards.forEach(function(c) { if (c.projeto) projetoSet[c.projeto] = true; });
+    var projetos = Object.keys(projetoSet).sort();
+    var filtersEl = document.getElementById('aprovacaoFilters');
     if (filtersEl) {
-      filtersEl.innerHTML = '<button class="fin-period-btn active" onclick="filterAprovacao(\'todos\', this)">Todos</button>' +
-        projetos.map(p => '<button class="fin-period-btn" onclick="filterAprovacao(\'' + p + '\', this)">' + p + '</button>').join('');
+      var fhtml = '<button class="fin-period-btn active" onclick="filterAprovacao(\'todos\', this)">Todos</button>';
+      projetos.forEach(function(p) {
+        fhtml += '<button class="fin-period-btn" onclick="filterAprovacao(\'' + p + '\', this)">' + p + '</button>';
+      });
+      filtersEl.innerHTML = fhtml;
     }
 
     renderAprovacaoCards();
