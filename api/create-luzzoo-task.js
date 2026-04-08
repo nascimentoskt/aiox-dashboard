@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
       };
     }
     if (tipo) {
-      properties['Tipo de campanha'] = { select: { name: tipo } };
+      properties['Tipo de campanha'] = { multi_select: [{ name: tipo }] };
     }
     if (canal) {
       properties['Canal'] = { select: { name: canal } };
@@ -46,7 +46,7 @@ module.exports = async function handler(req, res) {
       properties['Cliente'] = { select: { name: cliente } };
     }
     if (setor) {
-      properties['Setor'] = { select: { name: setor } };
+      properties['Setor'] = { multi_select: [{ name: setor }] };
     }
 
     // Try to find the person by name to assign via People property

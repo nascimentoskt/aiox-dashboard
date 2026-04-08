@@ -1,4 +1,10 @@
 module.exports = async function handler(req, res) {
+  // CORS headers for all requests (including preflight OPTIONS)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
   var body = '';
@@ -20,16 +26,14 @@ module.exports = async function handler(req, res) {
   if (!token) return res.status(500).json({ error: 'Token not configured for source: ' + source });
   if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
   try {
-    // Map action to status name per source
+    // Map action to status name per source (each DB uses different status names)
     var statusName;
     if (action === 'approve') {
       statusName = 'Concluído';
     } else {
-      // Reject = move back to first column
-      statusName = 'Não iniciado';
+      // Reject = move back to first column (source-aware naming)
+      statusName = (source === 'luzzoo') ? 'Não iniciado' : 'Não iniciada';
     }
 
     // Update page status

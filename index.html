@@ -5355,6 +5355,14 @@ function handleAprovar(cardId) {
     if (data.success) {
       card.classList.add('approved');
       if (actionsEl) actionsEl.innerHTML = '<span class="aprovacao-result approved">✓ APROVADA — Concluida no Notion</span>';
+      // Re-sync kanban para refletir a mudança imediatamente
+      setTimeout(function() {
+        if (typeof switchKanban === 'function' && typeof currentKanbanSource !== 'undefined') {
+          switchKanban(currentKanbanSource);
+        } else if (typeof syncFromNotion === 'function') {
+          syncFromNotion();
+        }
+      }, 1500);
     } else {
       if (actionsEl) actionsEl.innerHTML = '<span class="aprovacao-result" style="color:#F44336;">Erro: ' + (data.error || 'falha') + '</span>';
     }
@@ -5384,6 +5392,14 @@ function handleReprovar(cardId) {
     if (data.success) {
       card.classList.add('rejected');
       if (actionsEl) actionsEl.innerHTML = '<span class="aprovacao-result rejected">✕ REPROVADA — Retornada no Notion</span>';
+      // Re-sync kanban para refletir a mudança imediatamente
+      setTimeout(function() {
+        if (typeof switchKanban === 'function' && typeof currentKanbanSource !== 'undefined') {
+          switchKanban(currentKanbanSource);
+        } else if (typeof syncFromNotion === 'function') {
+          syncFromNotion();
+        }
+      }, 1500);
     } else {
       if (actionsEl) actionsEl.innerHTML = '<span class="aprovacao-result" style="color:#F44336;">Erro: ' + (data.error || 'falha') + '</span>';
     }
