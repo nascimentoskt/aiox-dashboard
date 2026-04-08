@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = await parseBody(req);
-    const { title, squad, responsavel, prioridade, projeto } = body;
+    const { title, status, squad, responsavel, prioridade, projeto } = body;
 
     if (!title) {
       return res.status(400).json({ error: 'title is required' });
@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
         title: [{ text: { content: title } }]
       },
       Status: {
-        status: { name: 'A Fazer' }
+        status: { name: status || 'A Fazer' }
       }
     };
 

@@ -5920,7 +5920,7 @@ function submitKanbanModal(e) {
   if (!titulo || !titulo.value.trim()) return;
 
   var payload = {
-    titulo: titulo.value.trim(),
+    title: titulo.value.trim(),
     status: status ? status.value : 'A Fazer',
     squad: squad ? squad.value : '',
     responsavel: responsavel ? responsavel.value.trim() : '',
