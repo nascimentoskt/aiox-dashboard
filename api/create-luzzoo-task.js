@@ -17,8 +17,11 @@ module.exports = async function handler(req, res) {
     const body = await parseBody(req);
     const { title, descricao, tipo, canal, cliente, setor, responsavel } = body;
 
-    if (!title) {
+    if (!title || !title.trim()) {
       return res.status(400).json({ error: 'title is required' });
+    }
+    if (!cliente) {
+      return res.status(400).json({ error: 'cliente is required' });
     }
 
     // Build properties

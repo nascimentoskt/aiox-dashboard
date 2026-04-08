@@ -5554,7 +5554,7 @@ async function loadAprovacao() {
     merged.sort(function(a, b) {
       var da = a.lastEdited ? new Date(a.lastEdited) : 0;
       var db = b.lastEdited ? new Date(b.lastEdited) : 0;
-      return da - db;
+      return db - da; // Mais recentes primeiro
     });
 
     allReviewCards = merged;
@@ -5855,6 +5855,11 @@ function attachKanbanDragDropAPI(board) {
         e.stopPropagation();
         var title = prompt('Titulo da nova tarefa:');
         if (!title || !title.trim()) return;
+        // Validação: título mínimo de 5 caracteres para evitar lixo
+        if (title.trim().length < 5) {
+          alert('Titulo muito curto. Use pelo menos 5 caracteres.');
+          return;
+        }
 
         fetch('/api/create-task', {
           method: 'POST',

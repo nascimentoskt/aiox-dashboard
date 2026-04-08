@@ -22,8 +22,19 @@ module.exports = async function handler(req, res) {
     const body = await parseBody(req);
     const { title, status, squad, responsavel, prioridade, projeto } = body;
 
-    if (!title) {
+    if (!title || !title.trim()) {
       return res.status(400).json({ error: 'title is required' });
+    }
+
+    // Validate required fields to prevent incomplete cards
+    if (!squad) {
+      return res.status(400).json({ error: 'squad is required' });
+    }
+    if (!responsavel) {
+      return res.status(400).json({ error: 'responsavel is required' });
+    }
+    if (!projeto) {
+      return res.status(400).json({ error: 'projeto is required' });
     }
 
     const properties = {

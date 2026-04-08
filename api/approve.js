@@ -32,8 +32,14 @@ module.exports = async function handler(req, res) {
     if (action === 'approve') {
       statusName = 'Concluído';
     } else {
-      // Reject = move back to first column (source-aware naming)
-      statusName = (source === 'luzzoo') ? 'Não iniciado' : 'Não iniciada';
+      // Reject = move back to actionable column (source-aware)
+      var rejectMap = {
+        'aiox': 'A Fazer',
+        'impulso': 'Pendente',
+        'luzzoo': 'Em espera',
+        '1pra1': 'Em espera'
+      };
+      statusName = rejectMap[source] || 'Não iniciada';
     }
 
     // Update page status
