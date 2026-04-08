@@ -1139,6 +1139,106 @@ body {
   .client-contrato-value { text-align: left; }
   .client-links-grid { grid-template-columns: 1fr; }
 }
+
+/* ========== APROVACAO SECTION ========== */
+.aprovacao-counter {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #FFB300; color: #fff; font-size: 13px; font-weight: 700;
+  min-width: 28px; height: 28px; border-radius: 14px; padding: 0 10px;
+  margin-left: 12px;
+}
+.aprovacao-list { display: flex; flex-direction: column; gap: 16px; }
+.aprovacao-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition);
+  position: relative;
+  border-left: 4px solid transparent;
+}
+.aprovacao-card:hover { box-shadow: var(--shadow-hover); }
+.aprovacao-card.approved {
+  opacity: 0.5;
+  border-left-color: #00C853;
+}
+.aprovacao-card.rejected {
+  opacity: 0.5;
+  border-left-color: #F44336;
+}
+.aprovacao-card-top {
+  display: flex; align-items: flex-start; gap: 16px; margin-bottom: 12px;
+}
+.aprovacao-num {
+  background: var(--navy); color: #fff;
+  font-size: 13px; font-weight: 700;
+  min-width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.aprovacao-card-info { flex: 1; min-width: 0; }
+.aprovacao-card-title {
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  margin-bottom: 4px; line-height: 1.3;
+}
+.aprovacao-card-date {
+  font-size: 12px; color: #8b8fa3; font-weight: 400;
+}
+.aprovacao-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.aprovacao-tag-squad {
+  display: inline-block; padding: 4px 12px;
+  font-size: 11px; font-weight: 600; border-radius: 20px;
+  background: rgba(0,136,255,0.1); color: var(--blue);
+}
+.aprovacao-tag-resp {
+  display: inline-block; padding: 4px 12px;
+  font-size: 11px; font-weight: 600; border-radius: 20px;
+  background: rgba(156,39,176,0.1); color: #9C27B0;
+}
+.aprovacao-resumo {
+  font-size: 13px; color: #555; line-height: 1.6;
+  margin-bottom: 12px;
+}
+.aprovacao-entregavel {
+  margin-bottom: 16px;
+}
+.aprovacao-entregavel a {
+  font-size: 13px; color: var(--blue); text-decoration: none;
+  font-weight: 500; display: inline-flex; align-items: center; gap: 6px;
+}
+.aprovacao-entregavel a:hover { text-decoration: underline; }
+.aprovacao-actions {
+  display: flex; gap: 12px; align-items: center;
+}
+.aprovacao-btn {
+  padding: 10px 24px; border: none; border-radius: var(--radius-sm);
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all var(--transition);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.aprovacao-btn-aprovar {
+  background: #00C853; color: #fff;
+}
+.aprovacao-btn-aprovar:hover { background: #00b848; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,200,83,0.3); }
+.aprovacao-btn-reprovar {
+  background: #F44336; color: #fff;
+}
+.aprovacao-btn-reprovar:hover { background: #e53935; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(244,67,54,0.3); }
+.aprovacao-result {
+  font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+}
+.aprovacao-result.approved { color: #00C853; }
+.aprovacao-result.rejected { color: #F44336; }
+.aprovacao-empty {
+  text-align: center; padding: 60px 20px; color: #8b8fa3;
+  font-size: 15px;
+}
+.aprovacao-empty svg { margin-bottom: 16px; opacity: 0.3; }
+@media (max-width: 768px) {
+  .aprovacao-card { padding: 16px 18px; }
+  .aprovacao-actions { flex-direction: column; }
+  .aprovacao-btn { width: 100%; justify-content: center; }
+}
 </style>
 </head>
 <body>
@@ -1175,6 +1275,10 @@ body {
     <a href="#projects" data-nav="projects">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       Projects
+    </a>
+    <a href="#aprovacao" data-nav="aprovacao">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      Aprovacao
     </a>
     <a href="#financeiro" data-nav="financeiro">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -1556,6 +1660,24 @@ body {
         </div>
         <div class="client-tab-content" id="clientTabContent">
           <!-- Tab content rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- APROVACAO SECTION -->
+    <section class="section-wrapper" id="aprovacao">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="accent-dot"></span>
+          Aprovacao
+          <span class="aprovacao-counter" id="aprovacaoCounter">0</span>
+        </div>
+        <div class="section-badge" id="aprovacaoBadge">Pendentes de revisao</div>
+      </div>
+      <div class="aprovacao-list" id="aprovacaoList">
+        <div class="aprovacao-empty">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          <div>Carregando cards em revisao...</div>
         </div>
       </div>
     </section>
@@ -2094,7 +2216,7 @@ document.querySelectorAll('.stat-card, .project-card').forEach(el => {
 });
 
 // ========== SCROLL SPY ==========
-const sections = ['dashboard','kanban','squads','projects','financeiro'];
+const sections = ['dashboard','kanban','squads','projects','aprovacao','financeiro'];
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY + 100;
   sections.forEach(id => {
@@ -2996,14 +3118,150 @@ function copyToClipboard(text, btn) {
   });
 }
 
+// ========== APROVACAO SECTION ==========
+let aprovacaoPendingCount = 0;
+
+function updateAprovacaoCounter() {
+  const counter = document.getElementById('aprovacaoCounter');
+  const badge = document.getElementById('aprovacaoBadge');
+  if (counter) counter.textContent = aprovacaoPendingCount;
+  if (badge) badge.textContent = aprovacaoPendingCount > 0
+    ? `${aprovacaoPendingCount} pendente${aprovacaoPendingCount !== 1 ? 's' : ''} de revisao`
+    : 'Nenhum pendente';
+}
+
+function handleAprovar(cardId) {
+  const card = document.querySelector(`.aprovacao-card[data-card-id="${cardId}"]`);
+  if (!card || card.classList.contains('approved') || card.classList.contains('rejected')) return;
+  card.classList.add('approved');
+  const actionsEl = card.querySelector('.aprovacao-actions');
+  if (actionsEl) actionsEl.innerHTML = '<span class="aprovacao-result approved">✓ APROVADA</span>';
+  aprovacaoPendingCount = Math.max(0, aprovacaoPendingCount - 1);
+  updateAprovacaoCounter();
+}
+
+function handleReprovar(cardId) {
+  const card = document.querySelector(`.aprovacao-card[data-card-id="${cardId}"]`);
+  if (!card || card.classList.contains('approved') || card.classList.contains('rejected')) return;
+  card.classList.add('rejected');
+  const actionsEl = card.querySelector('.aprovacao-actions');
+  if (actionsEl) actionsEl.innerHTML = '<span class="aprovacao-result rejected">✕ REPROVADA</span>';
+  aprovacaoPendingCount = Math.max(0, aprovacaoPendingCount - 1);
+  updateAprovacaoCounter();
+}
+
+const squadColors = {
+  'content': { bg: 'rgba(0,136,255,0.1)', color: '#0088FF' },
+  'strategy': { bg: 'rgba(255,179,0,0.1)', color: '#FFB300' },
+  'tech': { bg: 'rgba(0,188,212,0.1)', color: '#00BCD4' },
+  'design': { bg: 'rgba(233,30,99,0.1)', color: '#E91E63' },
+  'leadership': { bg: 'rgba(156,39,176,0.1)', color: '#9C27B0' },
+  'default': { bg: 'rgba(0,136,255,0.1)', color: '#0088FF' }
+};
+
+function getSquadStyle(squad) {
+  if (!squad) return squadColors['default'];
+  const key = squad.toLowerCase().replace(/\s+/g, '-');
+  return squadColors[key] || squadColors['default'];
+}
+
+async function loadAprovacao() {
+  try {
+    const res = await fetch('/api/notion');
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    // Find the "Em Revisao" / "review" column cards
+    let reviewCards = [];
+    if (data.columns) {
+      data.columns.forEach(col => {
+        if (col.id === 'review' || col.title === 'Em Revisao' || col.title === 'Em Revisão') {
+          reviewCards = reviewCards.concat(col.cards);
+        }
+      });
+    }
+
+    // Sort by created_time oldest first (if available), fallback to order received
+    reviewCards.sort((a, b) => {
+      const dateA = a.created_time ? new Date(a.created_time) : 0;
+      const dateB = b.created_time ? new Date(b.created_time) : 0;
+      return dateA - dateB;
+    });
+
+    aprovacaoPendingCount = reviewCards.length;
+    updateAprovacaoCounter();
+
+    const listEl = document.getElementById('aprovacaoList');
+    if (!listEl) return;
+
+    if (reviewCards.length === 0) {
+      listEl.innerHTML = `
+        <div class="aprovacao-empty">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          <div>Nenhum card em revisao no momento</div>
+        </div>`;
+      return;
+    }
+
+    listEl.innerHTML = reviewCards.map((card, idx) => {
+      const num = idx + 1;
+      const title = card.title || 'Sem titulo';
+      const date = card.created_time
+        ? new Date(card.created_time).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+        : '';
+      const squad = card.squad || '';
+      const squadStyle = getSquadStyle(squad);
+      const responsavel = card.responsavel || '';
+      const resumo = card.description || card.resumo || '';
+      const entregavel = card.entregavel || card.url || '';
+      const cardId = card.id || ('card-' + idx);
+
+      return `
+        <div class="aprovacao-card" data-card-id="${cardId}">
+          <div class="aprovacao-card-top">
+            <div class="aprovacao-num">${num}</div>
+            <div class="aprovacao-card-info">
+              <div class="aprovacao-card-title">${title}</div>
+              ${date ? `<div class="aprovacao-card-date">${date}</div>` : ''}
+            </div>
+          </div>
+          <div class="aprovacao-tags">
+            ${squad ? `<span class="aprovacao-tag-squad" style="background:${squadStyle.bg};color:${squadStyle.color}">${squad}</span>` : ''}
+            ${responsavel ? `<span class="aprovacao-tag-resp">${responsavel}</span>` : ''}
+          </div>
+          ${resumo ? `<div class="aprovacao-resumo">${resumo}</div>` : ''}
+          ${entregavel ? `<div class="aprovacao-entregavel"><a href="${entregavel}" target="_blank" rel="noopener">📎 Entregavel</a></div>` : ''}
+          <div class="aprovacao-actions">
+            <button class="aprovacao-btn aprovacao-btn-aprovar" onclick="handleAprovar('${cardId}')">✓ APROVAR</button>
+            <button class="aprovacao-btn aprovacao-btn-reprovar" onclick="handleReprovar('${cardId}')">✕ REPROVAR</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    console.log('[AIOX] Aprovacao loaded:', reviewCards.length, 'cards em revisao');
+  } catch (err) {
+    console.log('[AIOX] Aprovacao load failed:', err.message);
+    const listEl = document.getElementById('aprovacaoList');
+    if (listEl) {
+      listEl.innerHTML = `
+        <div class="aprovacao-empty">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          <div>Erro ao carregar cards. Tente novamente.</div>
+        </div>`;
+    }
+  }
+}
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
   renderClientCards();
   renderDespesas('abr');
+  loadAprovacao();
 });
 if (document.readyState !== 'loading') {
   renderClientCards();
   renderDespesas('abr');
+  loadAprovacao();
 }
 </script>
 </body>
