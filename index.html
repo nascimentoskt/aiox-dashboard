@@ -1851,10 +1851,7 @@ body {
         <div class="section-badge" id="fin-badge">Abr/2026 (parcial)</div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="fin-action-btns">
-        <button class="fin-action-btn green" onclick="openFinModal('receita')">+ Adicionar Receita</button>
-        <button class="fin-action-btn red" onclick="openFinModal('despesa')">+ Adicionar Despesa</button>
+      <!-- Action buttons moved inside each table card -->
       </div>
 
       <!-- Filtro de Periodo -->
@@ -1939,9 +1936,12 @@ body {
 
         <!-- Receitas Table -->
         <div class="fin-card full-width">
-          <div class="fin-card-title">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Receitas
+          <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Receitas
+            </div>
+            <button class="fin-action-btn green" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openFinModal('receita')">+ Adicionar</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="fin-table" id="tabelaReceitas">
@@ -1962,9 +1962,12 @@ body {
 
         <!-- Despesas Table -->
         <div class="fin-card full-width">
-          <div class="fin-card-title">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Despesas
+          <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Despesas
+            </div>
+            <button class="fin-action-btn red" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openFinModal('despesa')">+ Adicionar</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="fin-table" id="tabelaDespesas">
