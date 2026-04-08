@@ -2259,14 +2259,7 @@ body {
       </div>
 
       <!-- Filtro de Periodo -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
-        <button class="fin-period-btn active" onclick="setFinPeriod('abr', this)">Abr/2026</button>
-        <button class="fin-period-btn" onclick="setFinPeriod('mar', this)">Mar/2026</button>
-        <button class="fin-period-btn" onclick="setFinPeriod('fev', this)">Fev/2026</button>
-        <button class="fin-period-btn" onclick="setFinPeriod('jan', this)">Jan/2026</button>
-        <button class="fin-period-btn" onclick="setFinPeriod('q1', this)">Q1 2026</button>
-        <button class="fin-period-btn" onclick="setFinPeriod('all', this)">Todos</button>
-      </div>
+      <div id="finPeriodBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;"></div>
 
       <!-- KPI Cards -->
       <div class="fin-kpi-row" style="margin-bottom:24px;">
@@ -2499,6 +2492,8 @@ function showSection(sectionId) {
   // Update breadcrumb
   const bc = document.getElementById('breadcrumb-current');
   if (bc && navItem) bc.textContent = navItem.textContent.trim();
+  // Refresh financeiro data when switching to financeiro tab
+  if (sectionId === 'financeiro' && typeof loadFinanceiro === 'function') loadFinanceiro();
 }
 
 document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(a => {
@@ -2917,150 +2912,12 @@ setInterval(function() {
   else syncExternalKanban(currentKanbanSource);
 }, 60000);
 
-// ========== FINANCIAL PERIOD FILTER ==========
-var currentFinPeriod = 'abr';
-var receitaChartMode = 'barras';
-var evoChartMode = 'barras';
+// ========== FINANCEIRO - 100% NOTION API ==========
+var finApiData = null;
+var finSelectedPeriod = 'all';
+var finReceitaMode = 'barras';
+var finEvoMode = 'barras';
 
-var finData = {
-  jan: {
-    receita: 87003.25, despesas: 23259.98,
-    clientes: [
-      { nome: '1pra1', valor: 77003.25, pct: 88.5, cor: '#FF9800' },
-      { nome: 'Moom', valor: 5000, pct: 5.7, cor: '#00BCD4' },
-      { nome: 'Mermaid', valor: 5000, pct: 5.7, cor: '#9C27B0' },
-    ],
-    label: 'Jan/2026'
-  },
-  fev: {
-    receita: 66479.04, despesas: 20113.30,
-    clientes: [
-      { nome: '1pra1', valor: 56479.04, pct: 85.0, cor: '#FF9800' },
-      { nome: 'Moom', valor: 5000, pct: 7.5, cor: '#00BCD4' },
-      { nome: 'Mermaid', valor: 5000, pct: 7.5, cor: '#9C27B0' },
-    ],
-    label: 'Fev/2026'
-  },
-  mar: {
-    receita: 48563.69, despesas: 18721.05,
-    clientes: [
-      { nome: '1pra1', valor: 38563.69, pct: 79.4, cor: '#FF9800' },
-      { nome: 'Moom', valor: 5000, pct: 10.3, cor: '#00BCD4' },
-      { nome: 'Mermaid', valor: 5000, pct: 10.3, cor: '#9C27B0' },
-    ],
-    label: 'Mar/2026'
-  },
-  abr: {
-    receita: 37730.20, despesas: 10500,
-    clientes: [
-      { nome: '1pra1', valor: 37730.20, pct: 100, cor: '#FF9800' },
-    ],
-    label: 'Abr/2026 (parcial)'
-  },
-  q1: {
-    receita: 202045.98, despesas: 62094.33,
-    clientes: [
-      { nome: '1pra1', valor: 172045.98, pct: 85.2, cor: '#FF9800' },
-      { nome: 'Moom', valor: 15000, pct: 7.4, cor: '#00BCD4' },
-      { nome: 'Mermaid', valor: 15000, pct: 7.4, cor: '#9C27B0' },
-    ],
-    label: 'Q1 2026 (Jan-Mar)'
-  },
-  all: {
-    receita: 239776.18, despesas: 72594.33,
-    clientes: [
-      { nome: '1pra1', valor: 209776.18, pct: 87.5, cor: '#FF9800' },
-      { nome: 'Moom', valor: 15000, pct: 6.3, cor: '#00BCD4' },
-      { nome: 'Mermaid', valor: 15000, pct: 6.3, cor: '#9C27B0' },
-    ],
-    label: 'Todos (Jan-Abr 2026)'
-  }
-};
-
-// Despesas data (new format with status, nome, categoria, valor, cnpj, vencimento)
-var despesasData = {
-  jan: [
-    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-01-05' },
-    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-01-05' },
-    { status: 'Pago', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-01-10' },
-    { status: 'Pago', nome: 'Comissao Joao', categoria: 'Terceiros', valor: 12759.98, cnpj: '', vencimento: '2026-01-15' },
-  ],
-  fev: [
-    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-02-05' },
-    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-02-05' },
-    { status: 'Pago', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-02-10' },
-    { status: 'Pago', nome: 'Comissao Joao', categoria: 'Terceiros', valor: 9613.30, cnpj: '', vencimento: '2026-02-15' },
-  ],
-  mar: [
-    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-03-05' },
-    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-03-05' },
-    { status: 'Pago', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-03-10' },
-    { status: 'Pago', nome: 'Comissao Joao', categoria: 'Terceiros', valor: 8221.05, cnpj: '', vencimento: '2026-03-15' },
-  ],
-  abr: [
-    { status: 'Pago', nome: 'Salario Diego', categoria: 'Folha', valor: 5000, cnpj: '', vencimento: '2026-04-05' },
-    { status: 'Pago', nome: 'Salario Flavio', categoria: 'Folha', valor: 3500, cnpj: '', vencimento: '2026-04-05' },
-    { status: 'Pendente', nome: 'Comissao Guilherme', categoria: 'Folha', valor: 0, cnpj: '', vencimento: '2026-04-15' },
-    { status: 'Pendente', nome: 'Aluguel', categoria: 'Infraestrutura', valor: 2000, cnpj: '', vencimento: '2026-04-10' },
-  ],
-  q1: [
-    { status: 'Pago', nome: 'Salario Diego (Jan-Mar)', categoria: 'Folha', valor: 15000, cnpj: '', vencimento: '2026-03-05' },
-    { status: 'Pago', nome: 'Salario Flavio (Jan-Mar)', categoria: 'Folha', valor: 10500, cnpj: '', vencimento: '2026-03-05' },
-    { status: 'Pago', nome: 'Aluguel (Jan-Mar)', categoria: 'Infraestrutura', valor: 6000, cnpj: '', vencimento: '2026-03-10' },
-    { status: 'Pago', nome: 'Comissao Joao (Jan-Mar)', categoria: 'Terceiros', valor: 30594.33, cnpj: '', vencimento: '2026-03-15' },
-  ],
-  all: [
-    { status: 'Pago', nome: 'Salario Diego (Jan-Abr)', categoria: 'Folha', valor: 20000, cnpj: '', vencimento: '2026-04-05' },
-    { status: 'Pago', nome: 'Salario Flavio (Jan-Abr)', categoria: 'Folha', valor: 14000, cnpj: '', vencimento: '2026-04-05' },
-    { status: 'Pendente', nome: 'Aluguel (Jan-Abr)', categoria: 'Infraestrutura', valor: 8000, cnpj: '', vencimento: '2026-04-10' },
-    { status: 'Pago', nome: 'Comissao Joao (Jan-Mar)', categoria: 'Terceiros', valor: 30594.33, cnpj: '', vencimento: '2026-03-15' },
-    { status: 'Pendente', nome: 'Comissao Guilherme (Abr)', categoria: 'Folha', valor: 0, cnpj: '', vencimento: '2026-04-15' },
-  ]
-};
-
-// Receitas data (new)
-var receitasData = {
-  jan: [
-    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 77003.25, vencimento: '2026-01-15', cnpj: '' },
-    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-01-10', cnpj: '' },
-    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-01-10', cnpj: '' },
-  ],
-  fev: [
-    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 56479.04, vencimento: '2026-02-15', cnpj: '' },
-    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-02-10', cnpj: '' },
-    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-02-10', cnpj: '' },
-  ],
-  mar: [
-    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 38563.69, vencimento: '2026-03-15', cnpj: '' },
-    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-03-10', cnpj: '' },
-    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-03-10', cnpj: '' },
-  ],
-  abr: [
-    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 37730.20, vencimento: '2026-04-15', cnpj: '' },
-    { status: 'Pendente', nome: 'Moom', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-04-10', cnpj: '' },
-    { status: 'Pendente', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 5000, vencimento: '2026-04-10', cnpj: '' },
-    { status: 'Pendente', nome: 'Luzzoo', modelo: '% Faturamento', valor: 0, vencimento: '2026-04-20', cnpj: '' },
-    { status: 'Atrasado', nome: 'Encanto', modelo: 'Fee Fixo', valor: 10000, vencimento: '2026-03-10', cnpj: '' },
-  ],
-  q1: [
-    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 172045.98, vencimento: '2026-03-15', cnpj: '' },
-    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-03-10', cnpj: '' },
-    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-03-10', cnpj: '' },
-  ],
-  all: [
-    { status: 'Pago', nome: '1pra1', modelo: '% Investimento', valor: 209776.18, vencimento: '2026-04-15', cnpj: '' },
-    { status: 'Pago', nome: 'Moom', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-04-10', cnpj: '' },
-    { status: 'Pago', nome: 'Mermaid', modelo: 'Fee Fixo', valor: 15000, vencimento: '2026-04-10', cnpj: '' },
-    { status: 'Pendente', nome: 'Luzzoo', modelo: '% Faturamento', valor: 0, vencimento: '2026-04-20', cnpj: '' },
-    { status: 'Atrasado', nome: 'Encanto', modelo: 'Fee Fixo', valor: 10000, vencimento: '2026-03-10', cnpj: '' },
-  ]
-};
-
-var pendingClients = [
-  { nome: 'Luzzoo', cor: 'var(--blue)' },
-  { nome: 'Encanto', cor: '#FFB300' },
-  { nome: 'Black', cor: '#F44336' },
-];
 
 function fmt(v) {
   return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -3080,36 +2937,303 @@ function statusBadgeHtml(status) {
   return '<span class="status-badge ' + cls + '">' + status + '</span>';
 }
 
-// ========== RENDER DESPESAS TABLE ==========
-function renderDespesas(period) {
-  var tbody = document.getElementById('despesasBody');
-  if (!tbody) return;
-  var items = despesasData[period] || [];
-  if (items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma despesa cadastrada para este periodo</td></tr>';
+// ========== LOAD FINANCEIRO FROM API ==========
+function loadFinanceiro() {
+  fetch('/api/financeiro')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) { console.log('[AIOX] Financeiro error:', data.error); return; }
+      finApiData = data;
+      renderFinAll();
+    })
+    .catch(function(err) { console.log('[AIOX] Financeiro fetch failed:', err); });
+}
+
+function renderFinAll() {
+  if (!finApiData) return;
+  renderFinPeriodBtns();
+  renderFinKPIs();
+  renderFinReceitaChart();
+  renderFinEvoChart();
+  renderFinReceitas();
+  renderFinDespesas();
+}
+
+function getSelectedData() {
+  if (!finApiData) return { receita:0, custos:0, lucro:0, margem:0, receitas:[], despesas:[], clientes:[] };
+  if (finSelectedPeriod === 'all') {
+    return {
+      receita: finApiData.totals.receita,
+      custos: finApiData.totals.custos,
+      lucro: finApiData.totals.lucro,
+      margem: finApiData.totals.margem,
+      receitas: finApiData.receitas,
+      despesas: finApiData.despesas,
+      clientes: finApiData.clientes || []
+    };
+  }
+  var summary = null;
+  for (var i = 0; i < finApiData.summaries.length; i++) {
+    if (finApiData.summaries[i].mes === finSelectedPeriod) { summary = finApiData.summaries[i]; break; }
+  }
+  if (!summary) return { receita:0, custos:0, lucro:0, margem:0, receitas:[], despesas:[], clientes:[] };
+
+  var byClient = {};
+  var sReceitas = summary.receitas || [];
+  for (var j = 0; j < sReceitas.length; j++) {
+    var r = sReceitas[j];
+    var cName = r.cliente || r.nome || '';
+    if (cName) byClient[cName] = (byClient[cName] || 0) + (r.receita || r.valor || 0);
+  }
+  var clientes = [];
+  var clientKeys = Object.keys(byClient);
+  for (var k = 0; k < clientKeys.length; k++) {
+    var cn = clientKeys[k];
+    clientes.push({
+      nome: cn,
+      valor: byClient[cn],
+      pct: summary.receita > 0 ? Math.round(byClient[cn] / summary.receita * 1000) / 10 : 0
+    });
+  }
+  clientes.sort(function(a, b) { return b.valor - a.valor; });
+
+  return {
+    receita: summary.receita,
+    custos: summary.custos,
+    lucro: summary.lucro,
+    margem: summary.margem,
+    receitas: summary.receitas || [],
+    despesas: summary.despesas || [],
+    clientes: clientes
+  };
+}
+
+// ========== PERIOD BUTTONS ==========
+function renderFinPeriodBtns() {
+  var container = document.getElementById('finPeriodBtns');
+  if (!container || !finApiData) return;
+  var months = finApiData.months || [];
+  var html = '';
+  // "Todos" button first
+  html += '<button class="fin-period-btn' + (finSelectedPeriod === 'all' ? ' active' : '') + '" onclick="setFinPeriod(\'all\')">Todos</button>';
+  // Months reversed (most recent first)
+  for (var i = months.length - 1; i >= 0; i--) {
+    var m = months[i];
+    html += '<button class="fin-period-btn' + (finSelectedPeriod === m ? ' active' : '') + '" onclick="setFinPeriod(\'' + m + '\')">' + m + '</button>';
+  }
+  container.innerHTML = html;
+}
+
+// ========== KPI RENDERING ==========
+function renderFinKPIs() {
+  var d = getSelectedData();
+  var el = function(id) { return document.getElementById(id); };
+  var periodLabel = finSelectedPeriod === 'all' ? 'Todos' : finSelectedPeriod;
+
+  if (el('kpi-receita')) el('kpi-receita').textContent = fmt(d.receita);
+  if (el('kpi-receita-label')) el('kpi-receita-label').textContent = 'Receita ' + periodLabel;
+  if (el('kpi-receita-trend')) el('kpi-receita-trend').textContent = 'Dados Notion API';
+
+  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.custos > 0 ? fmt(d.custos) : '-';
+  if (el('kpi-despesas-label')) el('kpi-despesas-label').textContent = 'Despesas ' + periodLabel;
+  if (el('kpi-despesas-trend')) el('kpi-despesas-trend').textContent = d.custos > 0 ? 'Dados reais' : 'Sem despesas';
+
+  var lucro = d.lucro;
+  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.custos > 0 ? fmt(lucro) : '-';
+  if (el('kpi-lucro-label')) el('kpi-lucro-label').textContent = 'Lucro Liquido ' + periodLabel;
+  if (el('kpi-lucro-trend')) {
+    el('kpi-lucro-trend').textContent = d.custos > 0 ? 'Receita - Despesas' : 'Aguardando despesas';
+    el('kpi-lucro-trend').className = 'fin-kpi-trend' + (lucro > 0 ? ' up' : '');
+  }
+
+  var margem = d.margem;
+  if (el('kpi-margem')) el('kpi-margem').textContent = (typeof margem === 'number' && margem > 0) ? margem.toFixed(1) + '%' : '-';
+  if (el('kpi-margem-label')) el('kpi-margem-label').textContent = 'Margem ' + periodLabel;
+  if (el('kpi-margem-trend')) el('kpi-margem-trend').textContent = d.custos > 0 ? 'Lucro / Receita' : 'Aguardando despesas';
+
+  var badge = document.querySelector('#financeiro .section-badge');
+  if (badge) badge.textContent = periodLabel;
+}
+
+// ========== RECEITA POR CLIENTE CHART ==========
+function renderFinReceitaChart() {
+  var container = document.getElementById('receitaChartContainer');
+  if (!container) return;
+  var d = getSelectedData();
+  var clientes = d.clientes || [];
+  var chartColors = ['#FF9800','#00BCD4','#9C27B0','#4CAF50','#FF5722','#607D8B','#E91E63','#3F51B5','#0088FF','#FFB300'];
+
+  if (finReceitaMode === 'barras') {
+    var maxVal = 1;
+    for (var i = 0; i < clientes.length; i++) {
+      if (clientes[i].valor > maxVal) maxVal = clientes[i].valor;
+    }
+    var html = '<div class="fin-bar-chart" id="receitaBarChart">';
+    for (var j = 0; j < clientes.length; j++) {
+      var c = clientes[j];
+      var cor = c.cor || chartColors[j % chartColors.length];
+      html += '<div class="fin-bar-item">';
+      html += '<div class="fin-bar-label">' + c.nome + '</div>';
+      html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:' + (c.valor / maxVal * 100).toFixed(0) + '%;background:' + cor + ';">' + c.pct + '%</div></div>';
+      html += '<div class="fin-bar-value">' + fmt(c.valor) + '</div>';
+      html += '</div>';
+    }
+    if (clientes.length === 0) {
+      html += '<div style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma receita neste periodo</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    // Pizza / Donut
+    var total = 0;
+    for (var m = 0; m < clientes.length; m++) total += clientes[m].valor;
+    if (total === 0) total = 1;
+
+    var gradientParts = [];
+    var cumulative = 0;
+    for (var n = 0; n < clientes.length; n++) {
+      var pct = (clientes[n].valor / total) * 100;
+      var cor2 = clientes[n].cor || chartColors[n % chartColors.length];
+      gradientParts.push(cor2 + ' ' + cumulative.toFixed(1) + '% ' + (cumulative + pct).toFixed(1) + '%');
+      cumulative += pct;
+    }
+    if (cumulative < 100) {
+      gradientParts.push('#E0E0E0 ' + cumulative.toFixed(1) + '% 100%');
+    }
+
+    var html2 = '<div class="fin-donut-wrap">';
+    html2 += '<div class="fin-donut" style="background:conic-gradient(' + gradientParts.join(',') + ');">';
+    html2 += '<div class="fin-donut-hole"><div class="fin-donut-hole-val">' + fmt(total) + '</div><div class="fin-donut-hole-lbl">Total</div></div>';
+    html2 += '</div>';
+    html2 += '<div class="fin-donut-legend">';
+    for (var p = 0; p < clientes.length; p++) {
+      var cor3 = clientes[p].cor || chartColors[p % chartColors.length];
+      html2 += '<div class="fin-donut-legend-item">';
+      html2 += '<div class="fin-donut-legend-dot" style="background:' + cor3 + ';"></div>';
+      html2 += clientes[p].nome + ' - ' + fmt(clientes[p].valor) + ' (' + clientes[p].pct + '%)';
+      html2 += '</div>';
+    }
+    html2 += '</div></div>';
+    container.innerHTML = html2;
+  }
+}
+
+// ========== EVOLUCAO MENSAL CHART ==========
+function renderFinEvoChart() {
+  var container = document.getElementById('evoChartContainer');
+  if (!container || !finApiData) return;
+  var summaries = finApiData.summaries || [];
+  if (summaries.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Sem dados de evolucao</div>';
     return;
   }
-  var html = '';
-  for (var i = 0; i < items.length; i++) {
-    var d = items[i];
-    html += '<tr data-type="despesa" data-period="' + period + '" data-index="' + i + '"' + (d.pageId ? ' data-page-id="' + d.pageId + '"' : '') + '>';
-    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(d.status) + '</td>';
-    html += '<td class="fin-editable" data-field="nome"><strong>' + d.nome + '</strong></td>';
-    html += '<td class="fin-editable" data-field="categoria">' + d.categoria + '</td>';
-    html += '<td class="fin-editable" data-field="valor" data-value="' + d.valor + '">' + (d.valor > 0 ? fmt(d.valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
-    html += '<td class="fin-editable" data-field="cnpj">' + (d.cnpj || '-') + '</td>';
-    html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(d.vencimento) + '</td>';
-    html += '</tr>';
+
+  if (finEvoMode === 'barras') {
+    var maxTotal = 1;
+    for (var i = 0; i < summaries.length; i++) {
+      var t = (summaries[i].receita || 0) + (summaries[i].custos || 0);
+      if (t > maxTotal) maxTotal = t;
+    }
+    var html = '<div class="fin-evolution-chart">';
+    for (var j = 0; j < summaries.length; j++) {
+      var s = summaries[j];
+      var rec = s.receita || 0;
+      var desp = s.custos || 0;
+      var totalH = ((rec + desp) / maxTotal * 100);
+      var recPct = (rec + desp) > 0 ? rec / (rec + desp) * 100 : 50;
+      var despPct = 100 - recPct;
+      var label = s.mes || '';
+      html += '<div class="fin-evo-bar-wrapper">';
+      html += '<div class="fin-evo-bar-value">R$ ' + Math.round(rec / 1000) + 'k</div>';
+      html += '<div class="fin-evo-bar" style="height:' + totalH.toFixed(0) + '%;">';
+      html += '<div class="fin-evo-bar-receita" style="height:' + recPct.toFixed(0) + '%;" data-tooltip="Receita: ' + fmt(rec) + '"></div>';
+      html += '<div class="fin-evo-bar-despesa" style="height:' + despPct.toFixed(0) + '%;" data-tooltip="Despesas: ' + fmt(desp) + '"></div>';
+      html += '</div>';
+      html += '<div class="fin-evo-bar-label">' + label + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    // Line chart (SVG)
+    var maxVal = 1;
+    for (var k = 0; k < summaries.length; k++) {
+      if ((summaries[k].receita || 0) > maxVal) maxVal = summaries[k].receita;
+      if ((summaries[k].custos || 0) > maxVal) maxVal = summaries[k].custos;
+    }
+    maxVal = maxVal * 1.1;
+    var svgW = 400;
+    var svgH = 200;
+    var padL = 10;
+    var padR = 10;
+    var padT = 20;
+    var padB = 30;
+    var chartW = svgW - padL - padR;
+    var chartH = svgH - padT - padB;
+    var numPts = summaries.length;
+    var divisor = numPts > 1 ? numPts - 1 : 1;
+
+    var recPoints = [];
+    var despPoints = [];
+    for (var l = 0; l < numPts; l++) {
+      var x = padL + (l / divisor) * chartW;
+      var yR = padT + (1 - (summaries[l].receita || 0) / maxVal) * chartH;
+      var yD = padT + (1 - (summaries[l].custos || 0) / maxVal) * chartH;
+      recPoints.push(x.toFixed(1) + ',' + yR.toFixed(1));
+      despPoints.push(x.toFixed(1) + ',' + yD.toFixed(1));
+    }
+
+    var svg = '<div class="fin-line-chart-wrap">';
+    svg += '<svg class="fin-line-chart-svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" preserveAspectRatio="none">';
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + (g / 4) * chartH;
+      svg += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (svgW - padR) + '" y2="' + gy.toFixed(1) + '" stroke="#E8E4DE" stroke-width="1"/>';
+    }
+    svg += '<polyline points="' + recPoints.join(' ') + '" fill="none" stroke="#00C853" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+    svg += '<polyline points="' + despPoints.join(' ') + '" fill="none" stroke="#FF4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+    for (var n = 0; n < numPts; n++) {
+      var xn = padL + (n / divisor) * chartW;
+      var yrn = padT + (1 - (summaries[n].receita || 0) / maxVal) * chartH;
+      var ydn = padT + (1 - (summaries[n].custos || 0) / maxVal) * chartH;
+      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + yrn.toFixed(1) + '" r="5" fill="#00C853" stroke="#fff" stroke-width="2"/>';
+      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + ydn.toFixed(1) + '" r="5" fill="#FF4444" stroke="#fff" stroke-width="2"/>';
+      svg += '<text x="' + xn.toFixed(1) + '" y="' + (svgH - 5) + '" text-anchor="middle" font-size="11" font-weight="600" fill="#8b8fa3" font-family="Sora,sans-serif">' + (summaries[n].mes || '') + '</text>';
+      svg += '<text x="' + xn.toFixed(1) + '" y="' + (yrn - 10).toFixed(1) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#00873E" font-family="Sora,sans-serif">R$ ' + Math.round((summaries[n].receita || 0) / 1000) + 'k</text>';
+    }
+    svg += '</svg></div>';
+    container.innerHTML = svg;
   }
-  tbody.innerHTML = html;
-  attachInlineEditing(tbody);
+}
+
+// ========== CHART TOGGLES ==========
+function toggleReceitaChart(mode, btn) {
+  finReceitaMode = mode;
+  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  renderFinReceitaChart();
+}
+
+function toggleEvoChart(mode, btn) {
+  finEvoMode = mode;
+  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  renderFinEvoChart();
+}
+
+// ========== SET PERIOD ==========
+function setFinPeriod(period) {
+  finSelectedPeriod = period;
+  renderFinAll();
 }
 
 // ========== RENDER RECEITAS TABLE ==========
-function renderReceitas(period) {
+function renderFinReceitas() {
   var tbody = document.getElementById('receitasBody');
   if (!tbody) return;
-  var items = receitasData[period] || [];
+  var d = getSelectedData();
+  var items = d.receitas || [];
   if (items.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma receita cadastrada para este periodo</td></tr>';
     return;
@@ -3117,13 +3241,53 @@ function renderReceitas(period) {
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var r = items[i];
-    html += '<tr data-type="receita" data-period="' + period + '" data-index="' + i + '"' + (r.pageId ? ' data-page-id="' + r.pageId + '"' : '') + '>';
-    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(r.status) + '</td>';
-    html += '<td class="fin-editable" data-field="nome"><strong>' + r.nome + '</strong></td>';
-    html += '<td class="fin-editable" data-field="modelo">' + r.modelo + '</td>';
-    html += '<td class="fin-editable" data-field="valor" data-value="' + r.valor + '">' + (r.valor > 0 ? fmt(r.valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
-    html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(r.vencimento) + '</td>';
-    html += '<td class="fin-editable" data-field="cnpj">' + (r.cnpj || '-') + '</td>';
+    var pageId = r.id || r.pageId || '';
+    var nome = r.nome || r.cliente || r.registro || '';
+    var modelo = r.modelo || '';
+    var valor = r.receita || r.valor || 0;
+    var venc = r.vencimento || '';
+    var cnpj = r.cnpj || r.cpf || '';
+    var status = r.status || 'Pendente';
+    html += '<tr data-type="receita" data-page-id="' + pageId + '" data-index="' + i + '">';
+    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(status) + '</td>';
+    html += '<td class="fin-editable" data-field="nome"><strong>' + nome + '</strong></td>';
+    html += '<td class="fin-editable" data-field="modelo">' + modelo + '</td>';
+    html += '<td class="fin-editable" data-field="valor" data-value="' + valor + '">' + (valor > 0 ? fmt(valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
+    html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(venc) + '</td>';
+    html += '<td class="fin-editable" data-field="cnpj">' + (cnpj || '-') + '</td>';
+    html += '</tr>';
+  }
+  tbody.innerHTML = html;
+  attachInlineEditing(tbody);
+}
+
+// ========== RENDER DESPESAS TABLE ==========
+function renderFinDespesas() {
+  var tbody = document.getElementById('despesasBody');
+  if (!tbody) return;
+  var d = getSelectedData();
+  var items = d.despesas || [];
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Nenhuma despesa cadastrada para este periodo</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var dd = items[i];
+    var pageId = dd.id || dd.pageId || '';
+    var nome = dd.nome || dd.despesa || dd.registro || '';
+    var categoria = dd.categoria || '';
+    var valor = dd.custos || dd.valor || 0;
+    var cnpj = dd.cnpj || dd.cpf || '';
+    var venc = dd.vencimento || '';
+    var status = dd.status || 'Pendente';
+    html += '<tr data-type="despesa" data-page-id="' + pageId + '" data-index="' + i + '">';
+    html += '<td class="fin-editable" data-field="status">' + statusBadgeHtml(status) + '</td>';
+    html += '<td class="fin-editable" data-field="nome"><strong>' + nome + '</strong></td>';
+    html += '<td class="fin-editable" data-field="categoria">' + categoria + '</td>';
+    html += '<td class="fin-editable" data-field="valor" data-value="' + valor + '">' + (valor > 0 ? fmt(valor) : '<span style="color:#CC8F00">Pendente</span>') + '</td>';
+    html += '<td class="fin-editable" data-field="cnpj">' + (cnpj || '-') + '</td>';
+    html += '<td class="fin-editable" data-field="vencimento">' + fmtDate(venc) + '</td>';
     html += '</tr>';
   }
   tbody.innerHTML = html;
@@ -3142,16 +3306,12 @@ function handleCellEdit(e) {
   var td = e.currentTarget;
   if (td.classList.contains('editing')) return;
   var tr = td.parentElement;
-  var type = tr.dataset.type;
-  var period = tr.dataset.period;
-  var idx = parseInt(tr.dataset.index);
   var field = td.dataset.field;
-  var dataArr = type === 'despesa' ? despesasData : receitasData;
-  var item = dataArr[period] ? dataArr[period][idx] : null;
-  if (!item) return;
 
   td.classList.add('editing');
-  var currentVal = item[field] || '';
+  var currentVal = td.textContent.trim();
+  // For valor, use data-value attribute
+  if (field === 'valor') currentVal = td.dataset.value || '0';
 
   if (field === 'status') {
     var sel = document.createElement('select');
@@ -3160,14 +3320,14 @@ function handleCellEdit(e) {
       var opt = document.createElement('option');
       opt.value = opts[i];
       opt.textContent = opts[i];
-      if (opts[i] === currentVal) opt.selected = true;
+      if (currentVal.indexOf(opts[i]) !== -1) opt.selected = true;
       sel.appendChild(opt);
     }
     td.innerHTML = '';
     td.appendChild(sel);
     sel.focus();
-    sel.addEventListener('change', function() { finishEdit(td, sel.value, type, period, idx, field); });
-    sel.addEventListener('blur', function() { finishEdit(td, sel.value, type, period, idx, field); });
+    sel.addEventListener('change', function() { finishEdit(td, sel.value, field); });
+    sel.addEventListener('blur', function() { finishEdit(td, sel.value, field); });
   } else if (field === 'categoria') {
     var sel2 = document.createElement('select');
     var cats = ['Folha', 'Infraestrutura', 'Software', 'Marketing', 'Operacional', 'Terceiros'];
@@ -3181,8 +3341,8 @@ function handleCellEdit(e) {
     td.innerHTML = '';
     td.appendChild(sel2);
     sel2.focus();
-    sel2.addEventListener('change', function() { finishEdit(td, sel2.value, type, period, idx, field); });
-    sel2.addEventListener('blur', function() { finishEdit(td, sel2.value, type, period, idx, field); });
+    sel2.addEventListener('change', function() { finishEdit(td, sel2.value, field); });
+    sel2.addEventListener('blur', function() { finishEdit(td, sel2.value, field); });
   } else if (field === 'modelo') {
     var sel3 = document.createElement('select');
     var mods = ['% Faturamento', '% Investimento', 'Fee Fixo', 'Fixo + Comissao'];
@@ -3196,8 +3356,8 @@ function handleCellEdit(e) {
     td.innerHTML = '';
     td.appendChild(sel3);
     sel3.focus();
-    sel3.addEventListener('change', function() { finishEdit(td, sel3.value, type, period, idx, field); });
-    sel3.addEventListener('blur', function() { finishEdit(td, sel3.value, type, period, idx, field); });
+    sel3.addEventListener('change', function() { finishEdit(td, sel3.value, field); });
+    sel3.addEventListener('blur', function() { finishEdit(td, sel3.value, field); });
   } else if (field === 'valor') {
     var inp = document.createElement('input');
     inp.type = 'number';
@@ -3206,8 +3366,8 @@ function handleCellEdit(e) {
     td.innerHTML = '';
     td.appendChild(inp);
     inp.focus();
-    inp.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishEdit(td, parseFloat(inp.value) || 0, type, period, idx, field); });
-    inp.addEventListener('blur', function() { finishEdit(td, parseFloat(inp.value) || 0, type, period, idx, field); });
+    inp.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishEdit(td, parseFloat(inp.value) || 0, field); });
+    inp.addEventListener('blur', function() { finishEdit(td, parseFloat(inp.value) || 0, field); });
   } else if (field === 'vencimento') {
     var inp2 = document.createElement('input');
     inp2.type = 'date';
@@ -3215,8 +3375,8 @@ function handleCellEdit(e) {
     td.innerHTML = '';
     td.appendChild(inp2);
     inp2.focus();
-    inp2.addEventListener('change', function() { finishEdit(td, inp2.value, type, period, idx, field); });
-    inp2.addEventListener('blur', function() { finishEdit(td, inp2.value, type, period, idx, field); });
+    inp2.addEventListener('change', function() { finishEdit(td, inp2.value, field); });
+    inp2.addEventListener('blur', function() { finishEdit(td, inp2.value, field); });
   } else {
     var inp3 = document.createElement('input');
     inp3.type = 'text';
@@ -3224,261 +3384,69 @@ function handleCellEdit(e) {
     td.innerHTML = '';
     td.appendChild(inp3);
     inp3.focus();
-    inp3.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishEdit(td, inp3.value, type, period, idx, field); });
-    inp3.addEventListener('blur', function() { finishEdit(td, inp3.value, type, period, idx, field); });
+    inp3.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') finishEdit(td, inp3.value, field); });
+    inp3.addEventListener('blur', function() { finishEdit(td, inp3.value, field); });
   }
 }
 
-function finishEdit(td, newVal, type, period, idx, field) {
+function finishEdit(td, newVal, field) {
   if (!td.classList.contains('editing')) return;
   td.classList.remove('editing');
-  var dataArr = type === 'despesa' ? despesasData : receitasData;
-  if (dataArr[period] && dataArr[period][idx]) {
-    dataArr[period][idx][field] = newVal;
-  }
-  if (type === 'despesa') {
-    renderDespesas(period);
+
+  // Update cell display immediately
+  if (field === 'status') {
+    td.innerHTML = statusBadgeHtml(newVal);
+  } else if (field === 'valor') {
+    var numVal = parseFloat(newVal) || 0;
+    td.dataset.value = numVal;
+    td.innerHTML = numVal > 0 ? fmt(numVal) : '<span style="color:#CC8F00">Pendente</span>';
+  } else if (field === 'vencimento') {
+    td.textContent = fmtDate(newVal);
+  } else if (field === 'nome') {
+    td.innerHTML = '<strong>' + newVal + '</strong>';
   } else {
-    renderReceitas(period);
+    td.textContent = newVal || '-';
   }
-  refreshKPIs();
-}
 
-// ========== RECEITA BAR CHART ==========
-function renderReceitaBarChart() {
-  var d = finData[currentFinPeriod];
-  if (!d) return;
-  var container = document.getElementById('receitaChartContainer');
-  if (!container) return;
+  // Get pageId from the row
+  var row = td.closest('tr');
+  var pageId = row ? row.getAttribute('data-page-id') : null;
 
-  if (receitaChartMode === 'barras') {
-    var maxVal = 1;
-    for (var i = 0; i < d.clientes.length; i++) {
-      if (d.clientes[i].valor > maxVal) maxVal = d.clientes[i].valor;
-    }
-    var html = '<div class="fin-bar-chart" id="receitaBarChart">';
-    for (var j = 0; j < d.clientes.length; j++) {
-      var c = d.clientes[j];
-      html += '<div class="fin-bar-item">';
-      html += '<div class="fin-bar-label">' + c.nome + '</div>';
-      html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:' + (c.valor/maxVal*100).toFixed(0) + '%;background:' + c.cor + ';">' + c.pct + '%</div></div>';
-      html += '<div class="fin-bar-value">' + fmt(c.valor) + '</div>';
-      html += '</div>';
-    }
-    for (var k = 0; k < pendingClients.length; k++) {
-      var pc = pendingClients[k];
-      html += '<div class="fin-bar-item">';
-      html += '<div class="fin-bar-label">' + pc.nome + '</div>';
-      html += '<div class="fin-bar-track"><div class="fin-bar-fill" style="width:0%;background:' + pc.cor + ';">-</div></div>';
-      html += '<div class="fin-bar-value" style="opacity:.4">Pendente</div>';
-      html += '</div>';
-    }
-    html += '</div>';
-    container.innerHTML = html;
-  } else {
-    // Pizza / Donut chart
-    var total = 0;
-    for (var m = 0; m < d.clientes.length; m++) total += d.clientes[m].valor;
-    if (total === 0) total = 1;
+  if (pageId) {
+    // Map field for API
+    var apiField = field;
+    var type = row.getAttribute('data-type');
+    if (field === 'valor' && type === 'receita') apiField = 'receita';
+    if (field === 'valor' && type === 'despesa') apiField = 'custos';
 
-    var gradientParts = [];
-    var cumulative = 0;
-    for (var n = 0; n < d.clientes.length; n++) {
-      var pct = (d.clientes[n].valor / total) * 100;
-      gradientParts.push(d.clientes[n].cor + ' ' + cumulative.toFixed(1) + '% ' + (cumulative + pct).toFixed(1) + '%');
-      cumulative += pct;
-    }
-    if (cumulative < 100) {
-      gradientParts.push('#E0E0E0 ' + cumulative.toFixed(1) + '% 100%');
-    }
+    td.style.position = 'relative';
 
-    var html2 = '<div class="fin-donut-wrap">';
-    html2 += '<div class="fin-donut" style="background:conic-gradient(' + gradientParts.join(',') + ');">';
-    html2 += '<div class="fin-donut-hole"><div class="fin-donut-hole-val">' + fmt(total) + '</div><div class="fin-donut-hole-lbl">Total</div></div>';
-    html2 += '</div>';
-    html2 += '<div class="fin-donut-legend">';
-    for (var p = 0; p < d.clientes.length; p++) {
-      html2 += '<div class="fin-donut-legend-item">';
-      html2 += '<div class="fin-donut-legend-dot" style="background:' + d.clientes[p].cor + ';"></div>';
-      html2 += d.clientes[p].nome + ' - ' + fmt(d.clientes[p].valor) + ' (' + d.clientes[p].pct + '%)';
-      html2 += '</div>';
-    }
-    for (var q = 0; q < pendingClients.length; q++) {
-      html2 += '<div class="fin-donut-legend-item" style="opacity:0.4;">';
-      html2 += '<div class="fin-donut-legend-dot" style="background:#E0E0E0;"></div>';
-      html2 += pendingClients[q].nome + ' - Pendente';
-      html2 += '</div>';
-    }
-    html2 += '</div></div>';
-    container.innerHTML = html2;
+    fetch('/api/update-financial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pageId: pageId, field: apiField, value: newVal })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var indicator = document.createElement('span');
+      indicator.textContent = data.success ? '\u2713 Salvo' : '\u2717 Erro';
+      indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:' + (data.success ? '#22C55E' : '#F44336') + ';font-weight:600;pointer-events:none;z-index:10;';
+      td.appendChild(indicator);
+      setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
+      // Refresh all data from API
+      loadFinanceiro();
+    })
+    .catch(function() {
+      var indicator = document.createElement('span');
+      indicator.textContent = '\u2717 Erro';
+      indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#F44336;font-weight:600;z-index:10;';
+      td.appendChild(indicator);
+      setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
+    });
   }
-}
 
-function toggleReceitaChart(mode, btn) {
-  receitaChartMode = mode;
-  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
-  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-  btn.classList.add('active');
-  renderReceitaBarChart();
-}
-
-// ========== EVOLUTION CHART ==========
-var evoMonths = [
-  { key: 'jan', label: 'Jan', receita: 87003.25, despesas: 23259.98 },
-  { key: 'fev', label: 'Fev', receita: 66479.04, despesas: 20113.30 },
-  { key: 'mar', label: 'Mar', receita: 48563.69, despesas: 18721.05 },
-  { key: 'abr', label: 'Abr', receita: 37730.20, despesas: 10500 }
-];
-
-function renderEvoChart() {
-  var container = document.getElementById('evoChartContainer');
-  if (!container) return;
-
-  if (evoChartMode === 'barras') {
-    var maxTotal = 1;
-    for (var i = 0; i < evoMonths.length; i++) {
-      var t = evoMonths[i].receita + evoMonths[i].despesas;
-      if (t > maxTotal) maxTotal = t;
-    }
-    var html = '<div class="fin-evolution-chart">';
-    for (var j = 0; j < evoMonths.length; j++) {
-      var m = evoMonths[j];
-      var totalH = ((m.receita + m.despesas) / maxTotal * 100);
-      var recPct = m.receita / (m.receita + m.despesas) * 100;
-      var despPct = 100 - recPct;
-      html += '<div class="fin-evo-bar-wrapper">';
-      html += '<div class="fin-evo-bar-value">R$ ' + Math.round(m.receita/1000) + 'k</div>';
-      html += '<div class="fin-evo-bar" style="height:' + totalH.toFixed(0) + '%;">';
-      html += '<div class="fin-evo-bar-receita" style="height:' + recPct.toFixed(0) + '%;" data-tooltip="Receita: ' + fmt(m.receita) + '"></div>';
-      html += '<div class="fin-evo-bar-despesa" style="height:' + despPct.toFixed(0) + '%;" data-tooltip="Despesas: ' + fmt(m.despesas) + '"></div>';
-      html += '</div>';
-      html += '<div class="fin-evo-bar-label">' + m.label + '</div>';
-      html += '</div>';
-    }
-    html += '</div>';
-    container.innerHTML = html;
-  } else {
-    // Line chart (SVG)
-    var maxVal = 1;
-    for (var k = 0; k < evoMonths.length; k++) {
-      if (evoMonths[k].receita > maxVal) maxVal = evoMonths[k].receita;
-      if (evoMonths[k].despesas > maxVal) maxVal = evoMonths[k].despesas;
-    }
-    maxVal = maxVal * 1.1;
-    var svgW = 400;
-    var svgH = 200;
-    var padL = 10;
-    var padR = 10;
-    var padT = 20;
-    var padB = 30;
-    var chartW = svgW - padL - padR;
-    var chartH = svgH - padT - padB;
-
-    var recPoints = [];
-    var despPoints = [];
-    for (var l = 0; l < evoMonths.length; l++) {
-      var x = padL + (l / (evoMonths.length - 1)) * chartW;
-      var yR = padT + (1 - evoMonths[l].receita / maxVal) * chartH;
-      var yD = padT + (1 - evoMonths[l].despesas / maxVal) * chartH;
-      recPoints.push(x.toFixed(1) + ',' + yR.toFixed(1));
-      despPoints.push(x.toFixed(1) + ',' + yD.toFixed(1));
-    }
-
-    var svg = '<div class="fin-line-chart-wrap">';
-    svg += '<svg class="fin-line-chart-svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" preserveAspectRatio="none">';
-    // Grid lines
-    for (var g = 0; g <= 4; g++) {
-      var gy = padT + (g / 4) * chartH;
-      svg += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (svgW - padR) + '" y2="' + gy.toFixed(1) + '" stroke="#E8E4DE" stroke-width="1"/>';
-    }
-    // Receita line
-    svg += '<polyline points="' + recPoints.join(' ') + '" fill="none" stroke="#00C853" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
-    // Despesas line
-    svg += '<polyline points="' + despPoints.join(' ') + '" fill="none" stroke="#FF4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
-    // Dots and labels
-    for (var n = 0; n < evoMonths.length; n++) {
-      var xn = padL + (n / (evoMonths.length - 1)) * chartW;
-      var yrn = padT + (1 - evoMonths[n].receita / maxVal) * chartH;
-      var ydn = padT + (1 - evoMonths[n].despesas / maxVal) * chartH;
-      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + yrn.toFixed(1) + '" r="5" fill="#00C853" stroke="#fff" stroke-width="2"/>';
-      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + ydn.toFixed(1) + '" r="5" fill="#FF4444" stroke="#fff" stroke-width="2"/>';
-      svg += '<text x="' + xn.toFixed(1) + '" y="' + (svgH - 5) + '" text-anchor="middle" font-size="11" font-weight="600" fill="#8b8fa3" font-family="Sora,sans-serif">' + evoMonths[n].label + '</text>';
-      svg += '<text x="' + xn.toFixed(1) + '" y="' + (yrn - 10).toFixed(1) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#00873E" font-family="Sora,sans-serif">R$ ' + Math.round(evoMonths[n].receita/1000) + 'k</text>';
-    }
-    svg += '</svg></div>';
-    container.innerHTML = svg;
-  }
-}
-
-function toggleEvoChart(mode, btn) {
-  evoChartMode = mode;
-  var btns = btn.parentElement.querySelectorAll('.chart-toggle-btn');
-  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-  btn.classList.add('active');
-  renderEvoChart();
-}
-
-// ========== KPI REFRESH ==========
-function refreshKPIs() {
-  var period = currentFinPeriod;
-  var d = finData[period];
-  if (!d) return;
-  var el = function(id) { return document.getElementById(id); };
-  if (el('kpi-receita')) el('kpi-receita').textContent = fmt(d.receita);
-  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.despesas > 0 ? fmt(d.despesas) : '-';
-  var lucro = d.receita - d.despesas;
-  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.despesas > 0 ? fmt(lucro) : '-';
-  var margem = d.receita > 0 && d.despesas > 0 ? ((lucro / d.receita) * 100).toFixed(1) + '%' : '-';
-  if (el('kpi-margem')) el('kpi-margem').textContent = margem;
-}
-
-// ========== SET PERIOD ==========
-function setFinPeriod(period, btn) {
-  currentFinPeriod = period;
-  // Update active button (only within financeiro section)
-  var finSection = document.getElementById('financeiro');
-  if (finSection) {
-    var periodBtns = finSection.querySelectorAll('.fin-period-btn');
-    for (var i = 0; i < periodBtns.length; i++) periodBtns[i].classList.remove('active');
-  }
-  btn.classList.add('active');
-
-  var d = finData[period];
-  if (!d) return;
-
-  var periodLabels = {
-    jan: 'Jan/26', fev: 'Fev/26', mar: 'Mar/26', abr: 'Abr/26',
-    q1: 'Q1 2026', all: 'Todos'
-  };
-  var pl = periodLabels[period] || period;
-
-  var el = function(id) { return document.getElementById(id); };
-  if (el('kpi-receita')) el('kpi-receita').textContent = fmt(d.receita);
-  if (el('kpi-receita-label')) el('kpi-receita-label').textContent = 'Receita ' + pl;
-  if (el('kpi-despesas-label')) el('kpi-despesas-label').textContent = 'Despesas ' + pl;
-  if (el('kpi-lucro-label')) el('kpi-lucro-label').textContent = 'Lucro Liquido ' + pl;
-  if (el('kpi-margem-label')) el('kpi-margem-label').textContent = 'Margem ' + pl;
-
-  var badge = document.querySelector('#financeiro .section-badge');
-  if (badge) badge.textContent = d.label;
-
-  // Update charts
-  renderReceitaBarChart();
-  renderEvoChart();
-
-  // Update tables
-  renderDespesas(period);
-  renderReceitas(period);
-
-  // Update KPIs
-  if (el('kpi-despesas')) el('kpi-despesas').textContent = d.despesas > 0 ? fmt(d.despesas) : '-';
-  if (el('kpi-despesas-trend')) el('kpi-despesas-trend').textContent = d.despesas > 0 ? 'Dados reais' : 'Sem despesas cadastradas';
-  var lucro = d.receita - d.despesas;
-  if (el('kpi-lucro')) el('kpi-lucro').textContent = d.despesas > 0 ? fmt(lucro) : '-';
-  if (el('kpi-lucro-trend')) el('kpi-lucro-trend').textContent = d.despesas > 0 ? 'Receita - Despesas' : 'Aguardando despesas';
-  var margem = d.receita > 0 && d.despesas > 0 ? ((lucro / d.receita) * 100).toFixed(1) + '%' : '-';
-  if (el('kpi-margem')) el('kpi-margem').textContent = margem;
-  if (el('kpi-margem-trend')) el('kpi-margem-trend').textContent = d.despesas > 0 ? 'Lucro / Receita' : 'Aguardando despesas';
+  // Re-attach editing
+  td.addEventListener('dblclick', handleCellEdit);
 }
 
 // ========== MODAL (Add Receita / Despesa) ==========
@@ -3494,10 +3462,8 @@ function openFinModal(type) {
   title.textContent = type === 'receita' ? 'Adicionar Receita' : 'Adicionar Despesa';
 
   var html = '';
-  // Status
   html += '<div class="fin-modal-field"><label>Status</label>';
   html += '<select id="fm-status"><option value="Pago">Pago</option><option value="Pendente" selected>Pendente</option><option value="Atrasado">Atrasado</option></select></div>';
-  // Nome
   html += '<div class="fin-modal-field"><label>Nome</label><input type="text" id="fm-nome" placeholder="Nome do lancamento" required></div>';
 
   if (type === 'despesa') {
@@ -3508,11 +3474,8 @@ function openFinModal(type) {
     html += '<select id="fm-modelo"><option value="% Faturamento">% Faturamento</option><option value="% Investimento">% Investimento</option><option value="Fee Fixo">Fee Fixo</option><option value="Fixo + Comissao">Fixo + Comissao</option></select></div>';
   }
 
-  // Valor
   html += '<div class="fin-modal-field"><label>Valor (R$)</label><input type="number" id="fm-valor" step="0.01" min="0" placeholder="0,00" required></div>';
-  // CNPJ/CPF
   html += '<div class="fin-modal-field"><label>CNPJ/CPF</label><input type="text" id="fm-cnpj" placeholder="00.000.000/0000-00"></div>';
-  // Vencimento
   html += '<div class="fin-modal-field"><label>Vencimento</label><input type="date" id="fm-vencimento" required></div>';
 
   fieldsDiv.innerHTML = html;
@@ -3531,49 +3494,61 @@ function submitFinModal(e) {
   var valor = parseFloat(document.getElementById('fm-valor').value) || 0;
   var cnpj = document.getElementById('fm-cnpj').value;
   var vencimento = document.getElementById('fm-vencimento').value;
-  var period = currentFinPeriod;
+  var type = finModalType;
+  var categoria = '';
+  var modelo = '';
 
-  if (finModalType === 'despesa') {
-    var categoria = document.getElementById('fm-categoria').value;
-    var entry = { status: status, nome: nome, categoria: categoria, valor: valor, cnpj: cnpj, vencimento: vencimento };
-    if (!despesasData[period]) despesasData[period] = [];
-    despesasData[period].push(entry);
-    // Update finData despesas total
-    if (finData[period]) finData[period].despesas += valor;
-    renderDespesas(period);
+  if (type === 'despesa') {
+    categoria = document.getElementById('fm-categoria').value;
   } else {
-    var modelo = document.getElementById('fm-modelo').value;
-    var entry2 = { status: status, nome: nome, modelo: modelo, valor: valor, vencimento: vencimento, cnpj: cnpj };
-    if (!receitasData[period]) receitasData[period] = [];
-    receitasData[period].push(entry2);
-    // Update finData receita total and clientes
-    if (finData[period]) {
-      finData[period].receita += valor;
-      var found = false;
-      for (var i = 0; i < finData[period].clientes.length; i++) {
-        if (finData[period].clientes[i].nome === nome) {
-          finData[period].clientes[i].valor += valor;
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        var colors = ['#FF9800','#00BCD4','#9C27B0','#4CAF50','#FF5722','#607D8B','#E91E63','#3F51B5'];
-        finData[period].clientes.push({ nome: nome, valor: valor, pct: 0, cor: colors[finData[period].clientes.length % colors.length] });
-      }
-      // Recalculate percentages
-      var totalR = 0;
-      for (var j = 0; j < finData[period].clientes.length; j++) totalR += finData[period].clientes[j].valor;
-      for (var k = 0; k < finData[period].clientes.length; k++) {
-        finData[period].clientes[k].pct = totalR > 0 ? parseFloat(((finData[period].clientes[k].valor / totalR) * 100).toFixed(1)) : 0;
-      }
-    }
-    renderReceitas(period);
-    renderReceitaBarChart();
+    modelo = document.getElementById('fm-modelo').value;
   }
 
-  refreshKPIs();
-  closeFinModal();
+  var submitBtn = document.querySelector('#finModalForm button[type="submit"]');
+  var origText = '';
+  if (submitBtn) {
+    origText = submitBtn.textContent;
+    submitBtn.textContent = 'Salvando...';
+    submitBtn.disabled = true;
+  }
+
+  fetch('/api/add-financial', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: type,
+      nome: nome,
+      valor: valor,
+      status: status,
+      categoria: categoria,
+      modelo: modelo,
+      cnpj: cnpj,
+      vencimento: vencimento,
+      mesAno: finSelectedPeriod !== 'all' ? finSelectedPeriod : '',
+      cliente: nome
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (submitBtn) {
+      submitBtn.textContent = 'Salvo \u2713';
+      setTimeout(function() {
+        submitBtn.textContent = origText || 'Salvar';
+        submitBtn.disabled = false;
+      }, 1500);
+    }
+    console.log('[AIOX] Financial entry saved to API');
+    closeFinModal();
+    loadFinanceiro();
+  })
+  .catch(function(err) {
+    if (submitBtn) {
+      submitBtn.textContent = origText || 'Salvar';
+      submitBtn.disabled = false;
+    }
+    console.log('[AIOX] Failed to save financial entry:', err.message || err);
+    closeFinModal();
+  });
 }
 
 // ========== TABLE SORTING ==========
@@ -4477,10 +4452,7 @@ function loadDashPending() {
 
 document.addEventListener('DOMContentLoaded', function() {
   renderClientCards();
-  renderDespesas('abr');
-  renderReceitas('abr');
-  renderReceitaBarChart();
-  renderEvoChart();
+  loadFinanceiro();
   loadAprovacao();
   updateDashGreeting();
   loadDashActivity();
@@ -4488,239 +4460,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 if (document.readyState !== 'loading') {
   renderClientCards();
-  renderDespesas('abr');
-  renderReceitas('abr');
-  renderReceitaBarChart();
-  renderEvoChart();
+  loadFinanceiro();
   loadAprovacao();
   updateDashGreeting();
   loadDashActivity();
   loadDashPending();
 }
-// ========== API INTEGRATION: submitFinModal -> POST /api/add-financial ==========
-(function() {
-  var _origSubmitFinModal = submitFinModal;
-  submitFinModal = function(e) {
-    _origSubmitFinModal(e);
-
-    // Gather form values (modal already closed, read from data arrays)
-    var type = finModalType;
-    var status = '';
-    var nome = '';
-    var valor = 0;
-    var cnpj = '';
-    var vencimento = '';
-    var categoria = '';
-    var modelo = '';
-    var period = currentFinPeriod;
-
-    // Read from the last pushed entry in the data arrays
-    var dataArr = type === 'despesa' ? despesasData : receitasData;
-    if (dataArr[period] && dataArr[period].length > 0) {
-      var lastEntry = dataArr[period][dataArr[period].length - 1];
-      status = lastEntry.status || '';
-      nome = lastEntry.nome || '';
-      valor = lastEntry.valor || 0;
-      cnpj = lastEntry.cnpj || '';
-      vencimento = lastEntry.vencimento || '';
-      categoria = lastEntry.categoria || '';
-      modelo = lastEntry.modelo || '';
-    }
-
-    // Show saving indicator on the form button (if still visible)
-    var submitBtn = document.querySelector('#finModalForm button[type="submit"]');
-    var origText = '';
-    if (submitBtn) {
-      origText = submitBtn.textContent;
-      submitBtn.textContent = 'Salvando...';
-      submitBtn.disabled = true;
-    }
-
-    fetch('/api/add-financial', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        type: type,
-        nome: nome,
-        valor: valor,
-        status: status,
-        categoria: categoria,
-        modelo: modelo,
-        cnpj: cnpj,
-        vencimento: vencimento,
-        mesAno: period,
-        cliente: nome
-      })
-    })
-    .then(function(res) {
-      if (submitBtn) {
-        submitBtn.textContent = 'Salvo \u2713';
-        setTimeout(function() {
-          submitBtn.textContent = origText || 'Adicionar';
-          submitBtn.disabled = false;
-        }, 1500);
-      }
-      console.log('[AIOX] Financial entry saved to API');
-    })
-    .catch(function(err) {
-      if (submitBtn) {
-        submitBtn.textContent = origText || 'Adicionar';
-        submitBtn.disabled = false;
-      }
-      console.log('[AIOX] Failed to save financial entry:', err.message);
-    });
-  };
-})();
-
-// ========== API INTEGRATION: finishEdit -> save to Notion via /api/update-financial ==========
-(function() {
-  var _origFinishEdit = finishEdit;
-  finishEdit = function(td, newVal, type, period, idx, field) {
-    _origFinishEdit(td, newVal, type, period, idx, field);
-
-    // Get the pageId from the row
-    var row = td.closest('tr');
-    var pageId = row ? row.getAttribute('data-page-id') : null;
-
-    if (pageId) {
-      // Map field to API field name
-      var apiField = field;
-      if (field === 'valor' && type === 'receita') apiField = 'receita';
-      if (field === 'valor' && type === 'despesa') apiField = 'custos';
-
-      fetch('/api/update-financial', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ pageId: pageId, field: apiField, value: newVal })
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var indicator = document.createElement('span');
-        indicator.textContent = data.success ? '✓ Salvo' : '✗ Erro';
-        indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:' + (data.success ? '#22C55E' : '#F44336') + ';font-weight:600;pointer-events:none;z-index:10;';
-        td.style.position = 'relative';
-        td.appendChild(indicator);
-        setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
-      })
-      .catch(function() {
-        var indicator = document.createElement('span');
-        indicator.textContent = '✗ Erro';
-        indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#F44336;font-weight:600;z-index:10;';
-        td.style.position = 'relative';
-        td.appendChild(indicator);
-        setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
-      });
-    }
-
-    // Also update finData to keep KPIs in sync
-    if (field === 'valor' && type === 'receita') {
-      var d = finData[period];
-      if (d) {
-        // Recalculate receita for this period
-        var dataArr = receitasData[period] || [];
-        var totalReceita = 0;
-        for (var i = 0; i < dataArr.length; i++) totalReceita += (dataArr[i].valor || 0);
-        d.receita = totalReceita;
-
-        // Update clientes
-        d.clientes = [];
-        for (var j = 0; j < dataArr.length; j++) {
-          if (dataArr[j].valor > 0) {
-            d.clientes.push({ nome: dataArr[j].nome, valor: dataArr[j].valor, pct: totalReceita > 0 ? Math.round(dataArr[j].valor / totalReceita * 1000) / 10 : 0, cor: '#0088FF' });
-          }
-        }
-
-        // Re-render charts
-        if (typeof renderReceitaBarChart === 'function') renderReceitaBarChart();
-        if (typeof renderEvoChart === 'function') renderEvoChart();
-      }
-    }
-  };
-})();
-
-// ========== ENRICH TABLES WITH NOTION PAGE IDs (without replacing data) ==========
-(function() {
-  function enrichWithPageIds() {
-    fetch('/api/financeiro')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (!data.records) return;
-
-        // Add pageId to existing receitasData entries by matching nome
-        data.records.forEach(function(rec) {
-          var nome = rec.registro || '';
-          var mes = rec.mesAno || '';
-          if (!nome || !mes) return;
-
-          // Find short key for period
-          var shortKey = mes.split('/')[0].toLowerCase();
-
-          // Match in receitasData
-          if (rec.receitaImpulso > 0 && receitasData[shortKey]) {
-            for (var i = 0; i < receitasData[shortKey].length; i++) {
-              if (receitasData[shortKey][i].nome && nome.indexOf(receitasData[shortKey][i].nome) >= 0 && !receitasData[shortKey][i].pageId) {
-                receitasData[shortKey][i].pageId = rec.id;
-                break;
-              }
-            }
-          }
-
-          // Match in despesasData
-          if (rec.custosOperacionais > 0 && despesasData[shortKey]) {
-            for (var j = 0; j < despesasData[shortKey].length; j++) {
-              var d = despesasData[shortKey][j];
-              var dNome = d.despesa || d.nome || '';
-              if (dNome && nome.indexOf(dNome) >= 0 && !d.pageId) {
-                despesasData[shortKey][j].pageId = rec.id;
-                break;
-              }
-            }
-          }
-
-          // Also try "all" and "q1" periods
-          ['all', 'q1'].forEach(function(pk) {
-            if (receitasData[pk]) {
-              for (var k = 0; k < receitasData[pk].length; k++) {
-                if (receitasData[pk][k].nome && nome.indexOf(receitasData[pk][k].nome) >= 0 && !receitasData[pk][k].pageId) {
-                  receitasData[pk][k].pageId = rec.id;
-                  break;
-                }
-              }
-            }
-            if (despesasData[pk]) {
-              for (var l = 0; l < despesasData[pk].length; l++) {
-                var dd = despesasData[pk][l];
-                var ddNome = dd.despesa || dd.nome || '';
-                if (ddNome && nome.indexOf(ddNome) >= 0 && !dd.pageId) {
-                  despesasData[pk][l].pageId = rec.id;
-                  break;
-                }
-              }
-            }
-          });
-        });
-
-        // Re-render tables to include pageIds in rows
-        var currentPeriod = currentFinPeriod || 'abr';
-        renderReceitas(currentPeriod);
-        renderDespesas(currentPeriod);
-
-        console.log('[AIOX] Enriched financeiro data with ' + data.records.length + ' Notion IDs');
-      })
-      .catch(function() {});
-  }
-
-  // Run after initial render
-  setTimeout(enrichWithPageIds, 3000);
-
-  // Run when switching to financeiro tab
-  var _origShowSection2 = showSection;
-  showSection = function(id) {
-    _origShowSection2(id);
-    if (id === 'financeiro') setTimeout(enrichWithPageIds, 500);
-  };
-})();
-
 // ========== API INTEGRATION: Kanban drag & drop -> POST /api/update-status ==========
 function attachKanbanDragDropAPI(board) {
   if (!board) board = document.getElementById('kanbanBoard');
