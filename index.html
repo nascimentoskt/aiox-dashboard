@@ -348,126 +348,168 @@ body {
   padding: 4px 12px; border-radius: 20px; font-weight: 600;
 }
 
-/* ========== KANBAN ========== */
+/* ========== KANBAN (Premium) ========== */
 .kanban-wrapper {
   margin-bottom: 48px;
   overflow-x: auto;
   padding-bottom: 16px;
   -webkit-overflow-scrolling: touch;
+  min-height: calc(100vh - 200px);
 }
 .kanban-board {
-  display: flex; gap: 16px;
+  display: flex; gap: 14px;
   min-width: max-content;
+  align-items: flex-start;
 }
 .kanban-column {
-  width: 280px; min-width: 280px; flex-shrink: 0;
+  width: 290px; min-width: 290px; flex-shrink: 0;
   display: flex; flex-direction: column;
+  border-radius: var(--radius);
+  background: #F6F7F9;
+  overflow: hidden;
 }
 .kanban-col-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  margin-bottom: 0;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  border-left: 3px solid #8b8fa3;
 }
 .kanban-col-title {
-  font-size: 13px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 1px; color: #fff;
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--text-primary);
 }
 .kanban-col-count {
-  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.2);
-  width: 24px; height: 24px; border-radius: 8px;
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  background: #F0F2F7;
+  min-width: 26px; height: 22px; border-radius: 100px;
   display: flex; align-items: center; justify-content: center;
+  padding: 0 8px;
 }
 .kanban-col-body {
-  background: rgba(255,255,255,0.5);
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-  padding: 12px;
+  background: #F6F7F9;
+  padding: 10px;
   flex: 1;
   min-height: 120px;
+  display: flex; flex-direction: column; gap: 10px;
   transition: background var(--transition);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #E0E3EA transparent;
 }
 .kanban-col-body.drag-over {
-  background: rgba(0,136,255,0.08);
+  background: rgba(0,136,255,0.05);
   outline: 2px dashed var(--blue);
   outline-offset: -2px;
 }
 .kanban-card {
   background: var(--surface);
   border-radius: var(--radius-sm);
-  padding: 14px;
-  margin-bottom: 8px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-light);
   cursor: grab;
-  transition: all var(--transition);
-  border-left: 3px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.kanban-card-bar {
+  height: 3px; width: 100%;
+  background: #8b8fa3;
+  border-radius: 8px 8px 0 0;
+}
+.kanban-card-inner {
+  padding: 14px;
 }
 .kanban-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  transform: translateY(-2px);
+  border-color: rgba(0,0,0,0.08);
 }
 .kanban-card.dragging { opacity: 0.5; transform: rotate(2deg) scale(0.98); }
 .kanban-card-title {
   font-size: 13px; font-weight: 600; color: var(--navy);
-  margin-bottom: 10px; line-height: 1.4;
+  margin-bottom: 10px; line-height: 1.5;
 }
-.kanban-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.kanban-card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
 .kanban-tag {
-  font-size: 10px; font-weight: 600; padding: 3px 8px;
-  border-radius: 6px; letter-spacing: 0.3px;
+  font-size: 10px; font-weight: 600; padding: 2px 8px;
+  border-radius: 100px; letter-spacing: 0.2px;
+  line-height: 1.6;
 }
-.kanban-tag.squad { background: rgba(0,136,255,0.1); color: var(--blue); }
-.kanban-tag.squad-aiox { background: rgba(0,136,255,0.1); color: var(--blue); }
-.kanban-tag.squad-copy { background: rgba(233,30,99,0.1); color: #E91E63; }
-.kanban-tag.squad-brand { background: rgba(0,150,136,0.1); color: #009688; }
-.kanban-tag.squad-design { background: rgba(0,188,212,0.1); color: #00BCD4; }
-.kanban-tag.projeto-luzzoo { background: rgba(0,136,255,0.08); color: #0066CC; }
-.kanban-tag.projeto-impulso { background: rgba(0,200,83,0.08); color: #00873E; }
-.kanban-tag.priority-alta { background: rgba(255,0,0,0.08); color: #CC0000; }
-.kanban-tag.priority-media { background: rgba(255,179,0,0.08); color: #CC8F00; }
-.kanban-tag.priority-baixa { background: rgba(0,200,83,0.08); color: #00873E; }
+.kanban-tag.squad { background: rgba(0,136,255,0.08); color: #0070DD; }
+.kanban-tag.squad-aiox { background: rgba(0,136,255,0.08); color: #0070DD; }
+.kanban-tag.squad-copy { background: rgba(233,30,99,0.07); color: #D81B60; }
+.kanban-tag.squad-brand { background: rgba(0,150,136,0.07); color: #00897B; }
+.kanban-tag.squad-design { background: rgba(0,188,212,0.07); color: #0097A7; }
+.kanban-tag.projeto-luzzoo { background: rgba(0,136,255,0.06); color: #0066CC; }
+.kanban-tag.projeto-impulso { background: rgba(0,200,83,0.06); color: #00873E; }
+.kanban-tag.priority-alta { background: rgba(255,59,48,0.07); color: #D32F2F; }
+.kanban-tag.priority-media { background: rgba(255,179,0,0.08); color: #E6A200; }
+.kanban-tag.priority-baixa { background: rgba(0,200,83,0.07); color: #2E7D32; }
 .kanban-card-footer {
   display: flex; align-items: center; justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
 }
 .kanban-responsavel {
-  font-size: 11px; font-weight: 500; color: #8b8fa3;
-  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 500; color: var(--text-secondary);
+  display: flex; align-items: center; gap: 7px;
 }
 .kanban-responsavel .avatar {
-  width: 22px; height: 22px; border-radius: 7px;
-  background: var(--navy); color: #fff;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 700;
+  flex-shrink: 0;
 }
 .kanban-priority-dot {
   width: 8px; height: 8px; border-radius: 50%;
 }
-.kanban-priority-dot.alta { background: var(--red); }
+.kanban-priority-dot.alta { background: #FF3B30; }
 .kanban-priority-dot.media { background: #FFB300; }
-.kanban-priority-dot.baixa { background: #00C853; }
+.kanban-priority-dot.baixa { background: #34C759; }
 
-/* Col header colors */
-.kanban-col-backlog .kanban-col-header { background: #2D3348; }
-.kanban-col-afazer .kanban-col-header { background: #1A2744; }
-.kanban-col-progresso .kanban-col-header { background: #2E4057; }
-.kanban-col-revisao .kanban-col-header { background: #1B3A4B; }
-.kanban-col-concluido .kanban-col-header { background: #1B4332; }
-.kanban-col-backlog .kanban-card { border-left-color: #8b8fa3; }
-.kanban-col-afazer .kanban-card { border-left-color: var(--blue); }
-.kanban-col-progresso .kanban-card { border-left-color: #FFB300; }
-.kanban-col-revisao .kanban-card { border-left-color: #00BCD4; }
-.kanban-col-concluido .kanban-card { border-left-color: #00C853; }
+/* Col header left-border colors + card bar colors */
+.kanban-col-backlog .kanban-col-header { border-left-color: #8b8fa3; }
+.kanban-col-afazer .kanban-col-header { border-left-color: var(--blue); }
+.kanban-col-progresso .kanban-col-header { border-left-color: #FFB300; }
+.kanban-col-revisao .kanban-col-header { border-left-color: #00BCD4; }
+.kanban-col-concluido .kanban-col-header { border-left-color: #34C759; }
+.kanban-col-backlog .kanban-card-bar { background: #8b8fa3; }
+.kanban-col-afazer .kanban-card-bar { background: var(--blue); }
+.kanban-col-progresso .kanban-card-bar { background: #FFB300; }
+.kanban-col-revisao .kanban-card-bar { background: #00BCD4; }
+.kanban-col-concluido .kanban-card-bar { background: #34C759; }
 
 /* Sync classes from Notion API */
-.kanban-col-todo .kanban-col-header { background: #1A2744; }
-.kanban-col-progress .kanban-col-header { background: #2E4057; }
-.kanban-col-review .kanban-col-header { background: #1B3A4B; }
-.kanban-col-done .kanban-col-header { background: #1B4332; }
-.kanban-col-todo .kanban-card { border-left-color: var(--blue); }
-.kanban-col-progress .kanban-card { border-left-color: #FFB300; }
-.kanban-col-review .kanban-card { border-left-color: #00BCD4; }
-.kanban-col-done .kanban-card { border-left-color: #00C853; }
+.kanban-col-todo .kanban-col-header { border-left-color: var(--blue); }
+.kanban-col-progress .kanban-col-header { border-left-color: #FFB300; }
+.kanban-col-review .kanban-col-header { border-left-color: #00BCD4; }
+.kanban-col-done .kanban-col-header { border-left-color: #34C759; }
+.kanban-col-todo .kanban-card-bar { background: var(--blue); }
+.kanban-col-progress .kanban-card-bar { background: #FFB300; }
+.kanban-col-review .kanban-card-bar { background: #00BCD4; }
+.kanban-col-done .kanban-card-bar { background: #34C759; }
+
+/* Kanban source filter buttons */
+.kanban-source-filters {
+  display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.kanban-source-btn {
+  padding: 7px 20px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid rgba(0,0,0,0.10); color: var(--text-secondary);
+  background: transparent; font-family: 'Sora', sans-serif; transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.kanban-source-btn:hover {
+  border-color: var(--blue); color: var(--blue); background: rgba(0,136,255,0.04);
+}
+.kanban-source-btn.active {
+  background: var(--blue); color: #fff; border-color: var(--blue);
+  box-shadow: 0 2px 8px rgba(0,136,255,0.25);
+}
 
 /* ========== FILTER TABS ========== */
 .filter-tabs {
@@ -659,7 +701,7 @@ body {
   .stat-number { font-size: 28px; }
   .squad-grid { grid-template-columns: 1fr; }
   .client-hub-grid { grid-template-columns: 1fr; }
-  .kanban-column { width: 260px; min-width: 260px; }
+  .kanban-column { width: 270px; min-width: 270px; }
 }
 @media (max-width: 480px) {
   .stats-bar { grid-template-columns: 1fr; }
@@ -2135,11 +2177,11 @@ body {
       </div>
 
       <!-- Kanban Source Filter -->
-      <div style="display:flex;gap:8px;margin-bottom:20px;">
-        <button class="fin-period-btn active" id="btnAiox" onclick="switchKanban('aiox')">AIOX</button>
-        <button class="fin-period-btn" id="btnLuzzoo" onclick="switchKanban('luzzoo')">Luzzoo</button>
-        <button class="fin-period-btn" id="btnImpulso" onclick="switchKanban('impulso')">Impulso</button>
-        <button class="fin-period-btn" id="btn1pra1" onclick="switchKanban('1pra1')">1pra1</button>
+      <div class="kanban-source-filters">
+        <button class="kanban-source-btn active" id="btnAiox" onclick="switchKanban('aiox')">AIOX</button>
+        <button class="kanban-source-btn" id="btnLuzzoo" onclick="switchKanban('luzzoo')">Luzzoo</button>
+        <button class="kanban-source-btn" id="btnImpulso" onclick="switchKanban('impulso')">Impulso</button>
+        <button class="kanban-source-btn" id="btn1pra1" onclick="switchKanban('1pra1')">1pra1</button>
       </div>
 
       <div class="kanban-wrapper">
@@ -2153,49 +2195,61 @@ body {
             </div>
             <div class="kanban-col-body" data-status="backlog">
               <div class="kanban-card" draggable="true" data-id="1">
-                <div class="kanban-card-title">Cadastrar marca Luzzoo Fitness</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
-                  <span class="kanban-tag priority-media">Media</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">P</div> Prisma</div>
-                  <div class="kanban-priority-dot media"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Cadastrar marca Luzzoo Fitness</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
+                    <span class="kanban-tag priority-media">Media</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">P</div> Prisma</div>
+                    <div class="kanban-priority-dot media"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="2">
-                <div class="kanban-card-title">Roteiro de videos — Cliente novo</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag priority-baixa">Baixa</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">S</div> Script</div>
-                  <div class="kanban-priority-dot baixa"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Roteiro de videos -- Cliente novo</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag priority-baixa">Baixa</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">S</div> Script</div>
+                    <div class="kanban-priority-dot baixa"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="3">
-                <div class="kanban-card-title">Landing page Impulso Digital</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad-copy">Copy Squad</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-media">Media</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">C</div> Cyrus</div>
-                  <div class="kanban-priority-dot media"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Landing page Impulso Digital</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad-copy">Copy Squad</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-media">Media</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">C</div> Cyrus</div>
+                    <div class="kanban-priority-dot media"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="4">
-                <div class="kanban-card-title">Audit de marca — novo cliente</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad-brand">Brand Squad</span>
-                  <span class="kanban-tag priority-baixa">Baixa</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">B</div> Brand Chief</div>
-                  <div class="kanban-priority-dot baixa"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Audit de marca -- novo cliente</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad-brand">Brand Squad</span>
+                    <span class="kanban-tag priority-baixa">Baixa</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">B</div> Brand Chief</div>
+                    <div class="kanban-priority-dot baixa"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2209,39 +2263,48 @@ body {
             </div>
             <div class="kanban-col-body" data-status="afazer">
               <div class="kanban-card" draggable="true" data-id="5">
-                <div class="kanban-card-title">Calendario semanal Luzzoo — Semana 2</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
-                  <span class="kanban-tag priority-alta">Alta</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">A</div> Atlas</div>
-                  <div class="kanban-priority-dot alta"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Calendario semanal Luzzoo -- Semana 2</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
+                    <span class="kanban-tag priority-alta">Alta</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">A</div> Atlas</div>
+                    <div class="kanban-priority-dot alta"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="6">
-                <div class="kanban-card-title">Hooks para nova colecao</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
-                  <span class="kanban-tag priority-alta">Alta</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">H</div> Hormozi Hooks</div>
-                  <div class="kanban-priority-dot alta"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Hooks para nova colecao</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
+                    <span class="kanban-tag priority-alta">Alta</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">H</div> Hormozi Hooks</div>
+                    <div class="kanban-priority-dot alta"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="7">
-                <div class="kanban-card-title">Template de proposta comercial</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-media">Media</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">F</div> Forge</div>
-                  <div class="kanban-priority-dot media"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Template de proposta comercial</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-media">Media</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">F</div> Forge</div>
+                    <div class="kanban-priority-dot media"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2255,27 +2318,33 @@ body {
             </div>
             <div class="kanban-col-body" data-status="progresso">
               <div class="kanban-card" draggable="true" data-id="8">
-                <div class="kanban-card-title">Onboarding de marcas — sistema</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-alta">Alta</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">L</div> Lumen</div>
-                  <div class="kanban-priority-dot alta"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Onboarding de marcas -- sistema</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-alta">Alta</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">L</div> Lumen</div>
+                    <div class="kanban-priority-dot alta"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="9">
-                <div class="kanban-card-title">Estrategia de conteudo Q2</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-media">Media</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">A</div> Atlas</div>
-                  <div class="kanban-priority-dot media"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Estrategia de conteudo Q2</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-media">Media</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">A</div> Atlas</div>
+                    <div class="kanban-priority-dot media"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2289,15 +2358,18 @@ body {
             </div>
             <div class="kanban-col-body" data-status="revisao">
               <div class="kanban-card" draggable="true" data-id="10">
-                <div class="kanban-card-title">Dashboard AIOX v2</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad-aiox">AIOX Core</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-media">Media</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">P</div> Pax</div>
-                  <div class="kanban-priority-dot media"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Dashboard AIOX v2</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad-aiox">AIOX Core</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-media">Media</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">P</div> Pax</div>
+                    <div class="kanban-priority-dot media"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2311,39 +2383,48 @@ body {
             </div>
             <div class="kanban-col-body" data-status="concluido">
               <div class="kanban-card" draggable="true" data-id="11">
-                <div class="kanban-card-title">Roteiro Luzzoo Fitness</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad">Content Squad</span>
-                  <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
-                  <span class="kanban-tag priority-alta">Alta</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">S</div> Script</div>
-                  <div class="kanban-priority-dot alta"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Roteiro Luzzoo Fitness</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad">Content Squad</span>
+                    <span class="kanban-tag projeto-luzzoo">Luzzoo</span>
+                    <span class="kanban-tag priority-alta">Alta</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">S</div> Script</div>
+                    <div class="kanban-priority-dot alta"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="12">
-                <div class="kanban-card-title">Template de Roteiro Impulso</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad-design">Design Squad</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-alta">Alta</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">D</div> Design Chief</div>
-                  <div class="kanban-priority-dot alta"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Template de Roteiro Impulso</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad-design">Design Squad</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-alta">Alta</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">D</div> Design Chief</div>
+                    <div class="kanban-priority-dot alta"></div>
+                  </div>
                 </div>
               </div>
               <div class="kanban-card" draggable="true" data-id="13">
-                <div class="kanban-card-title">Content Squad — Criacao</div>
-                <div class="kanban-card-tags">
-                  <span class="kanban-tag squad-aiox">AIOX Core</span>
-                  <span class="kanban-tag projeto-impulso">Impulso</span>
-                  <span class="kanban-tag priority-alta">Alta</span>
-                </div>
-                <div class="kanban-card-footer">
-                  <div class="kanban-responsavel"><div class="avatar">C</div> Craft</div>
-                  <div class="kanban-priority-dot alta"></div>
+                <div class="kanban-card-bar"></div>
+                <div class="kanban-card-inner">
+                  <div class="kanban-card-title">Content Squad -- Criacao</div>
+                  <div class="kanban-card-tags">
+                    <span class="kanban-tag squad-aiox">AIOX Core</span>
+                    <span class="kanban-tag projeto-impulso">Impulso</span>
+                    <span class="kanban-tag priority-alta">Alta</span>
+                  </div>
+                  <div class="kanban-card-footer">
+                    <div class="kanban-responsavel"><div class="avatar">C</div> Craft</div>
+                    <div class="kanban-priority-dot alta"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2986,18 +3067,21 @@ async function syncFromNotion() {
         <div class="kanban-col-body" data-status="${col.id}">
           ${col.cards.map((card, i) => `
             <div class="kanban-card" draggable="true" data-id="${card.id}">
-              <div class="kanban-card-title">${card.title}</div>
-              <div class="kanban-card-tags">
-                ${card.squad ? `<span class="kanban-tag ${squadClass(card.squad)}">${card.squad}</span>` : ''}
-                ${card.projeto ? `<span class="kanban-tag ${projetoClass(card.projeto)}">${card.projeto}</span>` : ''}
-                ${card.prioridade ? `<span class="kanban-tag ${priorityClass(card.prioridade)}">${card.prioridade}</span>` : ''}
-              </div>
-              <div class="kanban-card-footer">
-                <div class="kanban-responsavel">
-                  <div class="avatar">${(card.responsavel || '?')[0].toUpperCase()}</div>
-                  ${card.responsavel || 'N/A'}
+              <div class="kanban-card-bar"></div>
+              <div class="kanban-card-inner">
+                <div class="kanban-card-title">${card.title}</div>
+                <div class="kanban-card-tags">
+                  ${card.squad ? `<span class="kanban-tag ${squadClass(card.squad)}">${card.squad}</span>` : ''}
+                  ${card.projeto ? `<span class="kanban-tag ${projetoClass(card.projeto)}">${card.projeto}</span>` : ''}
+                  ${card.prioridade ? `<span class="kanban-tag ${priorityClass(card.prioridade)}">${card.prioridade}</span>` : ''}
                 </div>
-                <div class="kanban-priority-dot ${(card.prioridade || '').toLowerCase()}"></div>
+                <div class="kanban-card-footer">
+                  <div class="kanban-responsavel">
+                    <div class="avatar">${(card.responsavel || '?')[0].toUpperCase()}</div>
+                    ${card.responsavel || 'N/A'}
+                  </div>
+                  <div class="kanban-priority-dot ${(card.prioridade || '').toLowerCase()}"></div>
+                </div>
               </div>
             </div>
           `).join('')}
@@ -3047,6 +3131,8 @@ async function switchKanban(source) {
     if (btn) btn.classList.toggle('active', s === source);
   });
   // Fix specific button IDs
+  var allKanbanBtns = document.querySelectorAll('.kanban-source-btn');
+  for (var k = 0; k < allKanbanBtns.length; k++) { allKanbanBtns[k].classList.remove('active'); }
   document.getElementById('btnAiox').classList.toggle('active', source === 'aiox');
   document.getElementById('btnLuzzoo').classList.toggle('active', source === 'luzzoo');
   document.getElementById('btnImpulso').classList.toggle('active', source === 'impulso');
@@ -3074,25 +3160,27 @@ async function syncExternalKanban(source) {
     for (var i = 0; i < data.columns.length; i++) {
       var col = data.columns[i];
       var colColor = col.color || '#1A2744';
-      html += '<div class="kanban-column" style="min-width:240px;width:240px;">';
-      html += '<div class="kanban-col-header" style="background:' + colColor + '">';
+      html += '<div class="kanban-column">';
+      html += '<div class="kanban-col-header" style="border-left-color:' + colColor + '">';
       html += '<span class="kanban-col-title">' + col.title + '</span>';
       html += '<span class="kanban-col-count">' + col.cards.length + '</span>';
       html += '</div><div class="kanban-col-body" data-status="' + col.id + '">';
       for (var j = 0; j < col.cards.length; j++) {
         var card = col.cards[j];
         var avatar = card.pessoa ? card.pessoa.charAt(0).toUpperCase() : '?';
-        html += '<div class="kanban-card" style="border-left:3px solid ' + colColor + '">';
+        html += '<div class="kanban-card">';
+        html += '<div class="kanban-card-bar" style="background:' + colColor + '"></div>';
+        html += '<div class="kanban-card-inner">';
         html += '<div class="kanban-card-title">' + card.title + '</div>';
         html += '<div class="kanban-card-tags">';
         if (card.tipo) html += '<span class="kanban-tag squad">' + card.tipo + '</span>';
-        if (card.canal) html += '<span class="kanban-tag" style="background:rgba(0,136,255,.1);color:#0088FF">' + card.canal + '</span>';
-        if (card.setor) html += '<span class="kanban-tag" style="background:rgba(156,39,176,.1);color:#9C27B0">' + card.setor + '</span>';
-        if (card.cliente) html += '<span class="kanban-tag" style="background:rgba(0,200,83,.1);color:#00873E">' + card.cliente + '</span>';
-        if (card.priority) html += '<span class="kanban-tag" style="background:rgba(255,0,0,.08);color:#CC0000">' + card.priority + '</span>';
+        if (card.canal) html += '<span class="kanban-tag" style="background:rgba(0,136,255,.07);color:#0070DD">' + card.canal + '</span>';
+        if (card.setor) html += '<span class="kanban-tag" style="background:rgba(156,39,176,.07);color:#8E24AA">' + card.setor + '</span>';
+        if (card.cliente) html += '<span class="kanban-tag" style="background:rgba(0,200,83,.07);color:#2E7D32">' + card.cliente + '</span>';
+        if (card.priority) html += '<span class="kanban-tag" style="background:rgba(255,59,48,.07);color:#D32F2F">' + card.priority + '</span>';
         html += '</div><div class="kanban-card-footer"><div class="kanban-responsavel">';
         html += '<div class="avatar">' + avatar + '</div>' + (card.pessoa || 'Sem responsavel');
-        html += '</div></div></div>';
+        html += '</div></div></div></div>';
       }
       html += '</div></div>';
     }
