@@ -4497,6 +4497,277 @@ if (document.readyState !== 'loading') {
   loadDashActivity();
   loadDashPending();
 }
+// ========== API INTEGRATION: submitFinModal -> POST /api/add-financial ==========
+(function() {
+  var _origSubmitFinModal = submitFinModal;
+  submitFinModal = function(e) {
+    _origSubmitFinModal(e);
+
+    // Gather form values (modal already closed, read from data arrays)
+    var type = finModalType;
+    var status = '';
+    var nome = '';
+    var valor = 0;
+    var cnpj = '';
+    var vencimento = '';
+    var categoria = '';
+    var modelo = '';
+    var period = currentFinPeriod;
+
+    // Read from the last pushed entry in the data arrays
+    var dataArr = type === 'despesa' ? despesasData : receitasData;
+    if (dataArr[period] && dataArr[period].length > 0) {
+      var lastEntry = dataArr[period][dataArr[period].length - 1];
+      status = lastEntry.status || '';
+      nome = lastEntry.nome || '';
+      valor = lastEntry.valor || 0;
+      cnpj = lastEntry.cnpj || '';
+      vencimento = lastEntry.vencimento || '';
+      categoria = lastEntry.categoria || '';
+      modelo = lastEntry.modelo || '';
+    }
+
+    // Show saving indicator on the form button (if still visible)
+    var submitBtn = document.querySelector('#finModalForm button[type="submit"]');
+    var origText = '';
+    if (submitBtn) {
+      origText = submitBtn.textContent;
+      submitBtn.textContent = 'Salvando...';
+      submitBtn.disabled = true;
+    }
+
+    fetch('/api/add-financial', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        type: type,
+        nome: nome,
+        valor: valor,
+        status: status,
+        categoria: categoria,
+        modelo: modelo,
+        cnpj: cnpj,
+        vencimento: vencimento,
+        mesAno: period,
+        cliente: nome
+      })
+    })
+    .then(function(res) {
+      if (submitBtn) {
+        submitBtn.textContent = 'Salvo \u2713';
+        setTimeout(function() {
+          submitBtn.textContent = origText || 'Adicionar';
+          submitBtn.disabled = false;
+        }, 1500);
+      }
+      console.log('[AIOX] Financial entry saved to API');
+    })
+    .catch(function(err) {
+      if (submitBtn) {
+        submitBtn.textContent = origText || 'Adicionar';
+        submitBtn.disabled = false;
+      }
+      console.log('[AIOX] Failed to save financial entry:', err.message);
+    });
+  };
+})();
+
+// ========== API INTEGRATION: finishEdit -> show "Salvo" indicator ==========
+(function() {
+  var _origFinishEdit = finishEdit;
+  finishEdit = function(td, newVal, type, period, idx, field) {
+    _origFinishEdit(td, newVal, type, period, idx, field);
+
+    // Build payload from updated data
+    var dataArr = type === 'despesa' ? despesasData : receitasData;
+    var entry = (dataArr[period] && dataArr[period][idx]) ? dataArr[period][idx] : {};
+
+    fetch('/api/add-financial', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        type: type,
+        nome: entry.nome || '',
+        valor: entry.valor || 0,
+        status: entry.status || '',
+        categoria: entry.categoria || '',
+        modelo: entry.modelo || '',
+        cnpj: entry.cnpj || '',
+        vencimento: entry.vencimento || '',
+        mesAno: period,
+        cliente: entry.nome || '',
+        update: true,
+        index: idx,
+        field: field
+      })
+    })
+    .then(function() {
+      // Show small "Salvo" indicator near the edited cell
+      var indicator = document.createElement('span');
+      indicator.textContent = 'Salvo';
+      indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#22C55E;font-weight:600;pointer-events:none;z-index:10;';
+      td.style.position = 'relative';
+      td.appendChild(indicator);
+      setTimeout(function() {
+        if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
+      }, 1500);
+      console.log('[AIOX] Inline edit saved to API');
+    })
+    .catch(function(err) {
+      console.log('[AIOX] Inline edit save failed:', err.message);
+    });
+  };
+})();
+
+// ========== API INTEGRATION: Kanban drag & drop -> POST /api/update-status ==========
+function attachKanbanDragDropAPI(board) {
+  if (!board) board = document.getElementById('kanbanBoard');
+  if (!board) return;
+
+  board.querySelectorAll('.kanban-col-body').forEach(function(col) {
+    // Remove old listeners by replacing node (avoid duplicates)
+    var newCol = col.cloneNode(true);
+    col.parentNode.replaceChild(newCol, col);
+
+    newCol.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      newCol.classList.add('drag-over');
+      var afterElement = getDragAfterElement(newCol, e.clientY);
+      if (draggedCard) {
+        if (afterElement == null) {
+          newCol.appendChild(draggedCard);
+        } else {
+          newCol.insertBefore(draggedCard, afterElement);
+        }
+      }
+    });
+
+    newCol.addEventListener('dragleave', function(e) {
+      if (!newCol.contains(e.relatedTarget)) newCol.classList.remove('drag-over');
+    });
+
+    newCol.addEventListener('drop', function(e) {
+      e.preventDefault();
+      newCol.classList.remove('drag-over');
+
+      var cardId = e.dataTransfer.getData('text/plain');
+      var cardEl = board.querySelector('[data-id="' + cardId + '"]');
+      if (cardEl && !newCol.contains(cardEl)) {
+        newCol.appendChild(cardEl);
+      }
+
+      var targetStatus = newCol.getAttribute('data-status') || '';
+
+      // Update column counts
+      updateColumnCounts();
+
+      // Call API to update status in Notion
+      if (cardId && targetStatus) {
+        fetch('/api/update-status', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            pageId: cardId,
+            newStatus: targetStatus,
+            source: currentKanbanSource
+          })
+        })
+        .then(function(res) {
+          console.log('[AIOX] Card ' + cardId + ' moved to ' + targetStatus);
+        })
+        .catch(function(err) {
+          console.log('[AIOX] Failed to update card status:', err.message);
+        });
+      }
+    });
+  });
+
+  // Re-attach dragstart/dragend on cards
+  board.querySelectorAll('.kanban-card').forEach(function(card) {
+    card.setAttribute('draggable', 'true');
+    card.addEventListener('dragstart', function(e) {
+      draggedCard = card;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.id || '');
+    });
+    card.addEventListener('dragend', function() {
+      card.classList.remove('dragging');
+      draggedCard = null;
+      document.querySelectorAll('.kanban-col-body').forEach(function(c) {
+        c.classList.remove('drag-over');
+      });
+    });
+  });
+}
+
+// ========== PATCH: syncFromNotion -> attach drag & drop with API after render ==========
+(function() {
+  var _origSyncFromNotion = syncFromNotion;
+  syncFromNotion = async function() {
+    await _origSyncFromNotion();
+    var board = document.getElementById('kanbanBoard');
+    if (board) attachKanbanDragDropAPI(board);
+  };
+})();
+
+// ========== PATCH: syncExternalKanban -> attach drag & drop with API after render ==========
+(function() {
+  var _origSyncExternalKanban = syncExternalKanban;
+  syncExternalKanban = async function(source) {
+    await _origSyncExternalKanban(source);
+    var board = document.getElementById('kanbanBoard');
+    if (board) attachKanbanDragDropAPI(board);
+  };
+})();
+
+// ========== DASHBOARD: "Nova Tarefa" button -> create task via API ==========
+(function() {
+  // Find the "Nova Tarefa" button and override its onclick
+  var quickBtns = document.querySelectorAll('.dash-quick-btn');
+  for (var i = 0; i < quickBtns.length; i++) {
+    var label = quickBtns[i].querySelector('.qlabel');
+    if (label && label.textContent.indexOf('Nova Tarefa') !== -1) {
+      quickBtns[i].onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var title = prompt('Titulo da nova tarefa:');
+        if (!title || !title.trim()) return;
+
+        fetch('/api/create-task', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            title: title.trim(),
+            squad: 'AIOX Core',
+            responsavel: 'Lucas',
+            prioridade: 'Alta',
+            projeto: 'Impulso'
+          })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          console.log('[AIOX] Task created:', title);
+          alert('Tarefa criada com sucesso!');
+          // Reload kanban
+          if (currentKanbanSource === 'aiox') {
+            syncFromNotion();
+          } else {
+            syncExternalKanban(currentKanbanSource);
+          }
+          showSection('kanban');
+        })
+        .catch(function(err) {
+          console.log('[AIOX] Failed to create task:', err.message);
+          alert('Erro ao criar tarefa: ' + err.message);
+        });
+      };
+      break;
+    }
+  }
+})();
+
 </script>
 </body>
 </html>
