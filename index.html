@@ -1682,6 +1682,12 @@ section.active-section, .section-wrapper.active-section { display: block !import
         </div>
         <div class="section-badge" id="aprovacaoBadge">Pendentes de revisao</div>
       </div>
+
+      <!-- Filtro por projeto -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;" id="aprovacaoFilters">
+        <button class="fin-period-btn active" onclick="filterAprovacao('todos', this)">Todos</button>
+      </div>
+
       <div class="aprovacao-list" id="aprovacaoList">
         <div class="aprovacao-empty">
           <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
@@ -3175,13 +3181,72 @@ function getSquadStyle(squad) {
   return squadColors[key] || squadColors['default'];
 }
 
+let allReviewCards = [];
+let currentAprovacaoFilter = 'todos';
+
+function filterAprovacao(projeto, btn) {
+  currentAprovacaoFilter = projeto;
+  document.querySelectorAll('#aprovacaoFilters .fin-period-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderAprovacaoCards();
+}
+
+function renderAprovacaoCards() {
+  const filtered = currentAprovacaoFilter === 'todos'
+    ? allReviewCards
+    : allReviewCards.filter(c => (c.projeto || '').toLowerCase() === currentAprovacaoFilter.toLowerCase());
+
+  aprovacaoPendingCount = filtered.length;
+  updateAprovacaoCounter();
+
+  const listEl = document.getElementById('aprovacaoList');
+  if (!listEl) return;
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="aprovacao-empty"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg><div>Nenhum card em revisao para este filtro</div></div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map((card, idx) => {
+    const num = idx + 1;
+    const title = card.title || 'Sem titulo';
+    const date = card.lastEdited ? new Date(card.lastEdited).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '';
+    const squad = card.squad || '';
+    const squadStyle = getSquadStyle(squad);
+    const responsavel = card.responsavel || '';
+    const projeto = card.projeto || '';
+    const entregavel = card.url || '';
+    const cardId = card.id || ('card-' + idx);
+
+    return `
+      <div class="aprovacao-card" data-card-id="${cardId}" data-projeto="${projeto}">
+        <div class="aprovacao-card-top">
+          <div class="aprovacao-num">${num}</div>
+          <div class="aprovacao-card-info">
+            <div class="aprovacao-card-title">${title}</div>
+            ${date ? '<div class="aprovacao-card-date">' + date + '</div>' : ''}
+          </div>
+        </div>
+        <div class="aprovacao-tags">
+          ${squad ? '<span class="aprovacao-tag-squad" style="background:' + squadStyle.bg + ';color:' + squadStyle.color + '">' + squad + '</span>' : ''}
+          ${projeto ? '<span class="aprovacao-tag-squad" style="background:rgba(0,200,83,.1);color:#00873E">' + projeto + '</span>' : ''}
+          ${responsavel ? '<span class="aprovacao-tag-resp">' + responsavel + '</span>' : ''}
+        </div>
+        ${entregavel ? '<div class="aprovacao-entregavel"><a href="' + entregavel + '" target="_blank" rel="noopener">📎 Ver no Notion</a></div>' : ''}
+        <div class="aprovacao-actions">
+          <button class="aprovacao-btn aprovacao-btn-aprovar" onclick="handleAprovar(\'' + cardId + '\')">✓ APROVAR</button>
+          <button class="aprovacao-btn aprovacao-btn-reprovar" onclick="handleReprovar(\'' + cardId + '\')">✕ REPROVAR</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
 async function loadAprovacao() {
   try {
     const res = await fetch('/api/notion');
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
 
-    // Find the "Em Revisao" / "review" column cards
     let reviewCards = [];
     if (data.columns) {
       data.columns.forEach(col => {
@@ -3191,62 +3256,23 @@ async function loadAprovacao() {
       });
     }
 
-    // Sort by created_time oldest first (if available), fallback to order received
     reviewCards.sort((a, b) => {
-      const dateA = a.created_time ? new Date(a.created_time) : 0;
-      const dateB = b.created_time ? new Date(b.created_time) : 0;
+      const dateA = a.lastEdited ? new Date(a.lastEdited) : 0;
+      const dateB = b.lastEdited ? new Date(b.lastEdited) : 0;
       return dateA - dateB;
     });
 
-    aprovacaoPendingCount = reviewCards.length;
-    updateAprovacaoCounter();
+    allReviewCards = reviewCards;
 
-    const listEl = document.getElementById('aprovacaoList');
-    if (!listEl) return;
-
-    if (reviewCards.length === 0) {
-      listEl.innerHTML = `
-        <div class="aprovacao-empty">
-          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-          <div>Nenhum card em revisao no momento</div>
-        </div>`;
-      return;
+    // Build project filter buttons
+    const projetos = [...new Set(reviewCards.map(c => c.projeto).filter(Boolean))].sort();
+    const filtersEl = document.getElementById('aprovacaoFilters');
+    if (filtersEl) {
+      filtersEl.innerHTML = '<button class="fin-period-btn active" onclick="filterAprovacao(\'todos\', this)">Todos</button>' +
+        projetos.map(p => '<button class="fin-period-btn" onclick="filterAprovacao(\'' + p + '\', this)">' + p + '</button>').join('');
     }
 
-    listEl.innerHTML = reviewCards.map((card, idx) => {
-      const num = idx + 1;
-      const title = card.title || 'Sem titulo';
-      const date = card.created_time
-        ? new Date(card.created_time).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
-        : '';
-      const squad = card.squad || '';
-      const squadStyle = getSquadStyle(squad);
-      const responsavel = card.responsavel || '';
-      const resumo = card.description || card.resumo || '';
-      const entregavel = card.entregavel || card.url || '';
-      const cardId = card.id || ('card-' + idx);
-
-      return `
-        <div class="aprovacao-card" data-card-id="${cardId}">
-          <div class="aprovacao-card-top">
-            <div class="aprovacao-num">${num}</div>
-            <div class="aprovacao-card-info">
-              <div class="aprovacao-card-title">${title}</div>
-              ${date ? `<div class="aprovacao-card-date">${date}</div>` : ''}
-            </div>
-          </div>
-          <div class="aprovacao-tags">
-            ${squad ? `<span class="aprovacao-tag-squad" style="background:${squadStyle.bg};color:${squadStyle.color}">${squad}</span>` : ''}
-            ${responsavel ? `<span class="aprovacao-tag-resp">${responsavel}</span>` : ''}
-          </div>
-          ${resumo ? `<div class="aprovacao-resumo">${resumo}</div>` : ''}
-          ${entregavel ? `<div class="aprovacao-entregavel"><a href="${entregavel}" target="_blank" rel="noopener">📎 Entregavel</a></div>` : ''}
-          <div class="aprovacao-actions">
-            <button class="aprovacao-btn aprovacao-btn-aprovar" onclick="handleAprovar('${cardId}')">✓ APROVAR</button>
-            <button class="aprovacao-btn aprovacao-btn-reprovar" onclick="handleReprovar('${cardId}')">✕ REPROVAR</button>
-          </div>
-        </div>`;
-    }).join('');
+    renderAprovacaoCards();
 
     console.log('[AIOX] Aprovacao loaded:', reviewCards.length, 'cards em revisao');
   } catch (err) {
