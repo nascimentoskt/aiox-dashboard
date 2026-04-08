@@ -547,6 +547,13 @@ body {
 
 /* ========== BRUSH STROKE SVG BG ========== */
 .section-wrapper { position: relative; }
+
+/* Tab-based navigation — only active section visible */
+.main > section, .main > .section-wrapper { display: none; }
+.main > section.active-section, .main > .section-wrapper.active-section { display: block; }
+.main > .stats-bar.active-section { display: grid; }
+.active-section { animation: fadeSection 0.3s ease; }
+@keyframes fadeSection { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .section-wrapper .brush-bg {
   position: absolute; right: -60px; top: -40px;
   width: 300px; height: 200px; opacity: 0.03;
@@ -1976,14 +1983,28 @@ sidebarOverlay.addEventListener('click', () => {
   setTimeout(() => sidebarOverlay.style.display = 'none', 300);
 });
 
-// Smooth scroll nav
+// Tab-based navigation — show/hide sections
+function showSection(sectionId) {
+  // Hide all sections
+  document.querySelectorAll('.main > section, .main > .section-wrapper').forEach(s => {
+    s.classList.remove('active-section');
+  });
+  // Show target
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.classList.add('active-section');
+    window.scrollTo(0, 0);
+  }
+  // Update sidebar active
+  document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(x => x.classList.remove('active'));
+  const navItem = document.querySelector(`a[data-nav="${sectionId}"]`);
+  if (navItem) navItem.classList.add('active');
+}
+
 document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
-    const target = document.getElementById(a.dataset.nav);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(x => x.classList.remove('active'));
-    a.classList.add('active');
+    showSection(a.dataset.nav);
     if (window.innerWidth <= 768) {
       sidebar.classList.remove('open');
       sidebarOverlay.classList.remove('show');
@@ -1991,6 +2012,9 @@ document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(a => {
     }
   });
 });
+
+// Show kanban by default on load
+showSection('kanban');
 
 // ========== DRAG & DROP KANBAN ==========
 let draggedCard = null;
@@ -2215,22 +2239,7 @@ document.querySelectorAll('.stat-card, .project-card').forEach(el => {
   observer.observe(el);
 });
 
-// ========== SCROLL SPY ==========
-const sections = ['dashboard','kanban','squads','projects','aprovacao','financeiro'];
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY + 100;
-  sections.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const top = el.offsetTop;
-    const height = el.offsetHeight;
-    if (scrollY >= top && scrollY < top + height) {
-      document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(a => {
-        a.classList.toggle('active', a.dataset.nav === id);
-      });
-    }
-  });
-});
+// Scroll spy removed — using tab-based navigation now
 
 // ========== NOTION SYNC ==========
 async function syncFromNotion() {
