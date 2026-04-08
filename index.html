@@ -3343,6 +3343,21 @@ function handleCellEdit(e) {
     sel2.focus();
     sel2.addEventListener('change', function() { finishEdit(td, sel2.value, field); });
     sel2.addEventListener('blur', function() { finishEdit(td, sel2.value, field); });
+  } else if (field === 'cliente') {
+    var sel4 = document.createElement('select');
+    var clientes = ['Impulso', 'Luzzoo', '1pra1', 'Moom', 'Mermaid', 'Encanto', 'Black', 'Jornal do Cartman', 'True'];
+    for (var c = 0; c < clientes.length; c++) {
+      var opt4 = document.createElement('option');
+      opt4.value = clientes[c];
+      opt4.textContent = clientes[c];
+      if (clientes[c] === currentVal) opt4.selected = true;
+      sel4.appendChild(opt4);
+    }
+    td.innerHTML = '';
+    td.appendChild(sel4);
+    sel4.focus();
+    sel4.addEventListener('change', function() { finishEdit(td, sel4.value, field); });
+    sel4.addEventListener('blur', function() { finishEdit(td, sel4.value, field); });
   } else if (field === 'modelo') {
     var sel3 = document.createElement('select');
     var mods = ['% Faturamento', '% Investimento', 'Fee Fixo', 'Fixo + Comissao'];
@@ -3402,7 +3417,7 @@ function finishEdit(td, newVal, field) {
     td.innerHTML = numVal > 0 ? fmt(numVal) : '<span style="color:#CC8F00">Pendente</span>';
   } else if (field === 'vencimento') {
     td.textContent = fmtDate(newVal);
-  } else if (field === 'nome') {
+  } else if (field === 'nome' || field === 'cliente') {
     td.innerHTML = '<strong>' + newVal + '</strong>';
   } else {
     td.textContent = newVal || '-';
@@ -3433,8 +3448,8 @@ function finishEdit(td, newVal, field) {
       indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:' + (data.success ? '#22C55E' : '#F44336') + ';font-weight:600;pointer-events:none;z-index:10;';
       td.appendChild(indicator);
       setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
-      // Refresh all data from API
-      loadFinanceiro();
+      // Refresh all data from API after Notion processes
+      setTimeout(function() { loadFinanceiro(); }, 1500);
     })
     .catch(function() {
       var indicator = document.createElement('span');
@@ -3545,7 +3560,8 @@ function submitFinModal(e) {
     }
     console.log('[AIOX] Financial entry saved to API');
     closeFinModal();
-    loadFinanceiro();
+    // Delay to let Notion process the new record before fetching
+    setTimeout(function() { loadFinanceiro(); }, 1500);
   })
   .catch(function(err) {
     if (submitBtn) {
