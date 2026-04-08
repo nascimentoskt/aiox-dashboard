@@ -6242,6 +6242,16 @@ function generateEmailStrategy(client) {
   html += '<div class="email-field"><div class="email-field-label">Tom de Voz</div>';
   html += '<div class="email-field-value">' + info.tone + '</div></div>';
 
+  // Botao para enviar demanda ao Notion da Luzzoo
+  var notionClients = ['luzzoo', 'mermaid', 'moom'];
+  if (notionClients.indexOf(client) >= 0) {
+    html += '<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-light);">';
+    html += '<button class="email-client-btn" style="max-width:100%;" id="emailSendNotion" onclick="sendEmailToNotion(\'' + client + '\', \'' + currentEmailType + '\')">';
+    html += '📋 Enviar Demanda ao Notion Luzzoo (Sergio / Em Espera)</button>';
+    html += '<div id="emailNotionStatus" style="margin-top:8px;font-size:11px;color:var(--text-secondary);text-align:center;"></div>';
+    html += '</div>';
+  }
+
   body.innerHTML = html;
 
   // Update KPIs
@@ -6284,6 +6294,68 @@ function renderEmailHistory() {
     html += '</div>';
   }
   list.innerHTML = html;
+}
+
+function sendEmailToNotion(client, type) {
+  var tpl = emailTemplates[type];
+  if (!tpl || !tpl.strategies[client]) return;
+
+  var strategy = tpl.strategies[client];
+  var info = emailClients[client];
+  var btn = document.getElementById('emailSendNotion');
+  var status = document.getElementById('emailNotionStatus');
+
+  if (btn) { btn.textContent = '⏳ Enviando ao Notion...'; btn.disabled = true; }
+
+  // Build description with full email strategy
+  var descricao = 'DIRECIONAMENTO EMAIL MARKETING\n';
+  descricao += '================================\n\n';
+  descricao += 'Cliente: ' + info.name + '\n';
+  descricao += 'Segmento: ' + info.segment + '\n';
+  descricao += 'Tipo: ' + tpl.name + '\n\n';
+  descricao += '--- CONTEUDO DO EMAIL ---\n\n';
+  descricao += 'Assunto: ' + strategy.subject + '\n\n';
+  descricao += 'Copy:\n' + strategy.copy + '\n\n';
+  descricao += 'CTA: ' + strategy.cta + '\n\n';
+  descricao += '--- ESTRATEGIA ---\n\n';
+  descricao += 'Segmentacao: ' + strategy.segmentation + '\n';
+  descricao += 'Publico: ' + info.audience + '\n';
+  descricao += 'Horario: ' + strategy.schedule + '\n';
+  descricao += 'Frequencia: ' + strategy.frequency + '\n';
+  descricao += 'Tom: ' + info.tone + '\n\n';
+  descricao += 'Plataforma: EDRONE\n';
+  descricao += 'Obs: Cabecalho e rodape padrao. Criar apenas a imagem central com o conteudo acima.';
+
+  var title = '[Email] ' + info.name + ' — ' + tpl.name + ': ' + strategy.subject.replace(/[^\w\s\-]/g, '').trim().substring(0, 60);
+
+  fetch('/api/create-luzzoo-task', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: title,
+      descricao: descricao,
+      tipo: 'Email Marketing',
+      canal: 'Email',
+      cliente: info.name,
+      setor: 'Marketing',
+      responsavel: 'Sergio'
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      if (btn) btn.textContent = '✓ Demanda criada no Notion!';
+      if (status) status.innerHTML = 'Card criado em <strong>Em Espera</strong>, atribuido ao <strong>Sergio</strong>. ' + (data.url ? '<a href="' + data.url + '" target="_blank" style="color:var(--blue);">Abrir no Notion</a>' : '');
+      if (btn) btn.style.background = '#34C759';
+    } else {
+      if (btn) { btn.textContent = '❌ Erro — Tentar novamente'; btn.disabled = false; btn.style.background = '#FF5252'; }
+      if (status) status.textContent = 'Erro: ' + (data.error || 'falha ao criar');
+    }
+  })
+  .catch(function(err) {
+    if (btn) { btn.textContent = '❌ Erro de conexao'; btn.disabled = false; btn.style.background = '#FF5252'; }
+    if (status) status.textContent = err.message;
+  });
 }
 
 // Show login on page load
