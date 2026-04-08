@@ -825,44 +825,253 @@ body {
 .fin-table .status-badge.ativo { background: rgba(0,200,83,0.1); color: #00873E; }
 .fin-table .status-badge.pendente { background: rgba(255,179,0,0.15); color: #CC8F00; }
 
-/* Evolucao Mensal Bar Chart (vertical) */
-.fin-evolution-chart {
-  display: flex; align-items: flex-end; gap: 16px;
-  height: 200px; padding-top: 20px;
+/* ========== PREMIUM EVOLUCAO MENSAL CHART ========== */
+.evo-chart-container {
+  position: relative;
+  min-height: 280px;
+  width: 100%;
+  padding: 0;
 }
-.fin-evo-bar-wrapper {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; height: 100%; justify-content: flex-end;
+.evo-chart-container .evo-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
-.fin-evo-bar-value {
-  font-size: 10px; font-weight: 700; color: var(--navy);
-  margin-bottom: 6px; white-space: nowrap;
+.evo-chart-container .evo-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
-.fin-evo-bar {
-  width: 100%; max-width: 48px; border-radius: 8px 8px 4px 4px;
-  transition: height 1s ease;
-  min-height: 8px;
-  overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
-  background: transparent;
+.evo-chart-container .evo-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
-.fin-evo-bar-receita, .fin-evo-bar-despesa {
-  width: 100%; position: relative; cursor: pointer;
-  transition: height 0.8s ease, filter 0.2s;
+/* --- BAR MODE --- */
+.evo-chart-container .evo-bar-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  min-height: 240px;
+  position: relative;
+  padding-left: 54px;
+  padding-bottom: 32px;
 }
-.fin-evo-bar-receita:hover, .fin-evo-bar-despesa:hover { filter: brightness(1.2); }
-.fin-evo-bar-receita::after, .fin-evo-bar-despesa::after {
-  content: attr(data-tooltip);
-  position: absolute; left: 50%; transform: translateX(-50%);
-  background: var(--navy); color: #fff;
-  font-size: 10px; font-weight: 600; white-space: nowrap;
-  padding: 4px 10px; border-radius: 6px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.2s;
-  z-index: 10;
+.evo-chart-container .evo-grid-lines {
+  position: absolute;
+  top: 0; left: 54px; right: 0; bottom: 32px;
+  pointer-events: none;
+  z-index: 0;
 }
-.fin-evo-bar-receita::after { bottom: calc(100% + 6px); }
-.fin-evo-bar-despesa::after { top: calc(100% + 6px); }
-.fin-evo-bar-receita:hover::after, .fin-evo-bar-despesa:hover::after { opacity: 1; }
+.evo-grid-line {
+  position: absolute;
+  left: 0; right: 0;
+  border-top: 1px dashed rgba(0,0,0,0.06);
+}
+.evo-y-labels {
+  position: absolute;
+  top: 0; left: 0; bottom: 32px;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
+}
+.evo-axis-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-caption);
+  text-align: right;
+  padding-right: 8px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.evo-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 2;
+  height: 208px;
+  min-width: 0;
+}
+.evo-bar {
+  width: 60%;
+  max-width: 44px;
+  min-width: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+.evo-bar:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 16px rgba(0,136,255,0.12);
+}
+.evo-bar-receita {
+  background: #22C55E;
+  width: 100%;
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.evo-bar-despesa {
+  background: #EF4444;
+  width: 100%;
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.evo-bar-x-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-caption);
+  margin-top: 10px;
+  white-space: nowrap;
+  text-align: center;
+}
+/* --- TOOLTIP --- */
+.evo-tooltip {
+  position: absolute;
+  background: var(--navy);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(26,39,68,0.28);
+  line-height: 1.6;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 10px);
+}
+.evo-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--navy);
+}
+.evo-bar-col:hover .evo-tooltip {
+  opacity: 1;
+}
+/* --- LINE/SVG MODE --- */
+.evo-line-wrap {
+  position: relative;
+  min-height: 280px;
+  width: 100%;
+  padding-left: 54px;
+  padding-bottom: 32px;
+}
+.evo-line-wrap .evo-grid-lines {
+  position: absolute;
+  top: 0; left: 54px; right: 0; bottom: 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+.evo-line-wrap .evo-y-labels {
+  position: absolute;
+  top: 0; left: 0; bottom: 32px;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
+}
+.evo-line-svg {
+  width: 100%;
+  height: 248px;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+.evo-line-svg .evo-area-receita {
+  fill: url(#evoGradReceita);
+  opacity: 0.18;
+}
+.evo-line-svg .evo-area-despesa {
+  fill: url(#evoGradDespesa);
+  opacity: 0.14;
+}
+.evo-line-svg .evo-path-receita {
+  fill: none;
+  stroke: #22C55E;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.evo-line-svg .evo-path-despesa {
+  fill: none;
+  stroke: #EF4444;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.evo-dot {
+  cursor: pointer;
+  transition: r 0.15s ease;
+}
+.evo-dot:hover {
+  r: 7;
+}
+.evo-line-x-labels {
+  position: absolute;
+  left: 54px; right: 0; bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1;
+}
+.evo-line-x-labels .evo-axis-label {
+  text-align: center;
+  padding: 0;
+  flex: 1;
+}
+/* SVG tooltip for line mode */
+.evo-line-tooltip {
+  position: fixed;
+  background: var(--navy);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(26,39,68,0.28);
+  line-height: 1.6;
+}
+/* Animation keyframes */
+@keyframes evoBarGrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes evoPathDraw {
+  from { stroke-dashoffset: var(--path-length); }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes evoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 /* Period Filter Buttons */
 .fin-period-btn {
@@ -872,15 +1081,7 @@ body {
 }
 .fin-period-btn:hover { border-color: var(--blue); color: var(--blue); }
 .fin-period-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-.fin-evo-bar-receita { background: #00C853; border-radius: 8px 8px 0 0; }
-.fin-evo-bar-despesa { background: #FF4444;
-  border-radius: 0 0 4px 4px;
-  transition: height 0.8s ease;
-}
-.fin-evo-bar-label {
-  font-size: 10px; font-weight: 600; color: #8b8fa3;
-  margin-top: 8px; white-space: nowrap;
-}
+/* (old fin-evo-bar styles removed - now using .evo-* premium classes) */
 
 /* Inadimplencia Card */
 .fin-inadimplencia {
@@ -934,13 +1135,7 @@ body {
   width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
 }
 
-/* Line Chart */
-.fin-line-chart-wrap {
-  height: 200px; padding-top: 20px; position: relative;
-}
-.fin-line-chart-svg {
-  width: 100%; height: 100%;
-}
+/* (old fin-line-chart styles removed - now using .evo-line-* premium classes) */
 
 /* Add Receita / Despesa Buttons */
 .fin-action-btns {
@@ -2335,11 +2530,7 @@ body {
               <button class="chart-toggle-btn" onclick="toggleEvoChart('linhas', this)">Linhas</button>
             </div>
           </div>
-          <div style="display:flex;gap:16px;margin-bottom:12px;font-size:11px;font-weight:600;">
-            <span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#00C853;"></span> Receita</span>
-            <span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#FF4444;"></span> Despesas</span>
-          </div>
-          <div id="evoChartContainer"></div>
+          <div id="evoChartContainer" class="evo-chart-container"></div>
         </div>
 
         <!-- Receitas Table -->
@@ -3173,90 +3364,216 @@ function renderFinReceitaChart() {
   }
 }
 
-// ========== EVOLUCAO MENSAL CHART ==========
+// ========== EVOLUCAO MENSAL CHART (PREMIUM) ==========
+function evoFormatK(v) {
+  if (v >= 1000000) return 'R$ ' + (v / 1000000).toFixed(1) + 'M';
+  if (v >= 1000) return 'R$ ' + (v / 1000).toFixed(0) + 'k';
+  return 'R$ ' + v.toFixed(0);
+}
+
+function evoBezierPath(points) {
+  if (points.length < 2) return '';
+  var d = 'M ' + points[0][0] + ',' + points[0][1];
+  for (var i = 0; i < points.length - 1; i++) {
+    var x0 = points[i][0];
+    var y0 = points[i][1];
+    var x1 = points[i + 1][0];
+    var y1 = points[i + 1][1];
+    var cpx = (x0 + x1) / 2;
+    d += ' C ' + cpx + ',' + y0 + ' ' + cpx + ',' + y1 + ' ' + x1 + ',' + y1;
+  }
+  return d;
+}
+
 function renderFinEvoChart() {
   var container = document.getElementById('evoChartContainer');
   if (!container || !finApiData) return;
   var summaries = finApiData.summaries || [];
   if (summaries.length === 0) {
-    container.innerHTML = '<div style="text-align:center;color:#8b8fa3;padding:24px;font-size:13px;">Sem dados de evolucao</div>';
+    container.innerHTML = '<div style="text-align:center;color:#8b8fa3;padding:40px;font-size:13px;">Sem dados de evolucao</div>';
     return;
   }
 
+  // Build legend
+  var legend = '<div class="evo-legend">';
+  legend += '<div class="evo-legend-item"><span class="evo-legend-dot" style="background:#22C55E;"></span>Receita</div>';
+  legend += '<div class="evo-legend-item"><span class="evo-legend-dot" style="background:#EF4444;"></span>Despesas</div>';
+  legend += '</div>';
+
+  // Compute Y-axis scale (nice round numbers)
+  var maxVal = 1;
+  var i, rec, desp;
+  for (i = 0; i < summaries.length; i++) {
+    rec = summaries[i].receita || 0;
+    desp = summaries[i].custos || 0;
+    if (finEvoMode === 'barras') {
+      var total = rec + desp;
+      if (total > maxVal) maxVal = total;
+    } else {
+      if (rec > maxVal) maxVal = rec;
+      if (desp > maxVal) maxVal = desp;
+    }
+  }
+  maxVal = maxVal * 1.15;
+  // Round up to nice number
+  var magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
+  var niceMax = Math.ceil(maxVal / magnitude) * magnitude;
+  if (niceMax === 0) niceMax = 1000;
+
+  // Y-axis labels (5 steps: 0%, 25%, 50%, 75%, 100%)
+  var yLabelsHtml = '<div class="evo-y-labels">';
+  for (i = 0; i <= 4; i++) {
+    var yVal = niceMax * (1 - i / 4);
+    yLabelsHtml += '<span class="evo-axis-label">' + evoFormatK(yVal) + '</span>';
+  }
+  yLabelsHtml += '</div>';
+
+  // Grid lines (4 horizontal dashed lines at 25%, 50%, 75%, 100%)
+  var gridHtml = '<div class="evo-grid-lines">';
+  for (i = 0; i <= 4; i++) {
+    var pct = (i / 4) * 100;
+    gridHtml += '<div class="evo-grid-line" style="top:' + pct + '%;"></div>';
+  }
+  gridHtml += '</div>';
+
   if (finEvoMode === 'barras') {
-    var maxTotal = 1;
-    for (var i = 0; i < summaries.length; i++) {
-      var t = (summaries[i].receita || 0) + (summaries[i].custos || 0);
-      if (t > maxTotal) maxTotal = t;
-    }
-    var html = '<div class="fin-evolution-chart">';
-    for (var j = 0; j < summaries.length; j++) {
-      var s = summaries[j];
-      var rec = s.receita || 0;
-      var desp = s.custos || 0;
-      var totalH = ((rec + desp) / maxTotal * 100);
-      var recPct = (rec + desp) > 0 ? rec / (rec + desp) * 100 : 50;
-      var despPct = 100 - recPct;
+    // ===== BAR MODE =====
+    var html = legend;
+    html += '<div class="evo-bar-area" style="position:relative;">';
+    html += yLabelsHtml;
+    html += gridHtml;
+
+    for (i = 0; i < summaries.length; i++) {
+      var s = summaries[i];
+      rec = s.receita || 0;
+      desp = s.custos || 0;
+      var recH = (rec / niceMax) * 100;
+      var despH = (desp / niceMax) * 100;
       var label = s.mes || '';
-      html += '<div class="fin-evo-bar-wrapper">';
-      html += '<div class="fin-evo-bar-value">R$ ' + Math.round(rec / 1000) + 'k</div>';
-      html += '<div class="fin-evo-bar" style="height:' + totalH.toFixed(0) + '%;">';
-      html += '<div class="fin-evo-bar-receita" style="height:' + recPct.toFixed(0) + '%;" data-tooltip="Receita: ' + fmt(rec) + '"></div>';
-      html += '<div class="fin-evo-bar-despesa" style="height:' + despPct.toFixed(0) + '%;" data-tooltip="Despesas: ' + fmt(desp) + '"></div>';
+      var delay = (i * 80);
+
+      html += '<div class="evo-bar-col">';
+      html += '<div class="evo-tooltip">';
+      html += '<div style="margin-bottom:2px;font-size:10px;color:rgba(255,255,255,0.6);">' + label + '</div>';
+      html += '<div style="color:#22C55E;">Receita: ' + fmt(rec) + '</div>';
+      html += '<div style="color:#EF4444;">Despesas: ' + fmt(desp) + '</div>';
       html += '</div>';
-      html += '<div class="fin-evo-bar-label">' + label + '</div>';
+      html += '<div class="evo-bar" style="animation: evoBarGrow 0.7s cubic-bezier(0.4,0,0.2,1) ' + delay + 'ms both; transform-origin: bottom;">';
+      html += '<div class="evo-bar-receita" style="height:' + recH.toFixed(1) + '%;"></div>';
+      html += '<div class="evo-bar-despesa" style="height:' + despH.toFixed(1) + '%;"></div>';
+      html += '</div>';
+      html += '<div class="evo-bar-x-label">' + label + '</div>';
       html += '</div>';
     }
+
     html += '</div>';
     container.innerHTML = html;
+
   } else {
-    // Line chart (SVG)
-    var maxVal = 1;
-    for (var k = 0; k < summaries.length; k++) {
-      if ((summaries[k].receita || 0) > maxVal) maxVal = summaries[k].receita;
-      if ((summaries[k].custos || 0) > maxVal) maxVal = summaries[k].custos;
-    }
-    maxVal = maxVal * 1.1;
-    var svgW = 400;
-    var svgH = 200;
-    var padL = 10;
-    var padR = 10;
-    var padT = 20;
-    var padB = 30;
-    var chartW = svgW - padL - padR;
+    // ===== LINE MODE (SVG) =====
+    var svgH = 248;
+    var padT = 12;
+    var padB = 8;
     var chartH = svgH - padT - padB;
     var numPts = summaries.length;
     var divisor = numPts > 1 ? numPts - 1 : 1;
 
-    var recPoints = [];
-    var despPoints = [];
-    for (var l = 0; l < numPts; l++) {
-      var x = padL + (l / divisor) * chartW;
-      var yR = padT + (1 - (summaries[l].receita || 0) / maxVal) * chartH;
-      var yD = padT + (1 - (summaries[l].custos || 0) / maxVal) * chartH;
-      recPoints.push(x.toFixed(1) + ',' + yR.toFixed(1));
-      despPoints.push(x.toFixed(1) + ',' + yD.toFixed(1));
+    // Collect data points (we use percentages for x, so viewBox width = 100)
+    var svgW = 100;
+    var recPts = [];
+    var despPts = [];
+    for (i = 0; i < numPts; i++) {
+      var xPct = (i / divisor) * svgW;
+      var yRec = padT + (1 - ((summaries[i].receita || 0) / niceMax)) * chartH;
+      var yDesp = padT + (1 - ((summaries[i].custos || 0) / niceMax)) * chartH;
+      recPts.push([xPct, yRec]);
+      despPts.push([xPct, yDesp]);
     }
 
-    var svg = '<div class="fin-line-chart-wrap">';
-    svg += '<svg class="fin-line-chart-svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" preserveAspectRatio="none">';
-    for (var g = 0; g <= 4; g++) {
-      var gy = padT + (g / 4) * chartH;
-      svg += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (svgW - padR) + '" y2="' + gy.toFixed(1) + '" stroke="#E8E4DE" stroke-width="1"/>';
+    // Build bezier paths
+    var recPath = evoBezierPath(recPts);
+    var despPath = evoBezierPath(despPts);
+
+    // Build area paths (path + close to bottom)
+    var recAreaPath = recPath + ' L ' + recPts[recPts.length - 1][0] + ',' + (padT + chartH) + ' L ' + recPts[0][0] + ',' + (padT + chartH) + ' Z';
+    var despAreaPath = despPath + ' L ' + despPts[despPts.length - 1][0] + ',' + (padT + chartH) + ' L ' + despPts[0][0] + ',' + (padT + chartH) + ' Z';
+
+    var svgOut = legend;
+    svgOut += '<div class="evo-line-wrap" style="position:relative;">';
+    svgOut += yLabelsHtml;
+    svgOut += gridHtml;
+
+    svgOut += '<svg class="evo-line-svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" preserveAspectRatio="none">';
+    // Gradient defs
+    svgOut += '<defs>';
+    svgOut += '<linearGradient id="evoGradReceita" x1="0" y1="0" x2="0" y2="1">';
+    svgOut += '<stop offset="0%" stop-color="#22C55E" stop-opacity="0.25"/>';
+    svgOut += '<stop offset="100%" stop-color="#22C55E" stop-opacity="0"/>';
+    svgOut += '</linearGradient>';
+    svgOut += '<linearGradient id="evoGradDespesa" x1="0" y1="0" x2="0" y2="1">';
+    svgOut += '<stop offset="0%" stop-color="#EF4444" stop-opacity="0.20"/>';
+    svgOut += '<stop offset="100%" stop-color="#EF4444" stop-opacity="0"/>';
+    svgOut += '</linearGradient>';
+    svgOut += '</defs>';
+
+    // Grid lines inside SVG
+    for (i = 0; i <= 4; i++) {
+      var gy = padT + (i / 4) * chartH;
+      svgOut += '<line x1="0" y1="' + gy.toFixed(1) + '" x2="' + svgW + '" y2="' + gy.toFixed(1) + '" stroke="rgba(0,0,0,0.06)" stroke-width="0.3" stroke-dasharray="1,1"/>';
     }
-    svg += '<polyline points="' + recPoints.join(' ') + '" fill="none" stroke="#00C853" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
-    svg += '<polyline points="' + despPoints.join(' ') + '" fill="none" stroke="#FF4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
-    for (var n = 0; n < numPts; n++) {
-      var xn = padL + (n / divisor) * chartW;
-      var yrn = padT + (1 - (summaries[n].receita || 0) / maxVal) * chartH;
-      var ydn = padT + (1 - (summaries[n].custos || 0) / maxVal) * chartH;
-      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + yrn.toFixed(1) + '" r="5" fill="#00C853" stroke="#fff" stroke-width="2"/>';
-      svg += '<circle cx="' + xn.toFixed(1) + '" cy="' + ydn.toFixed(1) + '" r="5" fill="#FF4444" stroke="#fff" stroke-width="2"/>';
-      svg += '<text x="' + xn.toFixed(1) + '" y="' + (svgH - 5) + '" text-anchor="middle" font-size="11" font-weight="600" fill="#8b8fa3" font-family="Sora,sans-serif">' + (summaries[n].mes || '') + '</text>';
-      svg += '<text x="' + xn.toFixed(1) + '" y="' + (yrn - 10).toFixed(1) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#00873E" font-family="Sora,sans-serif">R$ ' + Math.round((summaries[n].receita || 0) / 1000) + 'k</text>';
+
+    // Area fills
+    svgOut += '<path class="evo-area-receita" d="' + recAreaPath + '"/>';
+    svgOut += '<path class="evo-area-despesa" d="' + despAreaPath + '"/>';
+
+    // Lines
+    svgOut += '<path class="evo-path-receita" d="' + recPath + '" style="stroke-dasharray:1000;stroke-dashoffset:1000;animation:evoPathDraw 1.2s ease forwards;"/>';
+    svgOut += '<path class="evo-path-despesa" d="' + despPath + '" style="stroke-dasharray:1000;stroke-dashoffset:1000;animation:evoPathDraw 1.2s ease 0.15s forwards;"/>';
+
+    // Dots
+    for (i = 0; i < numPts; i++) {
+      var fadeDelay = (0.4 + i * 0.08).toFixed(2);
+      svgOut += '<circle class="evo-dot" cx="' + recPts[i][0].toFixed(2) + '" cy="' + recPts[i][1].toFixed(2) + '" r="0.8" fill="#22C55E" stroke="#fff" stroke-width="0.4" data-month="' + (summaries[i].mes || '') + '" data-label="Receita" data-value="' + fmt(summaries[i].receita || 0) + '" style="animation:evoFadeIn 0.3s ease ' + fadeDelay + 's both;"/>';
+      svgOut += '<circle class="evo-dot" cx="' + despPts[i][0].toFixed(2) + '" cy="' + despPts[i][1].toFixed(2) + '" r="0.8" fill="#EF4444" stroke="#fff" stroke-width="0.4" data-month="' + (summaries[i].mes || '') + '" data-label="Despesas" data-value="' + fmt(summaries[i].custos || 0) + '" style="animation:evoFadeIn 0.3s ease ' + fadeDelay + 's both;"/>';
     }
-    svg += '</svg></div>';
-    container.innerHTML = svg;
+
+    svgOut += '</svg>';
+
+    // X-axis labels
+    svgOut += '<div class="evo-line-x-labels">';
+    for (i = 0; i < numPts; i++) {
+      svgOut += '<span class="evo-axis-label">' + (summaries[i].mes || '') + '</span>';
+    }
+    svgOut += '</div>';
+
+    svgOut += '</div>';
+
+    // Floating tooltip element
+    svgOut += '<div class="evo-line-tooltip" id="evoLineTooltip"></div>';
+
+    container.innerHTML = svgOut;
+
+    // Attach hover events to dots
+    var dots = container.querySelectorAll('.evo-dot');
+    var tooltip = document.getElementById('evoLineTooltip');
+    for (i = 0; i < dots.length; i++) {
+      (function(dot) {
+        dot.addEventListener('mouseenter', function(e) {
+          var month = dot.getAttribute('data-month');
+          var lbl = dot.getAttribute('data-label');
+          var val = dot.getAttribute('data-value');
+          var color = lbl === 'Receita' ? '#22C55E' : '#EF4444';
+          tooltip.innerHTML = '<div style="margin-bottom:2px;font-size:10px;color:rgba(255,255,255,0.6);">' + month + '</div><div style="color:' + color + ';">' + lbl + ': ' + val + '</div>';
+          tooltip.style.opacity = '1';
+          var rect = dot.getBoundingClientRect();
+          tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+          tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+        });
+        dot.addEventListener('mouseleave', function() {
+          tooltip.style.opacity = '0';
+        });
+      })(dots[i]);
+    }
   }
 }
 
