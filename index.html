@@ -4572,50 +4572,114 @@ if (document.readyState !== 'loading') {
   };
 })();
 
-// ========== API INTEGRATION: finishEdit -> show "Salvo" indicator ==========
+// ========== API INTEGRATION: finishEdit -> save to Notion via /api/update-financial ==========
 (function() {
   var _origFinishEdit = finishEdit;
   finishEdit = function(td, newVal, type, period, idx, field) {
     _origFinishEdit(td, newVal, type, period, idx, field);
 
-    // Build payload from updated data
-    var dataArr = type === 'despesa' ? despesasData : receitasData;
-    var entry = (dataArr[period] && dataArr[period][idx]) ? dataArr[period][idx] : {};
+    // Get the pageId from the row
+    var row = td.closest('tr');
+    var pageId = row ? row.getAttribute('data-page-id') : null;
 
-    fetch('/api/add-financial', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        type: type,
-        nome: entry.nome || '',
-        valor: entry.valor || 0,
-        status: entry.status || '',
-        categoria: entry.categoria || '',
-        modelo: entry.modelo || '',
-        cnpj: entry.cnpj || '',
-        vencimento: entry.vencimento || '',
-        mesAno: period,
-        cliente: entry.nome || '',
-        update: true,
-        index: idx,
-        field: field
+    if (pageId) {
+      // Map field to API field name
+      var apiField = field;
+      if (field === 'valor' && type === 'receita') apiField = 'receita';
+      if (field === 'valor' && type === 'despesa') apiField = 'custos';
+
+      fetch('/api/update-financial', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ pageId: pageId, field: apiField, value: newVal })
       })
-    })
-    .then(function() {
-      // Show small "Salvo" indicator near the edited cell
-      var indicator = document.createElement('span');
-      indicator.textContent = 'Salvo';
-      indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#22C55E;font-weight:600;pointer-events:none;z-index:10;';
-      td.style.position = 'relative';
-      td.appendChild(indicator);
-      setTimeout(function() {
-        if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
-      }, 1500);
-      console.log('[AIOX] Inline edit saved to API');
-    })
-    .catch(function(err) {
-      console.log('[AIOX] Inline edit save failed:', err.message);
-    });
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var indicator = document.createElement('span');
+        indicator.textContent = data.success ? '✓ Salvo' : '✗ Erro';
+        indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:' + (data.success ? '#22C55E' : '#F44336') + ';font-weight:600;pointer-events:none;z-index:10;';
+        td.style.position = 'relative';
+        td.appendChild(indicator);
+        setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
+      })
+      .catch(function() {
+        var indicator = document.createElement('span');
+        indicator.textContent = '✗ Erro';
+        indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:#F44336;font-weight:600;z-index:10;';
+        td.style.position = 'relative';
+        td.appendChild(indicator);
+        setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
+      });
+    }
+
+    // Also update finData to keep KPIs in sync
+    if (field === 'valor' && type === 'receita') {
+      var d = finData[period];
+      if (d) {
+        // Recalculate receita for this period
+        var dataArr = receitasData[period] || [];
+        var totalReceita = 0;
+        for (var i = 0; i < dataArr.length; i++) totalReceita += (dataArr[i].valor || 0);
+        d.receita = totalReceita;
+
+        // Update clientes
+        d.clientes = [];
+        for (var j = 0; j < dataArr.length; j++) {
+          if (dataArr[j].valor > 0) {
+            d.clientes.push({ nome: dataArr[j].nome, valor: dataArr[j].valor, pct: totalReceita > 0 ? Math.round(dataArr[j].valor / totalReceita * 1000) / 10 : 0, cor: '#0088FF' });
+          }
+        }
+
+        // Re-render charts
+        if (typeof renderReceitaBarChart === 'function') renderReceitaBarChart();
+        if (typeof renderEvoChart === 'function') renderEvoChart();
+      }
+    }
+  };
+})();
+
+// ========== LOAD NOTION IDs INTO TABLES ==========
+// Fetch financeiro data and add page IDs to table rows
+(function() {
+  function enrichTablesWithNotionIds() {
+    fetch('/api/financeiro')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.records) return;
+
+        // Match records to table rows by name
+        var receitaRows = document.querySelectorAll('#tabelaReceitas tbody tr[data-type="receita"]');
+        var despesaRows = document.querySelectorAll('#tabelaDespesas tbody tr[data-type="despesa"]');
+
+        // For each Notion record, find matching row and set data-page-id
+        data.records.forEach(function(rec) {
+          var nome = rec.registro || rec.nome || '';
+          if (!nome) return;
+
+          var allRows = document.querySelectorAll('#receitasBody tr, #despesasBody tr');
+          for (var i = 0; i < allRows.length; i++) {
+            var row = allRows[i];
+            var nameCell = row.querySelector('td[data-field="nome"]');
+            if (nameCell && nameCell.textContent.trim().indexOf(nome) >= 0 && !row.getAttribute('data-page-id')) {
+              row.setAttribute('data-page-id', rec.id);
+              break;
+            }
+          }
+        });
+
+        console.log('[AIOX] Enriched financial tables with Notion IDs');
+      })
+      .catch(function() {});
+  }
+
+  // Run after tables render
+  setTimeout(enrichTablesWithNotionIds, 3000);
+
+  // Also run when switching to financeiro tab
+  var _origShowSection = showSection;
+  showSection = function(id) {
+    _origShowSection(id);
+    if (id === 'financeiro') setTimeout(enrichTablesWithNotionIds, 1000);
   };
 })();
 
