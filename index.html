@@ -388,8 +388,9 @@ body {
 .kanban-col-body {
   background: #F6F7F9;
   padding: 10px;
-  max-height: 45vh;
+  max-height: none;
   min-height: 120px;
+  flex: 1;
   display: flex; flex-direction: column; gap: 10px;
   transition: background var(--transition);
   overflow-y: auto;
@@ -724,6 +725,35 @@ body {
 
 /* ========== BRUSH STROKE SVG BG ========== */
 .section-wrapper { position: relative; }
+#kanban.active-section {
+  display: flex !important;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-h) - 56px);
+}
+#kanban .kanban-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#kanban .kanban-bottom-grid {
+  display: none;
+}
+#kanban .kanban-metrics {
+  margin-bottom: 12px;
+}
+#kanban .kanban-board {
+  flex: 1;
+  align-items: stretch;
+}
+#kanban .kanban-column {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
 
 /* Tab-based navigation — only active section visible */
 .content > section, .content > .section-wrapper { display: none !important; }
@@ -2022,7 +2052,8 @@ body {
 
 /* CHANGE 1: Column body scroll limit */
 .kanban-col-body {
-  max-height: 45vh;
+  max-height: none;
+  flex: 1;
   overflow-y: auto;
 }
 .kanban-col-body::-webkit-scrollbar { width: 5px; }
@@ -3469,11 +3500,6 @@ body {
 
   </div>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <p>Built with precision by <span class="footer-brand">Impulso Digital</span> &middot; AIOX Command Center v2.0</p>
-    <p style="margin-top:4px;">Powered by <strong>161 AI Agents</strong> across <strong>14 Squads</strong></p>
-  </footer>
 
 </div>
 
