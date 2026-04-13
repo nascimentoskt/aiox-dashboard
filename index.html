@@ -388,7 +388,7 @@ body {
 .kanban-col-body {
   background: #F6F7F9;
   padding: 10px;
-  max-height: 75vh;
+  max-height: calc(100vh - 220px);
   min-height: 120px;
   display: flex; flex-direction: column; gap: 10px;
   transition: background var(--transition);
@@ -2022,7 +2022,7 @@ body {
 
 /* CHANGE 1: Column body scroll limit */
 .kanban-col-body {
-  max-height: 75vh;
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
 }
 .kanban-col-body::-webkit-scrollbar { width: 5px; }
