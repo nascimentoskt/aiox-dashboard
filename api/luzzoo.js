@@ -47,6 +47,7 @@ module.exports = async function handler(req, res) {
         title: p['Nome da campanha']?.title?.[0]?.text?.content || 'Sem titulo',
         status: p['Status']?.status?.name || 'Não iniciado',
         pessoa: p['Pessoa']?.people?.[0]?.name || '',
+        pessoas: (p['Pessoa']?.people || []).map(function(x){return x.name||''}).filter(Boolean),
         canal: p['Canal']?.select?.name || '',
         tipo: p['Tipo de campanha']?.select?.name || '',
         cliente: p['Cliente']?.select?.name || '',

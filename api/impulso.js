@@ -35,6 +35,7 @@ module.exports = async function handler(req, res) {
         title: (p['Nome da campanha'] && p['Nome da campanha'].title && p['Nome da campanha'].title[0]) ? p['Nome da campanha'].title[0].text.content : 'Sem titulo',
         status: p['Status'] && p['Status'].status ? p['Status'].status.name : 'Não iniciado',
         pessoa: p['Pessoa'] && p['Pessoa'].people && p['Pessoa'].people[0] ? p['Pessoa'].people[0].name : '',
+        pessoas: p['Pessoa'] && p['Pessoa'].people ? p['Pessoa'].people.map(function(x){return x.name||''}).filter(Boolean) : [],
         canal: p['Canal'] && p['Canal'].select ? p['Canal'].select.name : '',
         tipo: p['Tipo de campanha'] && p['Tipo de campanha'].multi_select ? p['Tipo de campanha'].multi_select.map(function(s) { return s.name; }).join(', ') : '',
         cliente: p['Cliente'] && p['Cliente'].select ? p['Cliente'].select.name : '',

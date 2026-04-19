@@ -463,6 +463,36 @@ body {
   font-size: 10px; font-weight: 700;
   flex-shrink: 0;
 }
+.kanban-responsavel .avatar-stack {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.kanban-responsavel .avatar-stack .avatar {
+  margin-left: -8px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  transition: transform 0.15s ease;
+}
+.kanban-responsavel .avatar-stack .avatar:first-child { margin-left: 0; }
+.kanban-responsavel .avatar-stack .avatar:nth-child(2) {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+.kanban-responsavel .avatar-stack .avatar:nth-child(3) {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+.kanban-responsavel .avatar-stack .avatar:nth-child(4) {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+.kanban-responsavel .avatar-stack .avatar:nth-child(n+5) {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+.kanban-responsavel .avatar-stack:hover .avatar {
+  transform: translateX(2px);
+}
+.kanban-responsavel .avatar-stack:hover .avatar:first-child {
+  transform: translateX(0);
+}
 .kanban-priority-dot {
   width: 8px; height: 8px; border-radius: 50%;
 }
@@ -4525,10 +4555,13 @@ async function syncFromNotion() {
                   ${card.prioridade ? `<span class="kanban-tag ${priorityClass(card.prioridade)}">${card.prioridade}</span>` : ''}
                 </div>
                 <div class="kanban-card-footer">
-                  <div class="kanban-responsavel">
-                    <div class="avatar">${(card.responsavel || '?')[0].toUpperCase()}</div>
-                    ${card.responsavel || 'N/A'}
-                  </div>
+                  ${(() => {
+                    const list = (card.responsaveis && card.responsaveis.length ? card.responsaveis : (card.responsavel ? [card.responsavel] : []));
+                    if (!list.length) return '<div class="kanban-responsavel"><div class="avatar">?</div> Sem responsavel</div>';
+                    const avatars = list.map(n => `<div class="avatar" title="${n}">${(n[0]||'?').toUpperCase()}</div>`).join('');
+                    const label = list.length === 1 ? list[0] : list.length + ' pessoas';
+                    return `<div class="kanban-responsavel"><div class="avatar-stack">${avatars}</div><span title="${list.join(', ')}">${label}</span></div>`;
+                  })()}
                   <div class="kanban-priority-dot ${(card.prioridade || '').toLowerCase()}"></div>
                 </div>
               </div>
@@ -4628,7 +4661,17 @@ async function syncExternalKanban(source) {
         if (card.cliente) html += '<span class="kanban-tag" style="background:rgba(0,200,83,.07);color:#2E7D32">' + card.cliente + '</span>';
         if (card.priority) html += '<span class="kanban-tag" style="background:rgba(255,59,48,.07);color:#D32F2F">' + card.priority + '</span>';
         html += '</div><div class="kanban-card-footer"><div class="kanban-responsavel">';
-        html += '<div class="avatar">' + avatar + '</div>' + (card.pessoa || 'Sem responsavel');
+        var pessoasList = (card.pessoas && card.pessoas.length ? card.pessoas : (card.pessoa ? [card.pessoa] : []));
+        if (pessoasList.length === 0) {
+          html += '<div class="avatar">?</div> Sem responsavel';
+        } else {
+          html += '<div class="avatar-stack">';
+          for (var k = 0; k < pessoasList.length; k++) {
+            var nm = pessoasList[k];
+            html += '<div class="avatar" title="' + nm + '">' + (nm.charAt(0) || '?').toUpperCase() + '</div>';
+          }
+          html += '</div><span title="' + pessoasList.join(', ') + '">' + (pessoasList.length === 1 ? pessoasList[0] : pessoasList.length + ' pessoas') + '</span>';
+        }
         html += '</div></div></div></div>';
       }
       html += '</div></div>';

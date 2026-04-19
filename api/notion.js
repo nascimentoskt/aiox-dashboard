@@ -42,6 +42,23 @@ module.exports = async function handler(req, res) {
 
     const cards = allResults.map(page => {
       const props = page.properties;
+
+      // Extract all responsaveis: supports people field, multi-select, or rich_text with comma/semicolon separated names
+      let responsaveis = [];
+      const respProp = props.Responsavel || props.Responsaveis || props.Pessoa || props.Pessoas;
+      if (respProp) {
+        if (Array.isArray(respProp.people) && respProp.people.length) {
+          responsaveis = respProp.people.map(p => p.name || p.person?.email || '').filter(Boolean);
+        } else if (Array.isArray(respProp.multi_select) && respProp.multi_select.length) {
+          responsaveis = respProp.multi_select.map(m => m.name).filter(Boolean);
+        } else if (respProp.select?.name) {
+          responsaveis = [respProp.select.name];
+        } else if (Array.isArray(respProp.rich_text) && respProp.rich_text.length) {
+          const raw = respProp.rich_text.map(r => r.plain_text || r.text?.content || '').join('');
+          responsaveis = raw.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+        }
+      }
+
       return {
         id: page.id,
         title: props.Nome?.title?.[0]?.text?.content || 'Sem titulo',
@@ -49,7 +66,8 @@ module.exports = async function handler(req, res) {
         squad: props.Squad?.select?.name || '',
         projeto: props.Projeto?.select?.name || '',
         prioridade: props.Prioridade?.select?.name || '',
-        responsavel: props.Responsavel?.rich_text?.[0]?.text?.content || '',
+        responsavel: responsaveis[0] || '',
+        responsaveis: responsaveis,
         lastEdited: page.last_edited_time,
         url: page.url
       };
