@@ -3369,6 +3369,126 @@ h1, h2, h3, h4, h5, h6,
 .lucas-status.pendente { background: rgba(252,211,77,0.15); color: #FCD34D; }
 .lucas-status.atrasado { background: rgba(239,68,68,0.15); color: #F87171; }
 
+/* ===== Lucas Pie / Donut ===== */
+.lucas-pie-wrap {
+  display: grid; grid-template-columns: 200px 1fr; gap: 24px;
+  align-items: center; padding: 14px 0 4px;
+}
+.lucas-pie-wrap svg { width: 200px; height: 200px; }
+.lucas-pie-wrap .pie-legend { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+.lucas-pie-wrap .pie-legend-item {
+  display: grid; grid-template-columns: 14px 1fr auto auto; gap: 10px;
+  align-items: center; font-size: 12px; padding: 4px 0;
+}
+.lucas-pie-wrap .pie-dot { width: 12px; height: 12px; border-radius: 3px; }
+.lucas-pie-wrap .pie-name { color: var(--text-primary); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lucas-pie-wrap .pie-pct { color: var(--text-secondary); font-variant-numeric: tabular-nums; font-size: 11px; }
+.lucas-pie-wrap .pie-value { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 12px; }
+.lucas-pie-wrap .pie-empty { color: var(--text-caption); font-style: italic; padding: 24px 0; text-align: center; grid-column: 1 / -1; }
+.lucas-pie-wrap path { transition: opacity 0.15s, transform 0.15s; transform-origin: 100px 100px; }
+.lucas-pie-wrap path:hover { opacity: 0.85; transform: scale(1.03); }
+
+@media (max-width: 600px) {
+  .lucas-pie-wrap { grid-template-columns: 1fr; justify-items: center; }
+  .lucas-pie-wrap .pie-legend { width: 100%; max-height: none; }
+}
+
+/* ===== Lucas Timeline (compromissos 24m) ===== */
+.lucas-timeline-wrap {
+  margin-top: 14px;
+  overflow-x: auto;
+  padding: 14px 6px 6px;
+}
+.lucas-timeline-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 60px;
+  gap: 10px;
+  align-items: end;
+  min-height: 220px;
+  position: relative;
+}
+.lucas-tl-col {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; height: 100%;
+}
+.lucas-tl-bar-stack {
+  display: flex; flex-direction: column-reverse;
+  width: 36px; border-radius: 5px 5px 0 0;
+  overflow: hidden; cursor: pointer; transition: filter 0.15s;
+}
+.lucas-tl-bar-stack:hover { filter: brightness(1.18); }
+.lucas-tl-bar-seg { width: 100%; min-height: 1px; }
+.lucas-tl-month-label {
+  font-size: 10px; color: var(--text-caption); margin-top: 6px;
+  font-weight: 600; letter-spacing: 0.3px; white-space: nowrap;
+}
+.lucas-tl-month-total {
+  font-size: 10px; color: var(--text-secondary); font-weight: 600;
+  font-variant-numeric: tabular-nums; margin-top: 2px;
+}
+.lucas-tl-tooltip {
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%);
+  background: var(--navy-deep); color: #fff;
+  padding: 8px 12px; border-radius: 8px;
+  font-size: 11px; line-height: 1.6;
+  border: 1px solid var(--border);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.15s; white-space: nowrap;
+  z-index: 50;
+}
+.lucas-tl-col:hover .lucas-tl-tooltip { opacity: 1; }
+.lucas-tl-tooltip-row { display: flex; gap: 10px; align-items: center; }
+.lucas-tl-tooltip-dot { width: 8px; height: 8px; border-radius: 2px; }
+.lucas-tl-tooltip-total { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 4px; font-weight: 700; }
+.lucas-timeline-legend {
+  display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px;
+  font-size: 11px; color: var(--text-secondary);
+}
+.lucas-timeline-legend .leg-item { display: flex; align-items: center; gap: 6px; }
+.lucas-timeline-legend .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* ===== Analises CFO ===== */
+.lucas-analises-wrap {
+  margin-top: 14px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.lucas-analise-card {
+  background: var(--navy-deep);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: 10px;
+  padding: 18px 22px;
+  position: relative;
+}
+.lucas-analise-card.pinned { border-left-color: #FCD34D; background: rgba(252,211,77,0.05); }
+.lucas-analise-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; margin-bottom: 10px;
+}
+.lucas-analise-titulo { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.lucas-analise-meta { font-size: 11px; color: var(--text-caption); margin-top: 4px; }
+.lucas-analise-meta strong { color: var(--text-secondary); font-weight: 600; }
+.lucas-analise-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.lucas-analise-content {
+  font-size: 13px; line-height: 1.65; color: var(--text-secondary);
+}
+.lucas-analise-content h1, .lucas-analise-content h2, .lucas-analise-content h3 {
+  color: var(--text-primary); margin: 12px 0 6px; font-size: 14px; font-weight: 700;
+}
+.lucas-analise-content strong { color: var(--text-primary); font-weight: 700; }
+.lucas-analise-content em { color: var(--text-primary); font-style: italic; }
+.lucas-analise-content ul, .lucas-analise-content ol { padding-left: 22px; margin: 8px 0; }
+.lucas-analise-content li { margin: 3px 0; }
+.lucas-analise-content code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+.lucas-analise-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.lucas-analise-tag {
+  font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 100px;
+  background: var(--blue-soft); color: var(--blue);
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+
 @media (max-width: 768px) {
   .dreams-hero { flex-direction: column; align-items: flex-start; padding: 24px; }
   .metas-summary { grid-template-columns: repeat(2, 1fr); }
@@ -4517,6 +4637,39 @@ h1, h2, h3, h4, h5, h6,
         </div>
       </div>
 
+      <!-- Liquidez & Runway -->
+      <div class="fin-card full-width" style="margin-bottom:24px;">
+        <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Liquidez &amp; Runway
+          </div>
+          <button class="fin-action-btn" style="background:var(--blue);color:#fff;font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('caixa')">Atualizar Caixa</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:12px;">
+          <div id="lkRunwayHero" style="background:var(--navy);padding:24px 28px;display:flex;flex-direction:column;justify-content:center;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-caption);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:10px;">Runway pessoal</div>
+            <div id="lkRunwayMeses" style="font-size:48px;font-weight:800;letter-spacing:-2px;line-height:1;">0,0</div>
+            <div id="lkRunwayLabel" style="font-size:13px;color:var(--text-secondary);margin-top:6px;">meses · sem reserva</div>
+          </div>
+          <div style="background:var(--navy);padding:18px 22px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-caption);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;">Caixa atual</div>
+            <div id="lkCaixaAtual" style="font-size:22px;font-weight:700;">R$ 0</div>
+            <div id="lkCaixaSub" style="font-size:11px;color:var(--text-caption);margin-top:4px;">Cadastrar</div>
+          </div>
+          <div style="background:var(--navy);padding:18px 22px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-caption);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;">Receb. 30d</div>
+            <div id="lkReceb30" style="font-size:22px;font-weight:700;color:#4ADE80;">R$ 0</div>
+            <div id="lkReceb30Sub" style="font-size:11px;color:var(--text-caption);margin-top:4px;">Pendentes a receber</div>
+          </div>
+          <div style="background:var(--navy);padding:18px 22px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-caption);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;">Comprom. 30d</div>
+            <div id="lkComprom30" style="font-size:22px;font-weight:700;color:#F87171;">R$ 0</div>
+            <div id="lkComprom30Sub" style="font-size:11px;color:var(--text-caption);margin-top:4px;">A pagar nos prox 30d</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Periodo -->
       <div id="lucasPeriodBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;"></div>
 
@@ -4527,6 +4680,39 @@ h1, h2, h3, h4, h5, h6,
           Fluxo de Caixa Mensal
         </div>
         <div id="lucasEvoChart" class="evo-chart-container"></div>
+      </div>
+
+      <!-- Pizza Despesas + Concentracao Receita -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="fin-card">
+          <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+            Despesas por categoria
+          </div>
+          <div id="lucasPieDespesas" class="lucas-pie-wrap"></div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Concentra&ccedil;&atilde;o de receita
+            </div>
+            <span id="lucasHHIBadge" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;display:none;"></span>
+          </div>
+          <div id="lucasPieReceita" class="lucas-pie-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Timeline Compromissos 12-24m -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Linha do tempo de compromissos &middot; pr&oacute;ximos 24 meses
+          </div>
+          <span style="font-size:11px;color:var(--text-caption);">Total a pagar at&eacute; aqui: <strong id="lucasTimelineTotal" style="color:#F87171;">R$ 0</strong></span>
+        </div>
+        <div id="lucasTimeline" class="lucas-timeline-wrap"></div>
       </div>
 
       <!-- Pendencias (tabelas) -->
@@ -4667,6 +4853,18 @@ h1, h2, h3, h4, h5, h6,
             <tbody id="lucasPatrimBody"></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- Analises CFO -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            An&aacute;lises do CFO
+          </div>
+          <button class="fin-action-btn" style="background:var(--blue);color:#fff;font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('analise')">+ Nova an&aacute;lise</button>
+        </div>
+        <div id="lucasAnalisesList" class="lucas-analises-wrap"></div>
       </div>
 
       <!-- Modal Lucas -->
@@ -8652,7 +8850,7 @@ function submitKanbanModal(e) {
 
 var LUCAS_LOCK_PIN = '9151'; // pin numerico (cliente-side, nao seguro mas suficiente)
 var LUCAS_SESSION_KEY = 'impulso-hub-lucas-unlocked';
-var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v7';
+var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v8';
 var lucasPin = '';
 var lucasPeriodSelected = 'all';
 
@@ -8858,7 +9056,22 @@ function seedLucas() {
     });
   });
 
+  // Pre-popular primeira analise CFO com o resumo da sessao
+  var analisesCFO = [
+    {
+      id: 'cfo-001',
+      data: '2026-05-01',
+      autor: 'CFO',
+      titulo: 'Diagn\u00f3stico inicial \u2014 An\u00e1lise CFO',
+      tags: ['runway', 'reserva', 'concentra\u00e7\u00e3o'],
+      pinned: true,
+      conteudo: '**Veredito em uma linha:** patrim\u00f4nio de empres\u00e1rio (R$ 2,66M), estrutura de caixa de freelancer iniciante.\n\n**6 indicadores cr\u00edticos:**\n- **Runway pessoal:** ~0 meses (ideal \u2265 6)\n- **Reserva de emerg\u00eancia:** R$ 0 (ideal R$ 600k-1,2M)\n- **Concentra\u00e7\u00e3o em il\u00edquido:** 79% (ideal \u2264 60%)\n- **DSCR cobertura d\u00edvida:** ~1,0x (ideal \u2265 1,5x)\n- **Burn rate vs receita:** ~99% mai-jul (ideal < 30%)\n- **Investimentos:** tudo em im\u00f3veis (ideal diversificado)\n\n**Sa\u00edda fixa mai-jul/26:** R$ 99.445/m\u00eas = praticamente seu pro-labore de m\u00eas bom. **Margem de erro: ZERO.**\n\n**Top 3 a\u00e7\u00f5es imediatas:**\n1. **Pausar UTV** (R$ 7k/m\u00eas = R$ 84k/ano em ativo que s\u00f3 deprecia)\n2. **Cheques recebidos \u2192 100% reserva** em CDB liquidez di\u00e1ria. N\u00e3o tocar.\n3. **Negociar Encanto** com piso (R$ 10k OU 5% maior) e prospectar 2 novos clientes em 60 dias.\n\n**Riscos silenciosos:**\n- Moom Teen carrega 50% do faturamento da carteira \u2014 risco de concentra\u00e7\u00e3o\n- 3 im\u00f3veis simultaneamente em parcelamento com bal\u00f5es em dez/26 e dez/27\n- Receita de comiss\u00e3o vari\u00e1vel rec\u00e9m-reativada \u2014 gap de 30-60 dias entre operar e ter caixa.'
+    }
+  ];
+
   var seed = {
+    caixa: { atual: 0, atualizadoEm: '2026-05-01' },
+    analisesCFO: analisesCFO,
     receitas: receitasArr,
     despesas: despesasParcelas,
     investimentos: [],
@@ -9173,6 +9386,20 @@ function lucasFieldsForType(tipo) {
       + common({ id: 'lf-valor', label: 'Valor (R$)', req: true, type: 'number', step: 'any' })
       + common({ id: 'lf-obs', label: 'Observa\u00e7\u00e3o' });
   }
+  if (tipo === 'caixa') {
+    return common({ id: 'lf-atual', label: 'Saldo em conta hoje (R$)', req: true, type: 'number', step: 'any' })
+      + '<div style="font-size:11px;color:var(--text-caption);margin-top:-4px;">Soma de todas as contas correntes/poupan\u00e7a com liquidez imediata. \u00daltima atualiza\u00e7\u00e3o ser\u00e1 registrada.</div>';
+  }
+  if (tipo === 'analise') {
+    return common({ id: 'lf-titulo', label: 'T\u00edtulo', req: true })
+      + '<div class="meta-form-grid">'
+      +   common({ id: 'lf-autor', label: 'Autor', val: 'CFO' })
+      +   common({ id: 'lf-data', label: 'Data', type: 'date' })
+      + '</div>'
+      + common({ id: 'lf-tags', label: 'Tags (separadas por v\u00edrgula)' })
+      + '<div class="meta-form-row"><label>Conte\u00fado (markdown: **negrito**, *it\u00e1lico*, listas com -)</label>'
+      +   '<textarea id="lf-conteudo" rows="10" required style="resize:vertical;font-family:Sora,monospace;"></textarea></div>';
+  }
   return '';
 }
 
@@ -9180,10 +9407,31 @@ function openLucasModal(tipo, id) {
   document.getElementById('lucasTipo').value = tipo;
   document.getElementById('lucasId').value = id || '';
   document.getElementById('lucasFormFields').innerHTML = lucasFieldsForType(tipo);
-  var titleMap = { receita: 'Receita', despesa: 'Despesa', investimento: 'Investimento', patrimonio: 'Patrim\u00f4nio' };
+  var titleMap = { receita: 'Receita', despesa: 'Despesa', investimento: 'Investimento', patrimonio: 'Patrim\u00f4nio', caixa: 'Caixa Atual', analise: 'An\u00e1lise CFO' };
   document.getElementById('lucasModalTitle').textContent = (id ? 'Editar ' : 'Nova ') + titleMap[tipo];
-  if (id) {
-    var d = lucasLoad();
+  var d = lucasLoad();
+  if (tipo === 'caixa') {
+    var caixa = (d.caixa && d.caixa.atual) || 0;
+    var el = document.getElementById('lf-atual');
+    if (el) el.value = caixa;
+  } else if (tipo === 'analise' && id) {
+    var a = (d.analisesCFO || []).find(function(x) { return x.id === id; });
+    if (a) {
+      ['titulo','autor','data','conteudo'].forEach(function(k) {
+        var el = document.getElementById('lf-' + k);
+        if (el) el.value = a[k] || '';
+      });
+      var tagsEl = document.getElementById('lf-tags');
+      if (tagsEl) tagsEl.value = (a.tags || []).join(', ');
+    }
+  } else if (tipo === 'analise' && !id) {
+    // pre-fill date with today
+    var dataEl = document.getElementById('lf-data');
+    if (dataEl) {
+      var today = new Date();
+      dataEl.value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+    }
+  } else if (id) {
     var arr = d[tipo + (tipo === 'patrimonio' ? '' : 's')] || [];
     if (tipo === 'patrimonio') arr = d.patrimonio;
     if (tipo === 'investimento') arr = d.investimentos;
@@ -9207,6 +9455,46 @@ function submitLucas(e) {
   var tipo = document.getElementById('lucasTipo').value;
   var id = document.getElementById('lucasId').value;
   var d = lucasLoad();
+
+  // Caixa: salva direto na rubrica (sem array)
+  if (tipo === 'caixa') {
+    var atual = parseFloat(document.getElementById('lf-atual').value) || 0;
+    var hoje = new Date();
+    d.caixa = { atual: atual, atualizadoEm: hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0') };
+    lucasSave(d);
+    closeLucasModal();
+    renderLucasAll();
+    return;
+  }
+
+  // Analise CFO
+  if (tipo === 'analise') {
+    if (!d.analisesCFO) d.analisesCFO = [];
+    var a = {
+      id: id || ('cfo-' + Date.now()),
+      titulo: document.getElementById('lf-titulo').value.trim(),
+      autor: (document.getElementById('lf-autor').value || 'CFO').trim(),
+      data: document.getElementById('lf-data').value,
+      conteudo: document.getElementById('lf-conteudo').value,
+      tags: document.getElementById('lf-tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean)
+    };
+    if (id) {
+      var idxA = d.analisesCFO.findIndex(function(x) { return x.id === id; });
+      if (idxA >= 0) {
+        a.pinned = d.analisesCFO[idxA].pinned;
+        d.analisesCFO[idxA] = a;
+      } else {
+        d.analisesCFO.push(a);
+      }
+    } else {
+      d.analisesCFO.push(a);
+    }
+    lucasSave(d);
+    closeLucasModal();
+    renderLucasAll();
+    return;
+  }
+
   var key = tipo === 'patrimonio' ? 'patrimonio' : (tipo === 'investimento' ? 'investimentos' : tipo + 's');
   if (!d[key]) d[key] = [];
   var obj = { id: id || (tipo[0] + Date.now()) };
@@ -9242,6 +9530,345 @@ function deleteLucas(tipo, id) {
   lucasSave(d);
   renderLucasAll();
 }
+
+// ============================================================
+// SPRINT 1: Novos blocos (Liquidez/Runway, Pizzas, Timeline, Analises CFO)
+// ============================================================
+
+var LUCAS_PIE_COLORS = ['#0088FF','#22C55E','#FCD34D','#F87171','#C084FC','#5EEAD4','#FB923C','#60A5FA','#A78BFA','#34D399','#F472B6'];
+
+function lucasInferCliente(receita) {
+  var nome = (receita.nome || '').toLowerCase();
+  var cat = (receita.categoria || '').toLowerCase();
+  if (cat.indexOf('comiss') >= 0 || cat.indexOf('sal') >= 0 || cat.indexOf('venda') >= 0) {
+    if (nome.indexOf('luzzoo') >= 0) return 'Luzzoo';
+    if (nome.indexOf('mermaid') >= 0) return 'Mermaid';
+    if (nome.indexOf('moom') >= 0) return 'Moom';
+    if (nome.indexOf('1pra1') >= 0 || nome.indexOf('1 pra 1') >= 0) return '1pra1';
+    if (nome.indexOf('encanto') >= 0) return 'Encanto';
+    if (nome.indexOf('pro-labore') >= 0 || nome.indexOf('prolabore') >= 0) return 'Pro-labore Impulso';
+    if (nome.indexOf('cheque') >= 0 || nome.indexOf('carro') >= 0) return 'Venda carro';
+  }
+  return receita.categoria || 'Outros';
+}
+
+function renderLucasLiquidezRunway(d) {
+  var caixaAtual = (d.caixa && d.caixa.atual) || 0;
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var d30 = new Date(hoje); d30.setDate(d30.getDate() + 30);
+
+  var receb30 = (d.receitas || []).filter(function(r) {
+    if (r.status !== 'Pendente' || !r.data) return false;
+    var dt = new Date(r.data + 'T00:00:00');
+    return dt >= hoje && dt <= d30;
+  }).reduce(function(s, r) { return s + (parseFloat(r.valor) || 0); }, 0);
+
+  var comprom30 = (d.despesas || []).filter(function(x) {
+    if (x.status !== 'Pendente' || !x.data) return false;
+    var dt = new Date(x.data + 'T00:00:00');
+    return dt >= hoje && dt <= d30;
+  }).reduce(function(s, x) { return s + (parseFloat(x.valor) || 0); }, 0);
+
+  // Burn rate medio mensal: media despesas dos proximos 6 meses
+  var burnPorMes = {};
+  (d.despesas || []).forEach(function(x) {
+    if (!x.data) return;
+    var dt = new Date(x.data + 'T00:00:00');
+    if (dt < hoje) return;
+    var key = dt.getFullYear() + '-' + (dt.getMonth() + 1);
+    burnPorMes[key] = (burnPorMes[key] || 0) + (parseFloat(x.valor) || 0);
+  });
+  var burnVals = Object.values(burnPorMes).slice(0, 6);
+  var burnMedio = burnVals.length > 0 ? burnVals.reduce(function(a,b){return a+b;},0) / burnVals.length : 0;
+
+  // Runway = (caixa + receb proximo periodo) / burn medio
+  var liquidez = caixaAtual + receb30;
+  var runwayMeses = burnMedio > 0 ? (liquidez / burnMedio) : 0;
+
+  var $ = function(id) { return document.getElementById(id); };
+  if ($('lkCaixaAtual')) $('lkCaixaAtual').textContent = lucasFmt(caixaAtual);
+  if ($('lkCaixaSub')) $('lkCaixaSub').textContent = caixaAtual === 0 ? 'Cadastrar (clique em Atualizar Caixa)' : 'Atualizado em ' + ((d.caixa && d.caixa.atualizadoEm) || '--');
+  if ($('lkReceb30')) $('lkReceb30').textContent = lucasFmt(receb30);
+  if ($('lkComprom30')) $('lkComprom30').textContent = lucasFmt(comprom30);
+
+  if ($('lkRunwayMeses')) {
+    var formatted = runwayMeses.toFixed(1).replace('.', ',');
+    if (runwayMeses >= 99 || !isFinite(runwayMeses)) formatted = '\u221E';
+    $('lkRunwayMeses').textContent = formatted;
+    var color = '#F87171';
+    if (runwayMeses >= 6) color = '#FCD34D';
+    if (runwayMeses >= 12) color = '#4ADE80';
+    $('lkRunwayMeses').style.color = color;
+  }
+  if ($('lkRunwayLabel')) {
+    var status = runwayMeses < 1 ? 'cr\u00edtico \u2014 sem reserva' :
+                 runwayMeses < 6 ? 'aten\u00e7\u00e3o \u2014 abaixo do ideal' :
+                 runwayMeses < 12 ? 'saud\u00e1vel' : 'excelente';
+    $('lkRunwayLabel').textContent = 'meses \u00b7 ' + status + ' \u00b7 burn ' + lucasFmt(burnMedio) + '/m\u00eas';
+  }
+}
+
+function lucasPolarToCartesian(cx, cy, r, angleDeg) {
+  var a = (angleDeg - 90) * Math.PI / 180;
+  return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+}
+
+function lucasArcPath(cx, cy, r, startAngle, endAngle) {
+  var s = lucasPolarToCartesian(cx, cy, r, endAngle);
+  var e = lucasPolarToCartesian(cx, cy, r, startAngle);
+  var largeArc = endAngle - startAngle <= 180 ? '0' : '1';
+  return ['M', cx, cy, 'L', s[0].toFixed(2), s[1].toFixed(2), 'A', r, r, 0, largeArc, 0, e[0].toFixed(2), e[1].toFixed(2), 'Z'].join(' ');
+}
+
+function lucasRenderPie(containerId, data, opts) {
+  var c = document.getElementById(containerId);
+  if (!c) return;
+  if (!data || data.length === 0) {
+    c.innerHTML = '<div class="pie-empty">Sem dados no per\u00edodo selecionado</div>';
+    return;
+  }
+  var total = data.reduce(function(s, x) { return s + (x.valor || 0); }, 0);
+  if (total <= 0) {
+    c.innerHTML = '<div class="pie-empty">Sem dados no per\u00edodo selecionado</div>';
+    return;
+  }
+  var sorted = data.slice().sort(function(a, b) { return b.valor - a.valor; });
+  var cx = 100, cy = 100, r = 92;
+  var svgPaths = '';
+  var legend = '';
+  var startAngle = 0;
+  // Special case: single slice (avoid Z-only path)
+  if (sorted.length === 1) {
+    var color1 = LUCAS_PIE_COLORS[0];
+    svgPaths += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + color1 + '"><title>' + escHtml(sorted[0].nome) + ': ' + lucasFmt(sorted[0].valor) + '</title></circle>';
+  } else {
+    sorted.forEach(function(slice, i) {
+      var pct = slice.valor / total;
+      var endAngle = startAngle + pct * 360;
+      var color = LUCAS_PIE_COLORS[i % LUCAS_PIE_COLORS.length];
+      svgPaths += '<path d="' + lucasArcPath(cx, cy, r, startAngle, endAngle) + '" fill="' + color + '" stroke="var(--navy)" stroke-width="2"><title>' + escHtml(slice.nome) + ': ' + lucasFmt(slice.valor) + ' (' + (pct*100).toFixed(1) + '%)</title></path>';
+      startAngle = endAngle;
+    });
+  }
+  sorted.forEach(function(slice, i) {
+    var pct = slice.valor / total * 100;
+    var color = LUCAS_PIE_COLORS[i % LUCAS_PIE_COLORS.length];
+    legend += '<div class="pie-legend-item">'
+      + '<span class="pie-dot" style="background:' + color + ';"></span>'
+      + '<span class="pie-name">' + escHtml(slice.nome) + '</span>'
+      + '<span class="pie-pct">' + pct.toFixed(1) + '%</span>'
+      + '<span class="pie-value">' + lucasFmt(slice.valor) + '</span>'
+      + '</div>';
+  });
+  c.innerHTML = '<svg viewBox="0 0 200 200">' + svgPaths + '</svg><div class="pie-legend">' + legend + '</div>';
+}
+
+function renderLucasPieDespesas(d) {
+  var despesas = lucasFilterByPeriod(d.despesas || [], lucasPeriodSelected);
+  var byCat = {};
+  despesas.forEach(function(x) {
+    var cat = x.categoria || 'Outros';
+    byCat[cat] = (byCat[cat] || 0) + (parseFloat(x.valor) || 0);
+  });
+  var data = Object.keys(byCat).map(function(k) { return { nome: k, valor: byCat[k] }; });
+  lucasRenderPie('lucasPieDespesas', data);
+}
+
+function renderLucasPieReceita(d) {
+  var receitas = lucasFilterByPeriod(d.receitas || [], lucasPeriodSelected);
+  var byClient = {};
+  receitas.forEach(function(r) {
+    var c = lucasInferCliente(r);
+    byClient[c] = (byClient[c] || 0) + (parseFloat(r.valor) || 0);
+  });
+  var data = Object.keys(byClient).map(function(k) { return { nome: k, valor: byClient[k] }; });
+  lucasRenderPie('lucasPieReceita', data);
+  // HHI alert
+  var total = data.reduce(function(s,x){return s+x.valor;},0);
+  var badge = document.getElementById('lucasHHIBadge');
+  if (badge) {
+    if (total === 0) { badge.style.display = 'none'; return; }
+    var top = data.reduce(function(m,x){return x.valor>m.valor?x:m;},{valor:0,nome:'-'});
+    var topPct = (top.valor / total) * 100;
+    if (topPct > 30) {
+      badge.style.display = 'inline-flex';
+      badge.style.background = 'rgba(248,113,113,0.18)';
+      badge.style.color = '#F87171';
+      badge.textContent = '\u26a0 ' + top.nome + ' ' + topPct.toFixed(0) + '%';
+    } else {
+      badge.style.display = 'inline-flex';
+      badge.style.background = 'rgba(74,222,128,0.18)';
+      badge.style.color = '#4ADE80';
+      badge.textContent = '\u2713 diversificado';
+    }
+  }
+}
+
+function renderLucasTimeline(d) {
+  var c = document.getElementById('lucasTimeline');
+  if (!c) return;
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var months = [];
+  for (var i = 0; i < 24; i++) {
+    var dt = new Date(hoje.getFullYear(), hoje.getMonth() + i, 1);
+    months.push({
+      key: dt.getFullYear() + '-' + (dt.getMonth() + 1),
+      label: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][dt.getMonth()] + '/' + String(dt.getFullYear()).slice(-2),
+      total: 0,
+      byCategoria: {}
+    });
+  }
+  (d.despesas || []).forEach(function(x) {
+    if (x.status === 'Pago' || !x.data) return;
+    var dt = new Date(x.data + 'T00:00:00');
+    var key = dt.getFullYear() + '-' + (dt.getMonth() + 1);
+    var m = months.find(function(mm) { return mm.key === key; });
+    if (!m) return;
+    var cat = x.categoria || 'Outros';
+    var val = parseFloat(x.valor) || 0;
+    m.total += val;
+    m.byCategoria[cat] = (m.byCategoria[cat] || 0) + val;
+  });
+
+  var maxVal = months.reduce(function(m,x){return x.total>m?x.total:m;},1);
+  var grandTotal = months.reduce(function(s,x){return s+x.total;},0);
+  var totalEl = document.getElementById('lucasTimelineTotal');
+  if (totalEl) totalEl.textContent = lucasFmt(grandTotal);
+
+  // Map categoria to color
+  var allCats = {};
+  months.forEach(function(m) { Object.keys(m.byCategoria).forEach(function(k){ allCats[k] = true; }); });
+  var catList = Object.keys(allCats).sort();
+  var catColors = {};
+  catList.forEach(function(k, i) { catColors[k] = LUCAS_PIE_COLORS[i % LUCAS_PIE_COLORS.length]; });
+
+  var html = '<div class="lucas-timeline-grid">';
+  months.forEach(function(m) {
+    var heightPx = m.total > 0 ? Math.max(2, (m.total / maxVal) * 180) : 0;
+    html += '<div class="lucas-tl-col">';
+    if (m.total > 0) {
+      html += '<div class="lucas-tl-tooltip">';
+      html += '<div style="font-weight:700;margin-bottom:4px;">' + m.label + '</div>';
+      Object.keys(m.byCategoria).sort(function(a,b){return m.byCategoria[b]-m.byCategoria[a];}).forEach(function(cat) {
+        html += '<div class="lucas-tl-tooltip-row"><span class="lucas-tl-tooltip-dot" style="background:' + catColors[cat] + ';"></span><span style="flex:1;">' + escHtml(cat) + '</span><strong>' + lucasFmt(m.byCategoria[cat]) + '</strong></div>';
+      });
+      html += '<div class="lucas-tl-tooltip-row lucas-tl-tooltip-total"><span style="flex:1;">Total</span><strong>' + lucasFmt(m.total) + '</strong></div>';
+      html += '</div>';
+      html += '<div class="lucas-tl-bar-stack" style="height:' + heightPx + 'px;">';
+      Object.keys(m.byCategoria).sort().forEach(function(cat) {
+        var segH = (m.byCategoria[cat] / m.total) * 100;
+        html += '<div class="lucas-tl-bar-seg" style="background:' + catColors[cat] + ';flex:' + segH + ' 0 0;"></div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div style="height:0;width:36px;"></div>';
+    }
+    html += '<div class="lucas-tl-month-label">' + m.label + '</div>';
+    if (m.total > 0) html += '<div class="lucas-tl-month-total">' + (m.total >= 1000 ? 'R$ ' + (m.total/1000).toFixed(0) + 'k' : lucasFmt(m.total)) + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Legend
+  html += '<div class="lucas-timeline-legend">';
+  catList.forEach(function(k) {
+    html += '<div class="leg-item"><span class="leg-dot" style="background:' + catColors[k] + ';"></span>' + escHtml(k) + '</div>';
+  });
+  html += '</div>';
+
+  c.innerHTML = html;
+}
+
+// Simple markdown → HTML (apenas bold, italic, listas, headers)
+function lucasSimpleMd(md) {
+  if (!md) return '';
+  var html = escHtml(md);
+  // Headers (precisa antes de bold)
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  // Bold + italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Listas (linhas começando com - ou *)
+  var lines = html.split('\n');
+  var out = [];
+  var inList = false;
+  lines.forEach(function(line) {
+    if (/^[\-*] /.test(line)) {
+      if (!inList) { out.push('<ul>'); inList = true; }
+      out.push('<li>' + line.replace(/^[\-*] /, '') + '</li>');
+    } else {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push(line);
+    }
+  });
+  if (inList) out.push('</ul>');
+  return out.join('\n').replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br>');
+}
+
+function renderLucasAnalises(d) {
+  var c = document.getElementById('lucasAnalisesList');
+  if (!c) return;
+  var analises = (d.analisesCFO || []).slice().sort(function(a, b) {
+    if (!!b.pinned !== !!a.pinned) return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+    return (b.data || '').localeCompare(a.data || '');
+  });
+  if (analises.length === 0) {
+    c.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text-caption);font-style:italic;background:var(--navy-deep);border:1px dashed var(--border);border-radius:10px;">Nenhuma an\u00e1lise cadastrada. Clique em "+ Nova an\u00e1lise" para come\u00e7ar.</div>';
+    return;
+  }
+  c.innerHTML = analises.map(function(a) {
+    var tags = (a.tags || []).map(function(t) { return '<span class="lucas-analise-tag">' + escHtml(t) + '</span>'; }).join('');
+    return '<div class="lucas-analise-card' + (a.pinned ? ' pinned' : '') + '">'
+      + '<div class="lucas-analise-header">'
+      +   '<div>'
+      +     '<div class="lucas-analise-titulo">' + escHtml(a.titulo) + '</div>'
+      +     '<div class="lucas-analise-meta"><strong>' + escHtml(a.autor || 'CFO') + '</strong> &middot; ' + escHtml(a.data || '') + (a.pinned ? ' &middot; <span style="color:#FCD34D;">\u2605 Fixada</span>' : '') + '</div>'
+      +   '</div>'
+      +   '<div class="lucas-analise-actions">'
+      +     '<button class="lucas-row-btn" onclick="lucasTogglePin(\'' + a.id + '\')" title="' + (a.pinned ? 'Desafixar' : 'Fixar') + '">' + (a.pinned ? '\u2605' : '\u2606') + '</button>'
+      +     '<button class="lucas-row-btn" onclick="editLucas(\'analise\', \'' + a.id + '\')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>'
+      +     '<button class="lucas-row-btn danger" onclick="lucasDeleteAnalise(\'' + a.id + '\')" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="lucas-analise-content">' + lucasSimpleMd(a.conteudo) + '</div>'
+      + (tags ? '<div class="lucas-analise-tags">' + tags + '</div>' : '')
+      + '</div>';
+  }).join('');
+}
+
+function lucasTogglePin(id) {
+  var d = lucasLoad();
+  var a = (d.analisesCFO || []).find(function(x) { return x.id === id; });
+  if (!a) return;
+  a.pinned = !a.pinned;
+  lucasSave(d);
+  renderLucasAnalises(d);
+}
+
+function lucasDeleteAnalise(id) {
+  if (!confirm('Excluir esta an\u00e1lise? A\u00e7\u00e3o irrevers\u00edvel.')) return;
+  var d = lucasLoad();
+  d.analisesCFO = (d.analisesCFO || []).filter(function(x) { return x.id !== id; });
+  lucasSave(d);
+  renderLucasAnalises(d);
+}
+
+// Hook into renderLucasAll
+var __origRenderLucasAll = renderLucasAll;
+renderLucasAll = function() {
+  __origRenderLucasAll();
+  if (!isLucasUnlocked()) return;
+  var d = lucasLoad();
+  renderLucasLiquidezRunway(d);
+  renderLucasPieDespesas(d);
+  renderLucasPieReceita(d);
+  renderLucasTimeline(d);
+  renderLucasAnalises(d);
+};
 
 // Re-check lock on hash change (e.g. user navigates back)
 window.addEventListener('hashchange', function() {
