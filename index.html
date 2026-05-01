@@ -169,7 +169,84 @@ body {
 .evo-grid-line { border-top-color: rgba(255,255,255,0.06) !important; }
 /* X/Y axis labels */
 .evo-axis-label, .evo-bar-x-label { color: var(--text-caption) !important; }
-/* Tooltip stays the same (already dark) */
+
+/* ===== FIX: hardcoded dark text colors that became unreadable on dark bg ===== */
+/* Any element using var(--navy) or var(--chumbo) as TEXT color needs to be overridden.
+   We can't change the variables (used as backgrounds in sidebar). Use attribute selectors. */
+[style*="color: var(--navy)"],
+[style*="color:var(--navy)"],
+[style*="color: var(--chumbo)"],
+[style*="color:var(--chumbo)"] {
+  color: var(--text-primary) !important;
+}
+/* Common card title / value classes that hardcode color: var(--navy) */
+.fin-card-title,
+.fin-card-title strong,
+.fin-card-title span,
+.kpi-value,
+.fin-kpi-value,
+.fin-kpi-card .fin-kpi-value,
+.fin-kpi-card,
+.fin-bar-label,
+.fin-bar-value,
+.fin-table th,
+.fin-table td,
+.fin-donut-hole-val,
+.fin-donut-hole-label,
+.kanban-card-title,
+.kanban-col-title,
+.kanban-modal-title,
+.dream-title,
+.meta-title,
+.section-title-text,
+.section-title h2,
+.section-title h3,
+h1, h2, h3, h4, h5, h6,
+.fin-inadimplencia-detail,
+.fin-inadimplencia-detail strong,
+.user-name {
+  color: var(--text-primary) !important;
+}
+/* Subtler text that was using --chumbo */
+.fin-bar-meta,
+.fin-bar-sub,
+.kanban-card-meta,
+.kanban-meta,
+.user-role,
+.fin-table td.muted,
+.dream-desc,
+.meta-desc,
+.kpi-trend {
+  color: var(--text-secondary) !important;
+}
+/* Close icons / buttons that were dark */
+.fin-modal-close,
+.modal-close,
+.close-btn {
+  color: var(--text-primary) !important;
+}
+/* Dropdown option text */
+.fin-modal select option,
+.fin-modal input,
+.fin-modal select,
+.fin-modal textarea {
+  color: var(--text-primary) !important;
+}
+/* Filter tabs: not active should still be readable */
+.filter-tab,
+.filter-pill,
+.fin-filter-btn {
+  color: var(--text-secondary) !important;
+}
+.filter-tab:hover, .filter-pill:hover, .fin-filter-btn:hover { color: var(--blue) !important; }
+.filter-tab.active, .filter-pill.active, .fin-filter-btn.active { color: #fff !important; }
+/* Footer */
+.footer, .footer strong { color: var(--text-secondary) !important; }
+.footer strong { color: var(--text-primary) !important; }
+/* ALL text inside main content area defaults to readable */
+.content { color: var(--text-primary); }
+/* Keep specific colored elements (success/danger/warn) — only override neutrals */
+
 
 /* ========== SIDEBAR ========== */
 .sidebar {
