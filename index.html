@@ -8555,7 +8555,7 @@ function submitKanbanModal(e) {
 
 var LUCAS_LOCK_PIN = '9151'; // pin numerico (cliente-side, nao seguro mas suficiente)
 var LUCAS_SESSION_KEY = 'impulso-hub-lucas-unlocked';
-var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v2';
+var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v3';
 var lucasPin = '';
 var lucasPeriodSelected = 'all';
 
@@ -8694,10 +8694,39 @@ function seedLucas() {
   // Leoni balao mes 8 = dezembro 2026
   despesasParcelas.push({ id: 'leoB', nome: 'Leoni - bal\u00e3o m\u00eas 8 (corrigido CUB)', categoria: 'Im\u00f3vel', valor: 20531, status: 'Pendente', data: '2026-12-20' });
 
+  // 14 cheques da venda de um carro (total R$ 170.000)
+  var chequesCarro = [
+    { n: '01/14', data: '2026-04-08', valor: 10000, status: 'Pago' }, // ja passou
+    { n: '02/14', data: '2026-05-08', valor: 10000, status: 'Pendente' },
+    { n: '03/14', data: '2026-06-08', valor: 10000, status: 'Pendente' },
+    { n: '04/14', data: '2026-07-08', valor: 10000, status: 'Pendente' },
+    { n: '05/14', data: '2026-08-08', valor: 10000, status: 'Pendente' },
+    { n: '06/14', data: '2026-09-08', valor: 20000, status: 'Pendente' },
+    { n: '07/14', data: '2026-10-08', valor: 20000, status: 'Pendente' },
+    { n: '08/14', data: '2026-11-08', valor: 20000, status: 'Pendente' },
+    { n: '09/14', data: '2026-12-08', valor: 10000, status: 'Pendente' },
+    { n: '10/14', data: '2026-12-08', valor: 10000, status: 'Pendente' },
+    { n: '11/14', data: '2027-01-08', valor: 10000, status: 'Pendente' },
+    { n: '12/14', data: '2027-02-08', valor: 10000, status: 'Pendente' },
+    { n: '13/14', data: '2027-03-08', valor: 10000, status: 'Pendente' },
+    { n: '14/14', data: '2027-04-08', valor: 10000, status: 'Pendente' }
+  ];
+  var receitasArr = [
+    { id: 'r1', nome: 'Pro-labore Impulso', categoria: 'Sal\u00e1rio', valor: 100000, status: 'Pago', data: '2026-04-05' }
+  ];
+  chequesCarro.forEach(function(c, i) {
+    receitasArr.push({
+      id: 'chq' + (i + 1),
+      nome: 'Cheque venda carro ' + c.n,
+      categoria: 'Venda de ativo',
+      valor: c.valor,
+      status: c.status,
+      data: c.data
+    });
+  });
+
   var seed = {
-    receitas: [
-      { id: 'r1', nome: 'Pro-labore Impulso', categoria: 'Sal\u00e1rio', valor: 100000, status: 'Pago', data: '2026-04-05' }
-    ],
+    receitas: receitasArr,
     despesas: despesasParcelas,
     investimentos: [],
     patrimonio: [
