@@ -3371,27 +3371,25 @@ h1, h2, h3, h4, h5, h6,
 
 /* ===== Lucas Pie / Donut ===== */
 .lucas-pie-wrap {
-  display: grid; grid-template-columns: 200px 1fr; gap: 24px;
-  align-items: center; padding: 14px 0 4px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 14px 0 4px;
 }
-.lucas-pie-wrap svg { width: 200px; height: 200px; }
-.lucas-pie-wrap .pie-legend { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+.lucas-pie-wrap svg { width: 180px; height: 180px; flex-shrink: 0; }
+.lucas-pie-wrap .pie-legend { display: flex; flex-direction: column; gap: 6px; width: 100%; max-height: 220px; overflow-y: auto; padding-right: 4px; }
 .lucas-pie-wrap .pie-legend-item {
-  display: grid; grid-template-columns: 14px 1fr auto auto; gap: 10px;
-  align-items: center; font-size: 12px; padding: 4px 0;
+  display: grid; grid-template-columns: 12px 1fr auto auto; gap: 8px;
+  align-items: center; font-size: 11px; padding: 3px 0;
 }
-.lucas-pie-wrap .pie-dot { width: 12px; height: 12px; border-radius: 3px; }
+.lucas-pie-wrap .pie-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 .lucas-pie-wrap .pie-name { color: var(--text-primary); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lucas-pie-wrap .pie-pct { color: var(--text-secondary); font-variant-numeric: tabular-nums; font-size: 11px; }
-.lucas-pie-wrap .pie-value { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 12px; }
-.lucas-pie-wrap .pie-empty { color: var(--text-caption); font-style: italic; padding: 24px 0; text-align: center; grid-column: 1 / -1; }
+.lucas-pie-wrap .pie-pct { color: var(--text-secondary); font-variant-numeric: tabular-nums; font-size: 10px; }
+.lucas-pie-wrap .pie-value { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 11px; }
+.lucas-pie-wrap .pie-empty { color: var(--text-caption); font-style: italic; padding: 24px 0; text-align: center; }
 .lucas-pie-wrap path { transition: opacity 0.15s, transform 0.15s; transform-origin: 100px 100px; }
 .lucas-pie-wrap path:hover { opacity: 0.85; transform: scale(1.03); }
-
-@media (max-width: 600px) {
-  .lucas-pie-wrap { grid-template-columns: 1fr; justify-items: center; }
-  .lucas-pie-wrap .pie-legend { width: 100%; max-height: none; }
-}
+.lucas-pie-wrap::-webkit-scrollbar { width: 4px; }
+.lucas-pie-wrap .pie-legend::-webkit-scrollbar { width: 4px; }
+.lucas-pie-wrap .pie-legend::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
 /* ===== Lucas Timeline (compromissos 24m) ===== */
 .lucas-timeline-wrap {
@@ -4682,14 +4680,21 @@ h1, h2, h3, h4, h5, h6,
         <div id="lucasEvoChart" class="evo-chart-container"></div>
       </div>
 
-      <!-- Pizza Despesas + Concentracao Receita -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+      <!-- Pizza Despesas (categoria + item) + Concentracao Receita -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;">
         <div class="fin-card">
           <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
             Despesas por categoria
           </div>
           <div id="lucasPieDespesas" class="lucas-pie-wrap"></div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Despesas por item
+          </div>
+          <div id="lucasPieDespesasItem" class="lucas-pie-wrap"></div>
         </div>
         <div class="fin-card">
           <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
@@ -9674,6 +9679,20 @@ function renderLucasPieDespesas(d) {
   lucasRenderPie('lucasPieDespesas', data);
 }
 
+function renderLucasPieDespesasItem(d) {
+  // Agrupa pelo NOME limpo (Solarium - parcela 1/6 -> Solarium)
+  var despesas = lucasFilterByPeriod(d.despesas || [], lucasPeriodSelected);
+  var byNome = {};
+  despesas.forEach(function(x) {
+    var nome = (x.nome || '').replace(/\s*[-\u2013]\s*parcela.*$/i, '')
+                              .replace(/\s*[-\u2013]\s*bal[a\u00e3o].*$/i, '')
+                              .trim() || 'Sem nome';
+    byNome[nome] = (byNome[nome] || 0) + (parseFloat(x.valor) || 0);
+  });
+  var data = Object.keys(byNome).map(function(k) { return { nome: k, valor: byNome[k] }; });
+  lucasRenderPie('lucasPieDespesasItem', data);
+}
+
 function renderLucasPieReceita(d) {
   var receitas = lucasFilterByPeriod(d.receitas || [], lucasPeriodSelected);
   var byClient = {};
@@ -9865,6 +9884,7 @@ renderLucasAll = function() {
   var d = lucasLoad();
   renderLucasLiquidezRunway(d);
   renderLucasPieDespesas(d);
+  renderLucasPieDespesasItem(d);
   renderLucasPieReceita(d);
   renderLucasTimeline(d);
   renderLucasAnalises(d);
