@@ -173,13 +173,13 @@ body {
 /* ===== FIX: hardcoded dark text colors that became unreadable on dark bg ===== */
 /* Any element using var(--navy) or var(--chumbo) as TEXT color needs to be overridden.
    We can't change the variables (used as backgrounds in sidebar). Use attribute selectors. */
-[style*="color: var(--navy)"],
-[style*="color:var(--navy)"],
-[style*="color: var(--chumbo)"],
-[style*="color:var(--chumbo)"] {
+[style*="color: var(--text-primary)"],
+[style*="color: var(--text-primary)"],
+[style*="color: var(--text-secondary)"],
+[style*="color: var(--text-secondary)"] {
   color: var(--text-primary) !important;
 }
-/* Common card title / value classes that hardcode color: var(--navy) */
+/* Common card title / value classes that hardcode color: var(--text-primary) */
 .fin-card-title,
 .fin-card-title strong,
 .fin-card-title span,
@@ -517,7 +517,7 @@ h1, h2, h3, h4, h5, h6,
 .stat-card:nth-child(4) .stat-icon { background: rgba(0,188,212,0.1); color: #00BCD4; }
 .stat-number {
   font-size: 36px; font-weight: 800; line-height: 1;
-  margin-bottom: 4px; color: var(--navy);
+  margin-bottom: 4px; color: var(--text-primary);
 }
 .stat-label {
   font-size: 13px; font-weight: 500; color: #8b8fa3;
@@ -621,7 +621,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .kanban-card.dragging { opacity: 0.5; transform: rotate(2deg) scale(0.98); }
 .kanban-card-title {
-  font-size: 13px; font-weight: 600; color: var(--navy);
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
   margin-bottom: 10px; line-height: 1.5;
 }
 .kanban-card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
@@ -779,7 +779,7 @@ h1, h2, h3, h4, h5, h6,
   font-size: 22px; margin-bottom: 16px;
 }
 .squad-card-name {
-  font-size: 15px; font-weight: 700; color: var(--navy);
+  font-size: 15px; font-weight: 700; color: var(--text-primary);
   margin-bottom: 4px;
 }
 .squad-card-cat {
@@ -793,7 +793,7 @@ h1, h2, h3, h4, h5, h6,
   display: flex; flex-direction: column;
 }
 .squad-card-stat-val {
-  font-size: 20px; font-weight: 800; color: var(--navy); line-height: 1;
+  font-size: 20px; font-weight: 800; color: var(--text-primary); line-height: 1;
 }
 .squad-card-stat-label {
   font-size: 10px; color: #8b8fa3; font-weight: 500; text-transform: uppercase;
@@ -815,7 +815,7 @@ h1, h2, h3, h4, h5, h6,
 .squad-agent-chip {
   font-size: 11px; font-weight: 500; padding: 5px 12px;
   border-radius: 8px; background: #fff;
-  color: var(--chumbo); box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  color: var(--text-secondary); box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .squad-expand-hint {
   font-size: 10px; color: #aaa; text-align: center;
@@ -874,7 +874,7 @@ h1, h2, h3, h4, h5, h6,
   font-size: 20px; margin-bottom: 16px;
 }
 .project-name {
-  font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;
+  font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
 }
 .project-desc {
   font-size: 12px; color: #8b8fa3; margin-bottom: 20px; line-height: 1.5;
@@ -900,7 +900,7 @@ h1, h2, h3, h4, h5, h6,
   color: #8b8fa3;
   font-size: 12px;
 }
-.footer strong { color: var(--navy); }
+.footer strong { color: var(--text-primary); }
 .footer .footer-brand { font-weight: 700; color: var(--blue); }
 
 /* ========== RESPONSIVE ========== */
@@ -1009,7 +1009,7 @@ h1, h2, h3, h4, h5, h6,
 .fin-kpi-card:nth-child(4) .fin-kpi-icon { background: rgba(255,179,0,0.1); color: #FFB300; }
 .fin-kpi-value {
   font-size: 32px; font-weight: 800; line-height: 1;
-  margin-bottom: 4px; color: var(--navy);
+  margin-bottom: 4px; color: var(--text-primary);
 }
 .fin-kpi-label {
   font-size: 13px; font-weight: 500; color: #8b8fa3;
@@ -1035,7 +1035,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .fin-card:hover { box-shadow: var(--shadow-md); }
 .fin-card-title {
-  font-size: 16px; font-weight: 700; color: var(--navy);
+  font-size: 16px; font-weight: 700; color: var(--text-primary);
   margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
 }
 .fin-card-title svg { width: 20px; height: 20px; color: var(--blue); }
@@ -1045,7 +1045,7 @@ h1, h2, h3, h4, h5, h6,
 .fin-bar-item { display: flex; align-items: center; gap: 12px; }
 .fin-bar-label {
   width: 120px; min-width: 120px;
-  font-size: 13px; font-weight: 600; color: var(--navy);
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
 }
 .fin-bar-track {
   flex: 1; height: 28px; background: var(--offwhite);
@@ -1078,7 +1078,7 @@ h1, h2, h3, h4, h5, h6,
 .fin-table thead th .sort-icon { font-size: 9px; margin-left: 4px; opacity: 0.3; }
 .fin-table thead th.sorted .sort-icon { opacity: 1; color: var(--blue); }
 .fin-table tbody td {
-  font-size: 13px; font-weight: 500; color: var(--chumbo);
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
   padding: 14px 16px;
   border-bottom: 1px solid var(--offwhite);
 }
@@ -1231,7 +1231,7 @@ h1, h2, h3, h4, h5, h6,
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: var(--navy);
+  border-top-color: var(--text-primary);
 }
 .evo-bar-col:hover .evo-tooltip {
   opacity: 1;
@@ -1342,11 +1342,11 @@ h1, h2, h3, h4, h5, h6,
 /* Period Filter Buttons */
 .fin-period-btn {
   padding: 8px 18px; border-radius: 100px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: 1px solid rgba(26,39,68,0.12); color: var(--chumbo);
+  cursor: pointer; border: 1px solid rgba(26,39,68,0.12); color: var(--text-secondary);
   background: #fff; font-family: var(--font); transition: all 0.2s;
 }
 .fin-period-btn:hover { border-color: var(--blue); color: var(--blue); }
-.fin-period-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.fin-period-btn.active { background: var(--navy); color: #fff; border-color: var(--text-primary); }
 /* (old fin-evo-bar styles removed - now using .evo-* premium classes) */
 
 /* Pendencias Card */
@@ -1371,7 +1371,7 @@ h1, h2, h3, h4, h5, h6,
   padding: 14px 18px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text-primary);
   background: rgba(0,0,0,0.02);
   border-bottom: 1px solid var(--border);
 }
@@ -1385,7 +1385,7 @@ h1, h2, h3, h4, h5, h6,
   margin-left: auto;
   font-size: 13px;
   font-weight: 800;
-  color: var(--navy);
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 .pend-list {
@@ -1421,7 +1421,7 @@ h1, h2, h3, h4, h5, h6,
 .pend-item-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--text-primary);
   margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
@@ -1433,7 +1433,7 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   gap: 10px;
 }
-.pend-item-meta strong { color: var(--chumbo); font-weight: 600; }
+.pend-item-meta strong { color: var(--text-secondary); font-weight: 600; }
 .pend-item-right {
   display: flex;
   align-items: center;
@@ -1443,7 +1443,7 @@ h1, h2, h3, h4, h5, h6,
 .pend-item-value {
   font-size: 14px;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 .pend-receber .pend-item-value { color: #16A34A; }
@@ -1517,7 +1517,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .fin-inadimplencia .fin-card-title { color: #CC8F00; }
 .fin-inadimplencia-value {
-  font-size: 28px; font-weight: 800; color: var(--navy);
+  font-size: 28px; font-weight: 800; color: var(--text-primary);
   margin-bottom: 12px;
 }
 
@@ -1531,7 +1531,7 @@ h1, h2, h3, h4, h5, h6,
   background: #fff; font-family: 'Sora', sans-serif; transition: all 0.2s;
 }
 .chart-toggle-btn:hover { border-color: var(--blue); color: var(--blue); }
-.chart-toggle-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.chart-toggle-btn.active { background: var(--navy); color: #fff; border-color: var(--text-primary); }
 
 /* Donut Chart */
 .fin-donut-wrap {
@@ -1548,11 +1548,11 @@ h1, h2, h3, h4, h5, h6,
   background: #fff; display: flex; align-items: center; justify-content: center;
   flex-direction: column;
 }
-.fin-donut-hole-val { font-size: 14px; font-weight: 800; color: var(--navy); }
+.fin-donut-hole-val { font-size: 14px; font-weight: 800; color: var(--text-primary); }
 .fin-donut-hole-lbl { font-size: 10px; color: #8b8fa3; }
 .fin-donut-legend { display: flex; flex-direction: column; gap: 8px; }
 .fin-donut-legend-item {
-  display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--chumbo);
+  display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--text-secondary);
 }
 .fin-donut-legend-dot {
   width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
@@ -1588,14 +1588,14 @@ h1, h2, h3, h4, h5, h6,
   max-height: 90vh; overflow-y: auto;
 }
 .fin-modal-title {
-  font-size: 18px; font-weight: 800; color: var(--navy);
+  font-size: 18px; font-weight: 800; color: var(--text-primary);
   margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;
 }
 .fin-modal-close {
   width: 32px; height: 32px; border-radius: 8px; border: none;
   background: var(--offwhite); cursor: pointer; font-size: 18px;
   display: flex; align-items: center; justify-content: center;
-  color: var(--chumbo); transition: all 0.2s;
+  color: var(--text-secondary); transition: all 0.2s;
 }
 .fin-modal-close:hover { background: #FF5252; color: #fff; }
 .fin-modal-field {
@@ -1610,7 +1610,7 @@ h1, h2, h3, h4, h5, h6,
 .fin-modal-field select {
   width: 100%; padding: 10px 14px; border-radius: 10px;
   border: 1.5px solid rgba(26,39,68,0.12); font-size: 14px;
-  font-family: 'Sora', sans-serif; color: var(--chumbo);
+  font-family: 'Sora', sans-serif; color: var(--text-secondary);
   background: var(--offwhite); transition: border-color 0.2s;
 }
 .fin-modal-field input:focus,
@@ -1637,7 +1637,7 @@ h1, h2, h3, h4, h5, h6,
 .fin-table td.editing select {
   width: 100%; padding: 6px 10px; border-radius: 8px;
   border: 1.5px solid var(--blue); font-size: 13px;
-  font-family: 'Sora', sans-serif; color: var(--chumbo);
+  font-family: 'Sora', sans-serif; color: var(--text-secondary);
   background: #fff;
 }
 .fin-table td.editing input:focus,
@@ -1645,7 +1645,7 @@ h1, h2, h3, h4, h5, h6,
 .fin-inadimplencia-detail {
   font-size: 13px; color: #8b8fa3; line-height: 1.8;
 }
-.fin-inadimplencia-detail strong { color: var(--chumbo); }
+.fin-inadimplencia-detail strong { color: var(--text-secondary); }
 
 /* Financeiro Responsive */
 @media (max-width: 1024px) {
@@ -1719,7 +1719,7 @@ h1, h2, h3, h4, h5, h6,
 .client-card-name {
   font-size: 15px;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text-primary);
   letter-spacing: -0.2px;
 }
 .client-card-desc {
@@ -1786,7 +1786,7 @@ h1, h2, h3, h4, h5, h6,
 .client-detail-name {
   font-size: 20px;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text-primary);
   letter-spacing: -0.3px;
 }
 .client-detail-close {
@@ -1831,7 +1831,7 @@ h1, h2, h3, h4, h5, h6,
   position: relative;
 }
 .client-tab-btn:hover {
-  color: var(--navy);
+  color: var(--text-primary);
 }
 .client-tab-btn.active {
   color: var(--blue);
@@ -1867,7 +1867,7 @@ h1, h2, h3, h4, h5, h6,
 .pwd-table tbody td {
   padding: 14px 16px;
   font-size: 13px;
-  color: var(--chumbo);
+  color: var(--text-secondary);
   border-bottom: 1px solid rgba(0,0,0,0.04);
   vertical-align: middle;
 }
@@ -1880,7 +1880,7 @@ h1, h2, h3, h4, h5, h6,
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
   font-size: 12.5px;
   letter-spacing: 1px;
-  color: var(--navy);
+  color: var(--text-primary);
 }
 .pwd-actions {
   display: flex;
@@ -2008,7 +2008,7 @@ h1, h2, h3, h4, h5, h6,
 .client-contrato-value {
   font-size: 14px;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--text-primary);
   text-align: right;
 }
 .client-contrato-badge {
@@ -2083,7 +2083,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .client-timeline-text {
   font-size: 13px;
-  color: var(--chumbo);
+  color: var(--text-secondary);
   line-height: 1.65;
 }
 
@@ -2144,7 +2144,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .aprovacao-card-info { flex: 1; min-width: 0; }
 .aprovacao-card-title {
-  font-size: 16px; font-weight: 700; color: var(--navy);
+  font-size: 16px; font-weight: 700; color: var(--text-primary);
   margin-bottom: 4px; line-height: 1.3;
 }
 .aprovacao-card-date {
@@ -2207,7 +2207,7 @@ h1, h2, h3, h4, h5, h6,
 }
 /* ========== DASHBOARD GREETING ========== */
 .dash-greeting { margin-bottom: 24px; }
-.dash-greeting h2 { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.dash-greeting h2 { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
 .dash-greeting p { font-size: 13px; color: var(--text-secondary); }
 
 /* ========== DASHBOARD TWO-COLUMN GRID ========== */
@@ -2236,7 +2236,7 @@ h1, h2, h3, h4, h5, h6,
   gap: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--text-primary);
 }
 .dash-card-header-left .blue-dot {
   width: 8px; height: 8px;
@@ -2277,7 +2277,7 @@ h1, h2, h3, h4, h5, h6,
 .dash-activity-icon.edit { background: rgba(255,179,0,0.10); color: #FFB300; }
 .dash-activity-icon.done { background: rgba(0,188,212,0.10); color: #00BCD4; }
 .dash-activity-body { flex: 1; min-width: 0; }
-.dash-activity-title { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-activity-title { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dash-activity-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 .dash-activity-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 .dash-activity-time { font-size: 11px; color: var(--text-caption); }
@@ -2323,7 +2323,7 @@ h1, h2, h3, h4, h5, h6,
 .dash-quick-btn .qicon.green { background: rgba(34,197,94,0.10); color: #22C55E; }
 .dash-quick-btn .qicon.purple { background: rgba(139,92,246,0.10); color: #8B5CF6; }
 .dash-quick-btn .qicon.orange { background: rgba(255,179,0,0.10); color: #FFB300; }
-.dash-quick-btn .qlabel { font-size: 12px; font-weight: 600; color: var(--navy); }
+.dash-quick-btn .qlabel { font-size: 12px; font-weight: 600; color: var(--text-primary); }
 
 /* Pending Reviews */
 .dash-pending {
@@ -2346,7 +2346,7 @@ h1, h2, h3, h4, h5, h6,
   gap: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--text-primary);
 }
 .dash-pending-badge {
   font-size: 11px;
@@ -2366,7 +2366,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .dash-pending-item:last-child { border-bottom: none; }
 .dash-pending-info { flex: 1; min-width: 0; }
-.dash-pending-title { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-pending-title { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dash-pending-tags { display: flex; gap: 6px; margin-top: 4px; }
 .dash-pending-tags span {
   font-size: 10px;
@@ -2434,7 +2434,7 @@ h1, h2, h3, h4, h5, h6,
 .kanban-metric-value {
   font-size: 28px;
   font-weight: 800;
-  color: var(--navy);
+  color: var(--text-primary);
   line-height: 1.2;
 }
 .kanban-metric-label {
@@ -2499,7 +2499,7 @@ h1, h2, h3, h4, h5, h6,
 .kanban-modal-title {
   font-size: 18px;
   font-weight: 800;
-  color: var(--navy);
+  color: var(--text-primary);
   margin-bottom: 24px;
   display: flex;
   align-items: center;
@@ -2516,7 +2516,7 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--chumbo);
+  color: var(--text-secondary);
   transition: all 0.2s;
 }
 .kanban-modal-close:hover { background: #FF5252; color: #fff; }
@@ -2540,7 +2540,7 @@ h1, h2, h3, h4, h5, h6,
   border: 1.5px solid rgba(26,39,68,0.12);
   font-size: 14px;
   font-family: 'Sora', sans-serif;
-  color: var(--chumbo);
+  color: var(--text-secondary);
   background: var(--offwhite);
   transition: border-color 0.2s;
 }
@@ -2591,7 +2591,7 @@ h1, h2, h3, h4, h5, h6,
 .kanban-chat-panel h3 {
   font-size: 15px;
   font-weight: 800;
-  color: var(--navy);
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 .kanban-ranking-chart {
@@ -2609,7 +2609,7 @@ h1, h2, h3, h4, h5, h6,
   min-width: 120px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2687,7 +2687,7 @@ h1, h2, h3, h4, h5, h6,
   border: 1.5px solid rgba(26,39,68,0.12);
   font-size: 13px;
   font-family: 'Sora', sans-serif;
-  color: var(--chumbo);
+  color: var(--text-secondary);
   background: var(--offwhite);
   transition: border-color 0.2s;
 }
@@ -2739,7 +2739,7 @@ h1, h2, h3, h4, h5, h6,
 .email-client-card.active { border-color:var(--blue); box-shadow:0 0 0 2px rgba(0,136,255,0.15); }
 .email-client-top { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
 .email-client-avatar { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; flex-shrink:0; }
-.email-client-name { font-size:14px; font-weight:700; color:var(--navy); }
+.email-client-name { font-size:14px; font-weight:700; color: var(--text-primary); }
 .email-client-segment { font-size:11px; color:var(--text-secondary); }
 .email-client-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
 .email-meta-tag { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; background:rgba(0,136,255,0.06); color:var(--blue); }
@@ -2750,7 +2750,7 @@ h1, h2, h3, h4, h5, h6,
 
 .email-result { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border-light); overflow:hidden; }
 .email-result-header { padding:20px 24px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center; }
-.email-result-title { font-size:15px; font-weight:700; color:var(--navy); }
+.email-result-title { font-size:15px; font-weight:700; color: var(--text-primary); }
 .email-result-body { padding:24px; }
 .email-result-empty { padding:60px 24px; text-align:center; color:var(--text-secondary); font-size:13px; }
 .email-result-empty svg { margin-bottom:16px; opacity:0.3; }
@@ -2776,18 +2776,18 @@ h1, h2, h3, h4, h5, h6,
 .email-tpl-card:hover { border-color:var(--blue); background:rgba(0,136,255,0.02); }
 .email-tpl-card.active { border-color:var(--blue); background:rgba(0,136,255,0.04); box-shadow:0 0 0 2px rgba(0,136,255,0.1); }
 .email-tpl-icon { font-size:24px; margin-bottom:8px; }
-.email-tpl-name { font-size:12px; font-weight:700; color:var(--navy); margin-bottom:2px; }
+.email-tpl-name { font-size:12px; font-weight:700; color: var(--text-primary); margin-bottom:2px; }
 .email-tpl-desc { font-size:10px; color:var(--text-secondary); }
 
 .email-history { margin-top:32px; }
-.email-history-title { font-size:14px; font-weight:700; color:var(--navy); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.email-history-title { font-size:14px; font-weight:700; color: var(--text-primary); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
 .email-history-list { display:flex; flex-direction:column; gap:10px; }
 .email-history-item { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; transition:all var(--transition); }
 .email-history-item:hover { box-shadow:var(--shadow-card); }
 .email-history-left { display:flex; align-items:center; gap:12px; }
 .email-history-avatar { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; flex-shrink:0; }
 .email-history-info { }
-.email-history-name { font-size:12px; font-weight:600; color:var(--navy); }
+.email-history-name { font-size:12px; font-weight:600; color: var(--text-primary); }
 .email-history-date { font-size:10px; color:var(--text-secondary); }
 .email-history-type { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; }
 
@@ -3874,7 +3874,7 @@ h1, h2, h3, h4, h5, h6,
         <div>
           <!-- Templates -->
           <div style="margin-bottom:20px;">
-            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;">Tipo de Campanha</div>
+            <div style="font-size:12px;font-weight:700;color: var(--text-primary);margin-bottom:12px;">Tipo de Campanha</div>
             <div class="email-templates" id="emailTemplates">
               <div class="email-tpl-card active" data-type="promo" onclick="selectEmailTemplate('promo', this)">
                 <div class="email-tpl-icon">&#x1F525;</div>
@@ -7506,7 +7506,7 @@ function generateEmailStrategy(client) {
 
   var typeClass = currentEmailType === 'promo' ? 'promo' : currentEmailType === 'nurture' ? 'nurture' : currentEmailType === 'launch' ? 'launch' : 'reactivate';
 
-  var inputStyle = 'width:100%;padding:10px 14px;border:1.5px solid var(--border-light);border-radius:var(--radius-sm);font-family:Sora,sans-serif;font-size:13px;color:var(--navy);background:var(--surface);transition:border-color 0.2s;outline:none;';
+  var inputStyle = 'width:100%;padding:10px 14px;border:1.5px solid var(--border-light);border-radius:var(--radius-sm);font-family:Sora,sans-serif;font-size:13px;color: var(--text-primary);background:var(--surface);transition:border-color 0.2s;outline:none;';
   var inputFocus = ' onfocus="this.style.borderColor=\'var(--blue)\'" onblur="this.style.borderColor=\'var(--border-light)\'"';
   var textareaStyle = inputStyle + 'resize:vertical;min-height:100px;line-height:1.7;';
 
