@@ -8555,7 +8555,7 @@ function submitKanbanModal(e) {
 
 var LUCAS_LOCK_PIN = '9151'; // pin numerico (cliente-side, nao seguro mas suficiente)
 var LUCAS_SESSION_KEY = 'impulso-hub-lucas-unlocked';
-var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v4';
+var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v5';
 var lucasPin = '';
 var lucasPeriodSelected = 'all';
 
@@ -8734,9 +8734,7 @@ function seedLucas() {
     { n: '13/14', data: '2027-03-08', valor: 10000, status: 'Pendente' },
     { n: '14/14', data: '2027-04-08', valor: 10000, status: 'Pendente' }
   ];
-  var receitasArr = [
-    { id: 'r1', nome: 'Pro-labore Impulso', categoria: 'Sal\u00e1rio', valor: 100000, status: 'Pago', data: '2026-04-05' }
-  ];
+  var receitasArr = [];
   chequesCarro.forEach(function(c, i) {
     receitasArr.push({
       id: 'chq' + (i + 1),
