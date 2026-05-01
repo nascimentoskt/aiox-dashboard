@@ -3370,21 +3370,20 @@ h1, h2, h3, h4, h5, h6,
 .lucas-status.atrasado { background: rgba(239,68,68,0.15); color: #F87171; }
 
 /* ===== Lucas section spacing (padroniza espacos entre blocos) ===== */
-#financeiro-lucas > .fin-card,
-#financeiro-lucas > .fin-card.full-width {
-  margin-bottom: 24px;
+#financeiro-lucas .fin-card,
+#financeiro-lucas .fin-card.full-width {
+  margin-bottom: 28px !important;
 }
-#financeiro-lucas > .fin-card:last-of-type {
-  margin-bottom: 0;
+#financeiro-lucas .fin-kpi-row,
+#financeiro-lucas #lucasPeriodBtns {
+  margin-bottom: 28px !important;
 }
-#financeiro-lucas .fin-kpi-row {
-  margin-bottom: 24px;
-}
+/* Grids inline (3 pizzas, etc) - filhos diretos da section */
 #financeiro-lucas > div[style*="grid-template-columns"] {
-  margin-bottom: 24px;
+  margin-bottom: 28px !important;
 }
 #financeiro-lucas .section-header {
-  margin-bottom: 28px;
+  margin-bottom: 32px !important;
 }
 /* Mais respiro interno nos cards do Lucas */
 #financeiro-lucas .fin-card {
@@ -3392,6 +3391,10 @@ h1, h2, h3, h4, h5, h6,
 }
 #financeiro-lucas .fin-card-title {
   margin-bottom: 22px;
+}
+/* Ultimo card sem margem para nao deixar muito espaco no final */
+#financeiro-lucas .fin-card:last-child {
+  margin-bottom: 0 !important;
 }
 
 /* ===== Lucas Pie ===== */
