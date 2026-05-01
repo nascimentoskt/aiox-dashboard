@@ -7715,77 +7715,105 @@ function attachKanbanDragDropAPI(board) {
   }
 })();
 
-// ========== DASHBOARD LOGIN GATE ==========
-var DASH_PASS = '1Pra1*123';
+// ========== DASHBOARD LOGIN GATE (PIN keypad, dark) ==========
+var DASH_PASS = '1052';
+var dashPin = '';
 
 function showLoginOverlay() {
   var existing = document.getElementById('loginOverlay');
-  if (existing) { existing.style.display = 'flex'; return; }
+  if (existing) { existing.style.display = 'flex'; dashPin = ''; updateDashDots(); return; }
 
   var overlay = document.createElement('div');
   overlay.id = 'loginOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,39,68,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,22,38,0.98);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);background-image:radial-gradient(circle at 15% 0%, rgba(0,136,255,0.10) 0%, transparent 50%),radial-gradient(circle at 85% 100%, rgba(0,136,255,0.05) 0%, transparent 50%);';
 
-  var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:16px;padding:40px;width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);';
+  overlay.innerHTML =
+    '<div style="width:340px;max-width:calc(100vw - 32px);text-align:center;color:#F2F2F2;">'
+    + '<img src="logo-impulso-branca.png" alt="Impulso" style="height:54px;width:auto;display:block;margin:0 auto 22px;filter:drop-shadow(0 4px 16px rgba(0,136,255,0.28));">'
+    + '<div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:26px;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;">Impulso HUB</div>'
+    + '<div id="dashDots" style="display:flex;justify-content:center;gap:22px;margin-bottom:36px;">'
+    +   '<div class="dash-dot" style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);transition:all 0.15s;"></div>'
+    +   '<div class="dash-dot" style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);transition:all 0.15s;"></div>'
+    +   '<div class="dash-dot" style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);transition:all 0.15s;"></div>'
+    +   '<div class="dash-dot" style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);transition:all 0.15s;"></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,78px);gap:18px;justify-content:center;">'
+    +   dashKeyHTML('1', '')
+    +   dashKeyHTML('2', 'ABC')
+    +   dashKeyHTML('3', 'DEF')
+    +   dashKeyHTML('4', 'GHI')
+    +   dashKeyHTML('5', 'JKL')
+    +   dashKeyHTML('6', 'MNO')
+    +   dashKeyHTML('7', 'PQRS')
+    +   dashKeyHTML('8', 'TUV')
+    +   dashKeyHTML('9', 'WXYZ')
+    +   '<button class="lock-key lock-empty" style="background:transparent;border:none;cursor:default;pointer-events:none;"></button>'
+    +   dashKeyHTML('0', '')
+    +   '<button class="lock-key lock-back" onclick="dashBack()" style="width:78px;height:78px;border-radius:50%;background:transparent;border:none;color:#F2F2F2;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Apagar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l4-7h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H7l-4-7z"/><line x1="11" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="11" y2="15"/></svg></button>'
+    + '</div>'
+    + '</div>';
 
-  var icon = document.createElement('div');
-  icon.style.cssText = 'font-size:48px;margin-bottom:16px;';
-  icon.textContent = '🔒';
-
-  var title = document.createElement('h3');
-  title.style.cssText = 'font-size:18px;font-weight:700;color: var(--text-primary);margin-bottom:8px;';
-  title.textContent = 'AIOX Command Center';
-
-  var sub = document.createElement('p');
-  sub.style.cssText = 'font-size:13px;color: var(--text-caption);margin-bottom:24px;';
-  sub.textContent = 'Digite a senha para acessar o painel';
-
-  var input = document.createElement('input');
-  input.type = 'password';
-  input.placeholder = 'Senha';
-  input.id = 'loginPassInput';
-  input.style.cssText = 'width:100%;padding:12px 16px;border:2px solid #E0E0E0;border-radius:10px;font-size:14px;font-family:Sora,sans-serif;outline:none;text-align:center;letter-spacing:2px;transition:border-color 0.2s;';
-
-  var error = document.createElement('p');
-  error.id = 'loginPassError';
-  error.style.cssText = 'font-size:12px;color:#F44336;margin-top:8px;min-height:18px;';
-
-  var btn = document.createElement('button');
-  btn.style.cssText = 'width:100%;padding:12px;background:#0088FF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:Sora,sans-serif;cursor:pointer;margin-top:16px;transition:background 0.2s;';
-  btn.textContent = 'Desbloquear';
-
-  btn.onclick = function() { checkLoginPassword(); };
-  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') checkLoginPassword(); });
-  input.addEventListener('focus', function() { input.style.borderColor = '#0088FF'; });
-  input.addEventListener('blur', function() { input.style.borderColor = '#E0E0E0'; });
-
-  box.appendChild(icon);
-  box.appendChild(title);
-  box.appendChild(sub);
-  box.appendChild(input);
-  box.appendChild(error);
-  box.appendChild(btn);
-  overlay.appendChild(box);
   document.body.appendChild(overlay);
+  dashPin = '';
+  updateDashDots();
+}
 
-  setTimeout(function() { input.focus(); }, 100);
+function dashKeyHTML(num, letters) {
+  return '<button class="lock-key" onclick="dashTap(\'' + num + '\')" style="width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.06);color:#F2F2F2;font-size:32px;font-weight:300;font-family:Sora,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;">'
+    + num
+    + (letters ? '<span style="font-size:9px;font-weight:600;letter-spacing:1.5px;margin-top:3px;opacity:0.55;">' + letters + '</span>' : '')
+    + '</button>';
+}
+
+function dashTap(d) {
+  if (dashPin.length >= 4) return;
+  dashPin += d;
+  updateDashDots();
+  if (dashPin.length === 4) setTimeout(checkLoginPassword, 150);
+}
+
+function dashBack() {
+  if (dashPin.length === 0) return;
+  dashPin = dashPin.slice(0, -1);
+  updateDashDots();
+}
+
+function updateDashDots() {
+  var dots = document.querySelectorAll('#dashDots .dash-dot');
+  for (var i = 0; i < dots.length; i++) {
+    if (i < dashPin.length) {
+      dots[i].style.background = '#F2F2F2';
+      dots[i].style.borderColor = '#F2F2F2';
+    } else {
+      dots[i].style.background = 'transparent';
+      dots[i].style.borderColor = 'rgba(255,255,255,0.4)';
+    }
+  }
 }
 
 function checkLoginPassword() {
-  var input = document.getElementById('loginPassInput');
-  var error = document.getElementById('loginPassError');
-  if (!input) return;
-
-  if (input.value === DASH_PASS) {
+  if (dashPin === DASH_PASS) {
     var ov = document.getElementById('loginOverlay');
     if (ov) ov.style.display = 'none';
-    showSection('dashboard');
+    if (typeof showSection === 'function') showSection('dashboard');
   } else {
-    if (error) error.textContent = 'Senha incorreta';
-    input.value = '';
-    input.style.borderColor = '#F44336';
-    setTimeout(function() { input.style.borderColor = '#E0E0E0'; if (error) error.textContent = ''; }, 2000);
+    var dots = document.getElementById('dashDots');
+    if (dots) {
+      // shake
+      dots.animate([
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-8px)' },
+        { transform: 'translateX(8px)' },
+        { transform: 'translateX(-8px)' },
+        { transform: 'translateX(0)' }
+      ], { duration: 400 });
+      var children = dots.querySelectorAll('.dash-dot');
+      for (var i = 0; i < children.length; i++) children[i].style.borderColor = '#EF4444';
+    }
+    setTimeout(function() {
+      dashPin = '';
+      updateDashDots();
+    }, 450);
   }
 }
 
