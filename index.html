@@ -8931,8 +8931,10 @@ function renderLucasEvo(d) {
 }
 
 function renderLucasPendencias(d) {
-  var rec = (d.receitas || []).filter(function(x) { return x.status === 'Pendente'; });
-  var desp = (d.despesas || []).filter(function(x) { return x.status === 'Pendente'; });
+  var recAll = lucasFilterByPeriod(d.receitas || [], lucasPeriodSelected);
+  var despAll = lucasFilterByPeriod(d.despesas || [], lucasPeriodSelected);
+  var rec = recAll.filter(function(x) { return x.status === 'Pendente'; });
+  var desp = despAll.filter(function(x) { return x.status === 'Pendente'; });
   var totalR = rec.reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
   var totalP = desp.reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
   var $ = function(id) { return document.getElementById(id); };
@@ -8946,7 +8948,8 @@ function renderLucasPendencias(d) {
     : desp.map(function(x) { return lucasPendItemHtml(x, 'despesa'); }).join('');
   if ($('lpendSaldo')) {
     var saldo = totalR - totalP;
-    $('lpendSaldo').innerHTML = '<span class="pend-saldo-label">Saldo l\u00edquido das pend\u00eancias</span><span class="pend-saldo-value ' + (saldo >= 0 ? 'positive' : 'negative') + '">' + (saldo >= 0 ? '+' : '') + lucasFmt(saldo) + '</span>';
+    var periodTxt = lucasPeriodSelected === 'all' ? 'todas' : 'em ' + lucasPeriodSelected;
+    $('lpendSaldo').innerHTML = '<span class="pend-saldo-label">Saldo l\u00edquido das pend\u00eancias (' + periodTxt + ')</span><span class="pend-saldo-value ' + (saldo >= 0 ? 'positive' : 'negative') + '">' + (saldo >= 0 ? '+' : '') + lucasFmt(saldo) + '</span>';
   }
 }
 
@@ -8973,7 +8976,7 @@ function lucasMarkPaid(id, tipo) {
 function renderLucasReceitas(d) {
   var b = document.getElementById('lucasReceitasBody');
   if (!b) return;
-  var rows = (d.receitas || []).slice().sort(function(a, b) { return (b.data || '').localeCompare(a.data || ''); });
+  var rows = lucasFilterByPeriod(d.receitas || [], lucasPeriodSelected).slice().sort(function(a, b) { return (b.data || '').localeCompare(a.data || ''); });
   b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma receita cadastrada</td></tr>'
     : rows.map(function(x) {
       var stClass = x.status === 'Pago' ? 'pago' : 'pendente';
@@ -8989,7 +8992,7 @@ function renderLucasReceitas(d) {
 function renderLucasDespesas(d) {
   var b = document.getElementById('lucasDespesasBody');
   if (!b) return;
-  var rows = (d.despesas || []).slice().sort(function(a, b) { return (a.data || '').localeCompare(b.data || ''); });
+  var rows = lucasFilterByPeriod(d.despesas || [], lucasPeriodSelected).slice().sort(function(a, b) { return (a.data || '').localeCompare(b.data || ''); });
   b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma despesa cadastrada</td></tr>'
     : rows.map(function(x) {
       var stClass = x.status === 'Pago' ? 'pago' : 'pendente';
