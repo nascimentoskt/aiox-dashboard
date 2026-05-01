@@ -19,8 +19,12 @@
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
   font-family: 'Sora', -apple-system, sans-serif;
-  background: #F0F2F7;
-  color: #1A2744;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(0, 136, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 85% 100%, rgba(0, 136, 255, 0.04) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
   line-height: 1.5;
   overflow: hidden;
   height: 100vh;
@@ -28,16 +32,19 @@ body {
 }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #E8E4DE; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #0088FF80; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,136,255,0.45); }
 
-/* ========== CSS VARIABLES ========== */
+/* ========== CSS VARIABLES (DARK MODE) ========== */
 :root {
   --blue: #0088FF;
   --blue-light: #3AA8FF;
-  --blue-dim: rgba(0,136,255,0.10);
-  --blue-dim2: rgba(0,136,255,0.06);
+  --blue-dim: rgba(0,136,255,0.14);
+  --blue-dim2: rgba(0,136,255,0.08);
   --navy: #1A2744;
+  --navy-deep: #0F1626;
+  --navy-card: #1F2D52;
+  --navy-elev: #243463;
   --navy-light: #223263;
   --bege: #E8E4DE;
   --chumbo: #353535;
@@ -49,21 +56,120 @@ body {
   --header-h: 56px;
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow-card: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
-  --shadow-hover: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.05);
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.4), 0 2px 12px rgba(0,0,0,0.25);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.4), 0 2px 12px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.25);
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --text-primary: #1A2744;
-  --text-secondary: #6B7A9A;
-  --text-caption: #9AA3B8;
-  --border: rgba(0,0,0,0.07);
-  --border-light: rgba(0,0,0,0.04);
-  --surface: #FFFFFF;
-  --bg: #F0F2F7;
-  --sidebar-bg: rgba(26,39,68,0.97);
+  --text-primary: #F2F2F2;
+  --text-secondary: rgba(242,242,242,0.70);
+  --text-caption: rgba(242,242,242,0.45);
+  --border: rgba(255,255,255,0.08);
+  --border-light: rgba(255,255,255,0.04);
+  --border-strong: rgba(255,255,255,0.16);
+  --surface: #1A2744;
+  --surface-elev: #243463;
+  --bg: #0F1626;
+  --sidebar-bg: rgba(15,22,38,0.98);
   --sidebar-glass: rgba(255,255,255,0.04);
 }
+
+/* ========== DARK MODE OVERRIDES ========== */
+/* Convert hardcoded white backgrounds to dark surface */
+.fin-card,
+.fin-kpi-card,
+.stat-card,
+.kpi-card,
+.kanban-card,
+.kanban-card-inner,
+.fin-period-btn,
+.chart-toggle-btn,
+.pend-col,
+.fin-modal,
+.fin-table tbody tr {
+  background: var(--surface) !important;
+  color: var(--text-primary);
+}
+.fin-table {
+  background: transparent;
+  color: var(--text-primary);
+}
+.fin-table thead th {
+  background: var(--navy-deep) !important;
+  color: var(--text-secondary) !important;
+  border-bottom-color: var(--border) !important;
+}
+.fin-table tbody td {
+  border-bottom-color: var(--border) !important;
+  color: var(--text-primary);
+}
+.fin-table tbody tr:hover {
+  background: var(--surface-elev) !important;
+}
+.fin-period-btn {
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+.fin-period-btn:hover { color: var(--blue) !important; border-color: var(--blue) !important; }
+.fin-period-btn.active { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; }
+.chart-toggle-btn { border-color: var(--border) !important; color: var(--text-secondary) !important; }
+.chart-toggle-btn:hover { color: var(--blue) !important; border-color: var(--blue) !important; }
+.chart-toggle-btn.active { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; }
+/* Pendencias on dark */
+.pend-col-header { background: var(--navy-deep) !important; color: var(--text-primary) !important; border-bottom-color: var(--border) !important; }
+.pend-col-total { color: var(--text-primary) !important; }
+.pend-item { border-bottom-color: var(--border-light) !important; }
+.pend-item:hover { background: var(--surface-elev) !important; }
+.pend-item-name { color: var(--text-primary) !important; }
+.pend-item-meta { color: var(--text-caption) !important; }
+.pend-item-meta strong { color: var(--text-secondary) !important; }
+.pend-item-value { color: var(--text-primary) !important; }
+.pend-empty { color: var(--text-caption) !important; }
+/* Modal and dropdowns */
+.fin-modal-overlay { background: rgba(0,0,0,0.6) !important; }
+.fin-modal input, .fin-modal select, .fin-modal textarea {
+  background: var(--navy-deep) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+/* Status badges keep colors but adjust readability */
+.status-badge.ativo { background: rgba(34,197,94,0.18) !important; color: #4ADE80 !important; }
+.status-badge.pendente { background: rgba(255,179,0,0.18) !important; color: #FCD34D !important; }
+/* Section title text */
+.section-title, .fin-card-title, .kpi-value, .stat-value, .fin-kpi-value {
+  color: var(--text-primary) !important;
+}
+.fin-kpi-label, .stat-label, .kpi-label { color: var(--text-secondary) !important; }
+/* Inadimplencia card */
+.fin-inadimplencia { background: var(--surface) !important; border-color: var(--border) !important; }
+.fin-inadimplencia .fin-card-title { color: #FCD34D !important; }
+.fin-inadimplencia-value { color: var(--text-primary) !important; }
+/* Saldo box stays navy-deeper for contrast */
+.pend-saldo { background: var(--navy-deep) !important; }
+/* Dreams / Metas / Quadro card */
+.dreams-hero, .meta-card, .dream-card {
+  background: var(--surface) !important;
+  color: var(--text-primary);
+  border-color: var(--border) !important;
+}
+.dream-card .dream-category { background: var(--blue-dim) !important; color: var(--blue) !important; }
+/* Kanban dark */
+.kanban-column { background: rgba(255,255,255,0.02) !important; }
+.kanban-card { background: var(--surface) !important; color: var(--text-primary); }
+.kanban-card-title { color: var(--text-primary) !important; }
+.kanban-source-btn { background: var(--surface) !important; color: var(--text-secondary) !important; border-color: var(--border) !important; }
+.kanban-source-btn.active { background: var(--blue) !important; color: #fff !important; }
+/* Sort icons */
+.sort-icon { opacity: 0.4; color: var(--text-caption); }
+/* Subtle borders on cards */
+.fin-card, .fin-kpi-card, .stat-card, .pend-col {
+  border: 1px solid var(--border) !important;
+}
+/* Chart grid lines on dark */
+.evo-grid-line { border-top-color: rgba(255,255,255,0.06) !important; }
+/* X/Y axis labels */
+.evo-axis-label, .evo-bar-x-label { color: var(--text-caption) !important; }
+/* Tooltip stays the same (already dark) */
 
 /* ========== SIDEBAR ========== */
 .sidebar {
