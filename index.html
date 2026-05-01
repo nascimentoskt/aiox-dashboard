@@ -3276,6 +3276,99 @@ h1, h2, h3, h4, h5, h6,
   color: var(--text-primary);
 }
 
+/* ===== LOCK SCREEN (Lucas Financeiro) ===== */
+#lucasLockOverlay.active { display: flex !important; }
+.lock-box {
+  width: 320px; max-width: calc(100vw - 32px);
+  text-align: center; color: var(--text-primary);
+}
+.lock-avatar {
+  width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 16px;
+  background: linear-gradient(135deg, var(--blue), #0070DD);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 800; color: #fff;
+  box-shadow: 0 8px 32px rgba(0,136,255,0.4);
+}
+.lock-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.lock-hint {
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+.lock-dots {
+  display: flex; justify-content: center; gap: 22px; margin-bottom: 36px;
+}
+.lock-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  transition: all 0.15s;
+}
+.lock-dot.filled {
+  background: var(--text-primary); border-color: var(--text-primary);
+}
+.lock-dots.shake { animation: lockShake 0.4s; }
+.lock-dots.shake .lock-dot { border-color: #EF4444; background: transparent; }
+@keyframes lockShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+.lock-keypad {
+  display: grid; grid-template-columns: repeat(3, 78px);
+  gap: 18px; justify-content: center; margin-bottom: 28px;
+}
+.lock-key {
+  width: 78px; height: 78px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-primary);
+  font-size: 32px; font-weight: 300;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer; transition: background 0.1s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.lock-key:hover { background: rgba(255,255,255,0.14); }
+.lock-key:active { background: rgba(255,255,255,0.22); transform: scale(0.96); }
+.lock-key span {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  margin-top: 3px; opacity: 0.55;
+}
+.lock-key.lock-empty {
+  background: transparent; border: none; cursor: default; pointer-events: none;
+}
+.lock-key.lock-back {
+  background: transparent; border: none; font-size: 0;
+}
+.lock-key.lock-back:hover { background: rgba(255,255,255,0.06); }
+.lock-cancel {
+  background: transparent; border: none; color: var(--blue);
+  font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; padding: 8px 14px;
+}
+.lock-cancel:hover { opacity: 0.8; }
+
+/* ===== Lucas table actions ===== */
+.lucas-row-actions {
+  display: flex; gap: 6px;
+}
+.lucas-row-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.lucas-row-btn:hover { color: var(--blue); border-color: var(--blue); }
+.lucas-row-btn.danger:hover { color: #F87171; border-color: #F87171; }
+.lucas-row-btn svg { width: 13px; height: 13px; }
+.lucas-status {
+  display: inline-flex; padding: 3px 10px; border-radius: 100px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+}
+.lucas-status.pago { background: rgba(34,197,94,0.15); color: #4ADE80; }
+.lucas-status.pendente { background: rgba(252,211,77,0.15); color: #FCD34D; }
+.lucas-status.atrasado { background: rgba(239,68,68,0.15); color: #F87171; }
+
 @media (max-width: 768px) {
   .dreams-hero { flex-direction: column; align-items: flex-start; padding: 24px; }
   .metas-summary { grid-template-columns: repeat(2, 1fr); }
@@ -3329,8 +3422,13 @@ h1, h2, h3, h4, h5, h6,
 
     <div class="nav-section-label">Financeiro</div>
     <a href="#financeiro" data-nav="financeiro">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Financeiro
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M3 7l9-4 9 4M5 21V11M19 21V11M9 9v12M15 9v12"/></svg>
+      Impulso
+    </a>
+    <a href="#financeiro-lucas" data-nav="financeiro-lucas" onclick="return openLucasFinanceiro(event)">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Lucas
+      <svg style="margin-left:auto;width:12px;height:12px;opacity:0.5;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </a>
     <a href="#organograma" data-nav="organograma">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4"/><path d="M5 16v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/></svg>
@@ -4380,6 +4478,194 @@ h1, h2, h3, h4, h5, h6,
     </div>
 
     </section>
+
+    <!-- ========== FINANCEIRO LUCAS (PF) ========== -->
+    <section class="section-wrapper" id="financeiro-lucas">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="accent-dot"></span>
+          Financeiro · Lucas
+        </div>
+        <div class="section-badge" style="background:rgba(192,132,252,0.12);color:#C084FC;">PF · Privado</div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="fin-kpi-row" style="margin-bottom:24px;">
+        <div class="fin-kpi-card">
+          <div class="fin-kpi-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M3 7l9-4 9 4M5 21V11M19 21V11"/></svg></div>
+          <div class="fin-kpi-value" id="lkpi-patrimonio">R$ 0</div>
+          <div class="fin-kpi-label">Patrim&ocirc;nio Total</div>
+          <span class="fin-kpi-trend" id="lkpi-patrimonio-trend">--</span>
+        </div>
+        <div class="fin-kpi-card">
+          <div class="fin-kpi-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="fin-kpi-value" id="lkpi-receitas">R$ 0</div>
+          <div class="fin-kpi-label">Receitas do M&ecirc;s</div>
+          <span class="fin-kpi-trend up" id="lkpi-receitas-trend">--</span>
+        </div>
+        <div class="fin-kpi-card">
+          <div class="fin-kpi-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div class="fin-kpi-value" id="lkpi-despesas">R$ 0</div>
+          <div class="fin-kpi-label">Despesas do M&ecirc;s</div>
+          <span class="fin-kpi-trend down" id="lkpi-despesas-trend">--</span>
+        </div>
+        <div class="fin-kpi-card">
+          <div class="fin-kpi-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="fin-kpi-value" id="lkpi-saldo">R$ 0</div>
+          <div class="fin-kpi-label">Saldo do M&ecirc;s</div>
+          <span class="fin-kpi-trend" id="lkpi-saldo-trend">--</span>
+        </div>
+      </div>
+
+      <!-- Periodo -->
+      <div id="lucasPeriodBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;"></div>
+
+      <!-- Fluxo Mensal -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Fluxo de Caixa Mensal
+        </div>
+        <div id="lucasEvoChart" class="evo-chart-container"></div>
+      </div>
+
+      <!-- Pendencias -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Pend&ecirc;ncias PF
+        </div>
+        <div class="pend-grid">
+          <div class="pend-col pend-receber">
+            <div class="pend-col-header"><span class="pend-dot" style="background:#22C55E;"></span>A Receber<span class="pend-col-total" id="lpendReceberTotal">R$ 0</span></div>
+            <div class="pend-list" id="lpendReceberList"></div>
+          </div>
+          <div class="pend-col pend-pagar">
+            <div class="pend-col-header"><span class="pend-dot" style="background:#EF4444;"></span>A Pagar<span class="pend-col-total" id="lpendPagarTotal">R$ 0</span></div>
+            <div class="pend-list" id="lpendPagarList"></div>
+          </div>
+        </div>
+        <div class="pend-saldo" id="lpendSaldo"></div>
+      </div>
+
+      <!-- Receitas / Despesas -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Receitas
+          </div>
+          <button class="fin-action-btn green" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('receita')">+ Adicionar</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="fin-table" id="lucasReceitasTable">
+            <thead><tr><th>Status</th><th>Nome</th><th>Categoria</th><th>Valor</th><th>Venc/Recebimento</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody id="lucasReceitasBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fin-card full-width">
+        <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Despesas / Contas a Pagar
+          </div>
+          <button class="fin-action-btn red" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('despesa')">+ Adicionar</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="fin-table" id="lucasDespesasTable">
+            <thead><tr><th>Status</th><th>Nome</th><th>Categoria</th><th>Valor</th><th>Vencimento</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody id="lucasDespesasBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Investimentos -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="9 17 14 12 9 7"/><polyline points="14 7 19 12 14 17"/></svg>
+            Investimentos
+          </div>
+          <button class="fin-action-btn" style="background:var(--blue);color:#fff;font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('investimento')">+ Adicionar</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="fin-table" id="lucasInvestTable">
+            <thead><tr><th>Classe</th><th>Ativo</th><th>Valor Investido</th><th>Valor Atual</th><th>Rend.</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody id="lucasInvestBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Patrimonio -->
+      <div class="fin-card full-width">
+        <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Patrim&ocirc;nio (Im&oacute;veis, Ve&iacute;culos, Posses)
+          </div>
+          <button class="fin-action-btn" style="background:var(--blue);color:#fff;font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('patrimonio')">+ Adicionar</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="fin-table" id="lucasPatrimTable">
+            <thead><tr><th>Tipo</th><th>Item</th><th>Valor</th><th>Observa&ccedil;&atilde;o</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody id="lucasPatrimBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Lucas -->
+      <div class="meta-modal-overlay" id="lucasModalOverlay" onclick="if(event.target===this)closeLucasModal()">
+        <div class="meta-modal">
+          <div class="meta-modal-header">
+            <h3 id="lucasModalTitle">Adicionar</h3>
+            <button class="meta-modal-close" onclick="closeLucasModal()">&times;</button>
+          </div>
+          <form id="lucasForm" onsubmit="submitLucas(event)">
+            <input type="hidden" id="lucasId">
+            <input type="hidden" id="lucasTipo">
+            <div id="lucasFormFields"></div>
+            <div class="meta-form-actions">
+              <button type="button" class="meta-btn-secondary" onclick="closeLucasModal()">Cancelar</button>
+              <button type="submit" class="meta-btn-primary">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal de Senha -->
+    <div id="lucasLockOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,22,38,0.95);backdrop-filter:blur(12px);align-items:center;justify-content:center;">
+      <div class="lock-box">
+        <div class="lock-avatar">L</div>
+        <div class="lock-name">Lucas</div>
+        <div class="lock-hint">Digite o c&oacute;digo</div>
+        <div class="lock-dots" id="lockDots">
+          <div class="lock-dot"></div>
+          <div class="lock-dot"></div>
+          <div class="lock-dot"></div>
+          <div class="lock-dot"></div>
+        </div>
+        <div class="lock-keypad">
+          <button class="lock-key" onclick="lockTap('1')">1</button>
+          <button class="lock-key" onclick="lockTap('2')">2<span>ABC</span></button>
+          <button class="lock-key" onclick="lockTap('3')">3<span>DEF</span></button>
+          <button class="lock-key" onclick="lockTap('4')">4<span>GHI</span></button>
+          <button class="lock-key" onclick="lockTap('5')">5<span>JKL</span></button>
+          <button class="lock-key" onclick="lockTap('6')">6<span>MNO</span></button>
+          <button class="lock-key" onclick="lockTap('7')">7<span>PQRS</span></button>
+          <button class="lock-key" onclick="lockTap('8')">8<span>TUV</span></button>
+          <button class="lock-key" onclick="lockTap('9')">9<span>WXYZ</span></button>
+          <button class="lock-key lock-empty"></button>
+          <button class="lock-key" onclick="lockTap('0')">0</button>
+          <button class="lock-key lock-back" onclick="lockBack()" aria-label="Apagar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l4-7h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H7l-4-7z"/><line x1="11" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="11" y2="15"/></svg>
+          </button>
+        </div>
+        <button class="lock-cancel" onclick="cancelLock()">Cancelar</button>
+      </div>
+    </div>
 
     <!-- ========== ORGANOGRAMA IMPULSO ========== -->
     <section class="section-wrapper" id="organograma">
@@ -8261,6 +8547,508 @@ function submitKanbanModal(e) {
     alert('Erro ao criar demanda. Tente novamente.');
     if (submitBtn) { submitBtn.textContent = 'Criar Demanda'; submitBtn.disabled = false; }
   });
+}
+
+// ============================================================
+// ============== FINANCEIRO LUCAS (PF) =======================
+// ============================================================
+
+var LUCAS_LOCK_PIN = '9151'; // pin numerico (cliente-side, nao seguro mas suficiente)
+var LUCAS_SESSION_KEY = 'impulso-hub-lucas-unlocked';
+var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v1';
+var lucasPin = '';
+var lucasPeriodSelected = 'all';
+
+function isLucasUnlocked() {
+  return sessionStorage.getItem(LUCAS_SESSION_KEY) === '1';
+}
+function setLucasUnlocked(v) {
+  if (v) sessionStorage.setItem(LUCAS_SESSION_KEY, '1');
+  else sessionStorage.removeItem(LUCAS_SESSION_KEY);
+}
+
+function openLucasFinanceiro(e) {
+  if (e) e.preventDefault();
+  if (isLucasUnlocked()) {
+    showLucasSection();
+    return false;
+  }
+  showLockScreen();
+  return false;
+}
+
+function showLockScreen() {
+  var ov = document.getElementById('lucasLockOverlay');
+  if (!ov) return;
+  lucasPin = '';
+  updateLockDots();
+  ov.classList.add('active');
+  ov.style.display = 'flex';
+}
+
+function hideLockScreen() {
+  var ov = document.getElementById('lucasLockOverlay');
+  if (!ov) return;
+  ov.classList.remove('active');
+  ov.style.display = 'none';
+}
+
+function lockTap(d) {
+  if (lucasPin.length >= 4) return;
+  lucasPin += d;
+  updateLockDots();
+  if (lucasPin.length === 4) {
+    setTimeout(checkLucasPin, 150);
+  }
+}
+
+function lockBack() {
+  if (lucasPin.length === 0) return;
+  lucasPin = lucasPin.slice(0, -1);
+  updateLockDots();
+}
+
+function cancelLock() {
+  lucasPin = '';
+  updateLockDots();
+  hideLockScreen();
+  // Volta ao dashboard
+  if (typeof showSection === 'function') showSection('dashboard');
+}
+
+function updateLockDots() {
+  var dots = document.getElementById('lockDots');
+  if (!dots) return;
+  dots.classList.remove('shake');
+  var children = dots.querySelectorAll('.lock-dot');
+  for (var i = 0; i < children.length; i++) {
+    children[i].classList.toggle('filled', i < lucasPin.length);
+  }
+}
+
+function checkLucasPin() {
+  if (lucasPin === LUCAS_LOCK_PIN) {
+    setLucasUnlocked(true);
+    hideLockScreen();
+    showLucasSection();
+  } else {
+    var dots = document.getElementById('lockDots');
+    if (dots) dots.classList.add('shake');
+    setTimeout(function() {
+      lucasPin = '';
+      updateLockDots();
+    }, 450);
+  }
+}
+
+function showLucasSection() {
+  if (typeof showSection === 'function') {
+    showSection('financeiro-lucas');
+  } else {
+    document.querySelectorAll('.section-wrapper').forEach(function(s) { s.classList.remove('active-section'); });
+    var t = document.getElementById('financeiro-lucas');
+    if (t) t.classList.add('active-section');
+  }
+  renderLucasAll();
+}
+
+// ===== Storage =====
+function lucasLoad() {
+  try {
+    var raw = localStorage.getItem(LUCAS_DATA_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return seedLucas();
+}
+
+function lucasSave(data) {
+  try { localStorage.setItem(LUCAS_DATA_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function seedLucas() {
+  var seed = {
+    receitas: [
+      { id: 'r1', nome: 'Pro-labore Impulso', categoria: 'Sal\u00e1rio', valor: 100000, status: 'Pago', data: '2026-04-05' },
+      { id: 'r2', nome: 'Comiss\u00e3o Luzzoo', categoria: 'Comiss\u00e3o', valor: 84716, status: 'Pendente', data: '2026-05-10' }
+    ],
+    despesas: [
+      { id: 'd1', nome: 'Cart\u00e3o Nubank', categoria: 'Cart\u00e3o', valor: 8500, status: 'Pendente', data: '2026-05-10' },
+      { id: 'd2', nome: 'Financiamento apartamento', categoria: 'Im\u00f3vel', valor: 4200, status: 'Pendente', data: '2026-05-15' },
+      { id: 'd3', nome: 'Plano de sa\u00fade', categoria: 'Sa\u00fade', valor: 1200, status: 'Pendente', data: '2026-05-08' }
+    ],
+    investimentos: [
+      { id: 'i1', classe: 'A\u00e7\u00f5es', ativo: 'ITSA4', investido: 30000, atual: 38500 },
+      { id: 'i2', classe: 'FII', ativo: 'KNRI11', investido: 50000, atual: 52400 },
+      { id: 'i3', classe: 'Renda Fixa', ativo: 'Tesouro Selic', investido: 100000, atual: 108200 },
+      { id: 'i4', classe: 'Cripto', ativo: 'Bitcoin', investido: 20000, atual: 35600 }
+    ],
+    patrimonio: [
+      { id: 'p1', tipo: 'Im\u00f3vel', item: 'Apartamento', valor: 850000, obs: 'Financiado, 60% pago' },
+      { id: 'p2', tipo: 'Ve\u00edculo', item: 'Carro', valor: 120000, obs: 'Quitado' },
+      { id: 'p3', tipo: 'Reserva', item: 'Conta corrente', valor: 25000, obs: 'Liquidez imediata' }
+    ]
+  };
+  lucasSave(seed);
+  return seed;
+}
+
+// ===== Render =====
+function renderLucasAll() {
+  if (!isLucasUnlocked()) return;
+  var d = lucasLoad();
+  renderLucasKPIs(d);
+  renderLucasPeriodBtns(d);
+  renderLucasEvo(d);
+  renderLucasPendencias(d);
+  renderLucasReceitas(d);
+  renderLucasDespesas(d);
+  renderLucasInvestimentos(d);
+  renderLucasPatrimonio(d);
+}
+
+function lucasMonthKey(dateStr) {
+  if (!dateStr) return '';
+  var p = dateStr.split('-');
+  if (p.length < 2) return '';
+  var meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return meses[parseInt(p[1], 10) - 1] + '/' + p[0];
+}
+
+function lucasFilterByPeriod(items, period) {
+  if (period === 'all') return items;
+  return items.filter(function(x) { return lucasMonthKey(x.data) === period; });
+}
+
+function lucasFmt(v) {
+  if (typeof v !== 'number') v = parseFloat(v) || 0;
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function renderLucasKPIs(d) {
+  var rec = lucasFilterByPeriod(d.receitas || [], lucasPeriodSelected);
+  var desp = lucasFilterByPeriod(d.despesas || [], lucasPeriodSelected);
+  var totalRec = rec.reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
+  var totalDesp = desp.reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
+  var saldo = totalRec - totalDesp;
+
+  var totalInv = (d.investimentos || []).reduce(function(a, x) { return a + (parseFloat(x.atual) || 0); }, 0);
+  var totalPatrim = (d.patrimonio || []).reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
+  var patrimonio = totalInv + totalPatrim;
+
+  var $ = function(id) { return document.getElementById(id); };
+  if ($('lkpi-patrimonio')) $('lkpi-patrimonio').textContent = lucasFmt(patrimonio);
+  if ($('lkpi-patrimonio-trend')) $('lkpi-patrimonio-trend').textContent = 'Invest + Posses';
+  if ($('lkpi-receitas')) $('lkpi-receitas').textContent = lucasFmt(totalRec);
+  if ($('lkpi-receitas-trend')) $('lkpi-receitas-trend').textContent = rec.length + ' lan\u00e7amento(s)';
+  if ($('lkpi-despesas')) $('lkpi-despesas').textContent = lucasFmt(totalDesp);
+  if ($('lkpi-despesas-trend')) $('lkpi-despesas-trend').textContent = desp.length + ' lan\u00e7amento(s)';
+  if ($('lkpi-saldo')) {
+    $('lkpi-saldo').textContent = lucasFmt(saldo);
+    $('lkpi-saldo').style.color = saldo >= 0 ? '#4ADE80' : '#F87171';
+  }
+  if ($('lkpi-saldo-trend')) $('lkpi-saldo-trend').textContent = saldo >= 0 ? 'Sobra' : 'D\u00e9ficit';
+}
+
+function renderLucasPeriodBtns(d) {
+  var c = document.getElementById('lucasPeriodBtns');
+  if (!c) return;
+  var monthOrder = { Jan:1,Fev:2,Mar:3,Abr:4,Mai:5,Jun:6,Jul:7,Ago:8,Set:9,Out:10,Nov:11,Dez:12 };
+  var setMonths = {};
+  (d.receitas || []).concat(d.despesas || []).forEach(function(x) {
+    var m = lucasMonthKey(x.data);
+    if (m) setMonths[m] = true;
+  });
+  var monthsArr = Object.keys(setMonths).sort(function(a, b) {
+    var pa = a.split('/'); var pb = b.split('/');
+    if (pa[1] !== pb[1]) return pa[1].localeCompare(pb[1]);
+    return monthOrder[pa[0]] - monthOrder[pb[0]];
+  });
+  var html = '<button class="fin-period-btn ' + (lucasPeriodSelected === 'all' ? 'active' : '') + '" onclick="setLucasPeriod(\'all\')">Todos</button>';
+  for (var i = monthsArr.length - 1; i >= 0; i--) {
+    html += '<button class="fin-period-btn ' + (lucasPeriodSelected === monthsArr[i] ? 'active' : '') + '" onclick="setLucasPeriod(\'' + monthsArr[i] + '\')">' + monthsArr[i] + '</button>';
+  }
+  c.innerHTML = html;
+}
+function setLucasPeriod(p) { lucasPeriodSelected = p; renderLucasAll(); }
+
+function renderLucasEvo(d) {
+  var c = document.getElementById('lucasEvoChart');
+  if (!c) return;
+  var monthOrder = { Jan:1,Fev:2,Mar:3,Abr:4,Mai:5,Jun:6,Jul:7,Ago:8,Set:9,Out:10,Nov:11,Dez:12 };
+  var byMonth = {};
+  (d.receitas || []).forEach(function(x) {
+    var m = lucasMonthKey(x.data); if (!m) return;
+    if (!byMonth[m]) byMonth[m] = { rec: 0, desp: 0 };
+    byMonth[m].rec += parseFloat(x.valor) || 0;
+  });
+  (d.despesas || []).forEach(function(x) {
+    var m = lucasMonthKey(x.data); if (!m) return;
+    if (!byMonth[m]) byMonth[m] = { rec: 0, desp: 0 };
+    byMonth[m].desp += parseFloat(x.valor) || 0;
+  });
+  var months = Object.keys(byMonth).sort(function(a, b) {
+    var pa = a.split('/'); var pb = b.split('/');
+    if (pa[1] !== pb[1]) return pa[1].localeCompare(pb[1]);
+    return monthOrder[pa[0]] - monthOrder[pb[0]];
+  });
+  if (months.length === 0) {
+    c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-caption);font-size:13px;">Sem dados \u2014 cadastre receitas e despesas para ver evolu\u00e7\u00e3o</div>';
+    return;
+  }
+  var maxVal = 1;
+  months.forEach(function(m) {
+    if (byMonth[m].rec > maxVal) maxVal = byMonth[m].rec;
+    if (byMonth[m].desp > maxVal) maxVal = byMonth[m].desp;
+  });
+  maxVal *= 1.15;
+  var html = '<div class="evo-legend"><div class="evo-legend-item"><span class="evo-legend-dot" style="background:#22C55E;"></span>Receita</div><div class="evo-legend-item"><span class="evo-legend-dot" style="background:#EF4444;"></span>Despesas</div></div>';
+  html += '<div class="evo-bar-area" style="position:relative;">';
+  html += '<div class="evo-y-labels">';
+  for (var i = 0; i <= 4; i++) {
+    var yVal = maxVal * (1 - i / 4);
+    html += '<span class="evo-axis-label">R$ ' + (yVal >= 1000 ? (yVal/1000).toFixed(0) + 'k' : yVal.toFixed(0)) + '</span>';
+  }
+  html += '</div><div class="evo-grid-lines">';
+  for (var j = 0; j <= 4; j++) html += '<div class="evo-grid-line" style="top:' + (j*25) + '%;"></div>';
+  html += '</div>';
+  months.forEach(function(m, i) {
+    var rH = (byMonth[m].rec / maxVal) * 100;
+    var dH = (byMonth[m].desp / maxVal) * 100;
+    var delay = i * 80;
+    html += '<div class="evo-bar-col">';
+    html += '<div class="evo-tooltip"><div style="margin-bottom:2px;font-size:10px;color:rgba(255,255,255,0.6);">' + m + '</div><div style="color:#22C55E;">Receita: ' + lucasFmt(byMonth[m].rec) + '</div><div style="color:#EF4444;">Despesas: ' + lucasFmt(byMonth[m].desp) + '</div><div style="margin-top:2px;font-size:10px;color:rgba(255,255,255,0.6);">Saldo: ' + lucasFmt(byMonth[m].rec - byMonth[m].desp) + '</div></div>';
+    html += '<div class="evo-bar">';
+    html += '<div class="evo-bar-receita" style="height:' + rH.toFixed(1) + '%; animation: evoBarGrow 0.7s cubic-bezier(0.4,0,0.2,1) ' + delay + 'ms both; transform-origin: bottom;"></div>';
+    html += '<div class="evo-bar-despesa" style="height:' + dH.toFixed(1) + '%; animation: evoBarGrow 0.7s cubic-bezier(0.4,0,0.2,1) ' + (delay + 60) + 'ms both; transform-origin: bottom;"></div>';
+    html += '</div><div class="evo-bar-x-label">' + m + '</div></div>';
+  });
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderLucasPendencias(d) {
+  var rec = (d.receitas || []).filter(function(x) { return x.status === 'Pendente'; });
+  var desp = (d.despesas || []).filter(function(x) { return x.status === 'Pendente'; });
+  var totalR = rec.reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
+  var totalP = desp.reduce(function(a, x) { return a + (parseFloat(x.valor) || 0); }, 0);
+  var $ = function(id) { return document.getElementById(id); };
+  if ($('lpendReceberTotal')) $('lpendReceberTotal').textContent = lucasFmt(totalR);
+  if ($('lpendPagarTotal')) $('lpendPagarTotal').textContent = lucasFmt(totalP);
+  if ($('lpendReceberList')) $('lpendReceberList').innerHTML = rec.length === 0
+    ? '<div class="pend-empty">Sem pend\u00eancias \u2014 tudo recebido</div>'
+    : rec.map(function(x) { return lucasPendItemHtml(x, 'receita'); }).join('');
+  if ($('lpendPagarList')) $('lpendPagarList').innerHTML = desp.length === 0
+    ? '<div class="pend-empty">Sem pend\u00eancias \u2014 nada a pagar</div>'
+    : desp.map(function(x) { return lucasPendItemHtml(x, 'despesa'); }).join('');
+  if ($('lpendSaldo')) {
+    var saldo = totalR - totalP;
+    $('lpendSaldo').innerHTML = '<span class="pend-saldo-label">Saldo l\u00edquido das pend\u00eancias</span><span class="pend-saldo-value ' + (saldo >= 0 ? 'positive' : 'negative') + '">' + (saldo >= 0 ? '+' : '') + lucasFmt(saldo) + '</span>';
+  }
+}
+
+function lucasPendItemHtml(x, tipo) {
+  var btnLabel = tipo === 'receita' ? 'Recebido' : 'Pago';
+  return '<div class="pend-item">'
+    + '<div class="pend-item-info">'
+    + '<div class="pend-item-name">' + escHtml(x.nome) + '</div>'
+    + '<div class="pend-item-meta"><strong>' + escHtml(lucasMonthKey(x.data) || '--') + '</strong>' + (x.categoria ? ' &middot; ' + escHtml(x.categoria) : '') + '</div>'
+    + '</div>'
+    + '<div class="pend-item-right">'
+    + '<span class="pend-item-value">' + lucasFmt(x.valor) + '</span>'
+    + '<button class="pend-action-btn" onclick="lucasMarkPaid(\'' + x.id + '\', \'' + tipo + '\')">' + btnLabel + '</button>'
+    + '</div></div>';
+}
+
+function lucasMarkPaid(id, tipo) {
+  var d = lucasLoad();
+  var arr = tipo === 'receita' ? d.receitas : d.despesas;
+  var x = arr.find(function(i) { return i.id === id; });
+  if (x) { x.status = 'Pago'; lucasSave(d); renderLucasAll(); }
+}
+
+function renderLucasReceitas(d) {
+  var b = document.getElementById('lucasReceitasBody');
+  if (!b) return;
+  var rows = (d.receitas || []).slice().sort(function(a, b) { return (b.data || '').localeCompare(a.data || ''); });
+  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma receita cadastrada</td></tr>'
+    : rows.map(function(x) {
+      var stClass = x.status === 'Pago' ? 'pago' : 'pendente';
+      return '<tr><td><span class="lucas-status ' + stClass + '">' + escHtml(x.status || 'Pendente') + '</span></td>'
+        + '<td>' + escHtml(x.nome) + '</td>'
+        + '<td>' + escHtml(x.categoria || '--') + '</td>'
+        + '<td style="font-weight:600;color:#4ADE80;">' + lucasFmt(x.valor) + '</td>'
+        + '<td>' + escHtml(x.data || '--') + '</td>'
+        + '<td>' + lucasRowActions(x.id, 'receita') + '</td></tr>';
+    }).join('');
+}
+
+function renderLucasDespesas(d) {
+  var b = document.getElementById('lucasDespesasBody');
+  if (!b) return;
+  var rows = (d.despesas || []).slice().sort(function(a, b) { return (a.data || '').localeCompare(b.data || ''); });
+  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma despesa cadastrada</td></tr>'
+    : rows.map(function(x) {
+      var stClass = x.status === 'Pago' ? 'pago' : 'pendente';
+      return '<tr><td><span class="lucas-status ' + stClass + '">' + escHtml(x.status || 'Pendente') + '</span></td>'
+        + '<td>' + escHtml(x.nome) + '</td>'
+        + '<td>' + escHtml(x.categoria || '--') + '</td>'
+        + '<td style="font-weight:600;color:#F87171;">' + lucasFmt(x.valor) + '</td>'
+        + '<td>' + escHtml(x.data || '--') + '</td>'
+        + '<td>' + lucasRowActions(x.id, 'despesa') + '</td></tr>';
+    }).join('');
+}
+
+function renderLucasInvestimentos(d) {
+  var b = document.getElementById('lucasInvestBody');
+  if (!b) return;
+  var rows = d.investimentos || [];
+  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhum investimento cadastrado</td></tr>'
+    : rows.map(function(x) {
+      var inv = parseFloat(x.investido) || 0;
+      var atual = parseFloat(x.atual) || 0;
+      var rend = inv > 0 ? ((atual - inv) / inv * 100) : 0;
+      var rendCol = rend >= 0 ? '#4ADE80' : '#F87171';
+      return '<tr><td>' + escHtml(x.classe || '--') + '</td>'
+        + '<td>' + escHtml(x.ativo || '--') + '</td>'
+        + '<td>' + lucasFmt(inv) + '</td>'
+        + '<td style="font-weight:600;">' + lucasFmt(atual) + '</td>'
+        + '<td style="font-weight:600;color:' + rendCol + ';">' + (rend >= 0 ? '+' : '') + rend.toFixed(1) + '%</td>'
+        + '<td>' + lucasRowActions(x.id, 'investimento') + '</td></tr>';
+    }).join('');
+}
+
+function renderLucasPatrimonio(d) {
+  var b = document.getElementById('lucasPatrimBody');
+  if (!b) return;
+  var rows = d.patrimonio || [];
+  b.innerHTML = rows.length === 0 ? '<tr><td colspan="5" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhum patrim\u00f4nio cadastrado</td></tr>'
+    : rows.map(function(x) {
+      return '<tr><td>' + escHtml(x.tipo || '--') + '</td>'
+        + '<td>' + escHtml(x.item || '--') + '</td>'
+        + '<td style="font-weight:600;">' + lucasFmt(x.valor) + '</td>'
+        + '<td style="color:var(--text-secondary);font-size:12px;">' + escHtml(x.obs || '') + '</td>'
+        + '<td>' + lucasRowActions(x.id, 'patrimonio') + '</td></tr>';
+    }).join('');
+}
+
+function lucasRowActions(id, tipo) {
+  return '<div class="lucas-row-actions">'
+    + '<button class="lucas-row-btn" onclick="editLucas(\'' + tipo + '\', \'' + id + '\')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>'
+    + '<button class="lucas-row-btn danger" onclick="deleteLucas(\'' + tipo + '\', \'' + id + '\')" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button>'
+    + '</div>';
+}
+
+// ===== Modal =====
+function lucasFieldsForType(tipo) {
+  var common = function(opts) {
+    return '<div class="meta-form-row"><label>' + opts.label + (opts.req ? ' *' : '') + '</label>'
+      + '<input type="' + (opts.type || 'text') + '" id="' + opts.id + '" ' + (opts.req ? 'required' : '') + ' ' + (opts.step ? 'step="' + opts.step + '"' : '') + ' value="' + (opts.val || '') + '"></div>';
+  };
+  if (tipo === 'receita' || tipo === 'despesa') {
+    return common({ id: 'lf-nome', label: 'Nome', req: true })
+      + '<div class="meta-form-grid">'
+      + common({ id: 'lf-categoria', label: 'Categoria' })
+      + common({ id: 'lf-valor', label: 'Valor (R$)', req: true, type: 'number', step: 'any' })
+      + '</div>'
+      + '<div class="meta-form-grid">'
+      + '<div class="meta-form-row"><label>Status</label><select id="lf-status"><option value="Pendente">Pendente</option><option value="Pago">' + (tipo === 'receita' ? 'Recebido' : 'Pago') + '</option></select></div>'
+      + common({ id: 'lf-data', label: 'Data', type: 'date' })
+      + '</div>';
+  }
+  if (tipo === 'investimento') {
+    return common({ id: 'lf-classe', label: 'Classe (A\u00e7\u00f5es / FII / Renda Fixa / Cripto)', req: true })
+      + common({ id: 'lf-ativo', label: 'Ativo (ITSA4, KNRI11, etc)', req: true })
+      + '<div class="meta-form-grid">'
+      + common({ id: 'lf-investido', label: 'Valor Investido', req: true, type: 'number', step: 'any' })
+      + common({ id: 'lf-atual', label: 'Valor Atual', req: true, type: 'number', step: 'any' })
+      + '</div>';
+  }
+  if (tipo === 'patrimonio') {
+    return common({ id: 'lf-tipo', label: 'Tipo (Im\u00f3vel / Ve\u00edculo / Reserva / Outro)', req: true })
+      + common({ id: 'lf-item', label: 'Item', req: true })
+      + common({ id: 'lf-valor', label: 'Valor (R$)', req: true, type: 'number', step: 'any' })
+      + common({ id: 'lf-obs', label: 'Observa\u00e7\u00e3o' });
+  }
+  return '';
+}
+
+function openLucasModal(tipo, id) {
+  document.getElementById('lucasTipo').value = tipo;
+  document.getElementById('lucasId').value = id || '';
+  document.getElementById('lucasFormFields').innerHTML = lucasFieldsForType(tipo);
+  var titleMap = { receita: 'Receita', despesa: 'Despesa', investimento: 'Investimento', patrimonio: 'Patrim\u00f4nio' };
+  document.getElementById('lucasModalTitle').textContent = (id ? 'Editar ' : 'Nova ') + titleMap[tipo];
+  if (id) {
+    var d = lucasLoad();
+    var arr = d[tipo + (tipo === 'patrimonio' ? '' : 's')] || [];
+    if (tipo === 'patrimonio') arr = d.patrimonio;
+    if (tipo === 'investimento') arr = d.investimentos;
+    var x = arr.find(function(i) { return i.id === id; });
+    if (x) {
+      Object.keys(x).forEach(function(k) {
+        var el = document.getElementById('lf-' + k);
+        if (el) el.value = x[k];
+      });
+    }
+  }
+  document.getElementById('lucasModalOverlay').classList.add('active');
+}
+
+function closeLucasModal() {
+  document.getElementById('lucasModalOverlay').classList.remove('active');
+}
+
+function submitLucas(e) {
+  e.preventDefault();
+  var tipo = document.getElementById('lucasTipo').value;
+  var id = document.getElementById('lucasId').value;
+  var d = lucasLoad();
+  var key = tipo === 'patrimonio' ? 'patrimonio' : (tipo === 'investimento' ? 'investimentos' : tipo + 's');
+  if (!d[key]) d[key] = [];
+  var obj = { id: id || (tipo[0] + Date.now()) };
+  var fieldsByType = {
+    receita: ['nome','categoria','valor','status','data'],
+    despesa: ['nome','categoria','valor','status','data'],
+    investimento: ['classe','ativo','investido','atual'],
+    patrimonio: ['tipo','item','valor','obs']
+  };
+  fieldsByType[tipo].forEach(function(f) {
+    var el = document.getElementById('lf-' + f);
+    if (!el) return;
+    obj[f] = (f === 'valor' || f === 'investido' || f === 'atual') ? (parseFloat(el.value) || 0) : el.value;
+  });
+  if (id) {
+    var idx = d[key].findIndex(function(i) { return i.id === id; });
+    if (idx >= 0) d[key][idx] = obj; else d[key].push(obj);
+  } else {
+    d[key].push(obj);
+  }
+  lucasSave(d);
+  closeLucasModal();
+  renderLucasAll();
+}
+
+function editLucas(tipo, id) { openLucasModal(tipo, id); }
+
+function deleteLucas(tipo, id) {
+  if (!confirm('Excluir este item? A\u00e7\u00e3o irrevers\u00edvel.')) return;
+  var d = lucasLoad();
+  var key = tipo === 'patrimonio' ? 'patrimonio' : (tipo === 'investimento' ? 'investimentos' : tipo + 's');
+  d[key] = (d[key] || []).filter(function(i) { return i.id !== id; });
+  lucasSave(d);
+  renderLucasAll();
+}
+
+// Re-check lock on hash change (e.g. user navigates back)
+window.addEventListener('hashchange', function() {
+  if (window.location.hash === '#financeiro-lucas' && !isLucasUnlocked()) {
+    showLockScreen();
+  }
+});
+
+// First render if already unlocked
+if (window.location.hash === '#financeiro-lucas' && isLucasUnlocked()) {
+  setTimeout(renderLucasAll, 100);
 }
 
 </script>
