@@ -4992,7 +4992,12 @@ function showSection(sectionId) {
 document.querySelectorAll('.sidebar-nav a[data-nav]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
-    showSection(a.dataset.nav);
+    // Lucas tab requires PIN; route through openLucasFinanceiro
+    if (a.dataset.nav === 'financeiro-lucas') {
+      if (typeof openLucasFinanceiro === 'function') openLucasFinanceiro(e);
+    } else {
+      showSection(a.dataset.nav);
+    }
     if (window.innerWidth <= 768) {
       sidebar.classList.remove('open');
       sidebarOverlay.classList.remove('show');
