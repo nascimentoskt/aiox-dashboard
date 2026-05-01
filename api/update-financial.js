@@ -19,6 +19,19 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
+    if (field === 'archived') {
+      var archiveRes = await fetch('https://api.notion.com/v1/pages/' + pageId, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + NOTION_TOKEN, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ archived: value === true || value === 'true' })
+      });
+      if (!archiveRes.ok) {
+        var errA = await archiveRes.json();
+        return res.status(archiveRes.status).json({ error: errA.message });
+      }
+      return res.status(200).json({ success: true, pageId: pageId, field: field, value: value });
+    }
+
     var properties = {};
 
     if (field === 'receita' || field === 'valor') {
