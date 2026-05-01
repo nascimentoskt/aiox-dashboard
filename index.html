@@ -2937,10 +2937,11 @@ h1, h2, h3, h4, h5, h6,
   margin-bottom: 20px;
 }
 .meta-summary-card {
-  background: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-card);
   border-left: 3px solid #0088FF;
 }
 .meta-summary-card:nth-child(1) { border-left-color: #0088FF; }
@@ -2956,7 +2957,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .meta-summary-label {
   font-size: 12px;
-  color: #6B7A9A;
+  color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2977,9 +2978,9 @@ h1, h2, h3, h4, h5, h6,
 .meta-filter-btn {
   padding: 8px 16px;
   border-radius: 100px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background: #fff;
-  color: #6B7A9A;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
   font-family: 'Sora', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -3018,17 +3019,19 @@ h1, h2, h3, h4, h5, h6,
   margin-bottom: 48px;
 }
 .meta-item {
-  background: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-card);
   border-left: 3px solid #0088FF;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.2s;
 }
+.meta-item:hover { background: var(--surface-elev); }
 .meta-item:hover { transform: translateX(4px); }
 .meta-item.meta-concluida { border-left-color: #34C759; opacity: 0.85; }
 .meta-item.meta-andamento { border-left-color: #FFB300; }
@@ -3066,8 +3069,8 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 100px;
-  background: #F0F2F7;
-  color: #6B7A9A;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -3093,7 +3096,7 @@ h1, h2, h3, h4, h5, h6,
 .meta-progress-bar {
   width: 180px;
   height: 8px;
-  background: #F0F2F7;
+  background: rgba(255,255,255,0.08);
   border-radius: 100px;
   overflow: hidden;
 }
@@ -3109,7 +3112,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .meta-deadline {
   font-size: 11px;
-  color: #6B7A9A;
+  color: var(--text-secondary);
   font-weight: 600;
   min-width: 90px;
   text-align: right;
