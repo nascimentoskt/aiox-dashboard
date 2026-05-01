@@ -37,6 +37,8 @@ module.exports = async function handler(req, res) {
       properties['Modelo'] = { select: { name: value } };
     } else if (field === 'cliente') {
       properties['Cliente'] = { select: { name: value } };
+    } else if (field === 'mesAno') {
+      properties['Mes/Ano'] = { select: { name: value } };
     }
 
     var updateRes = await fetch('https://api.notion.com/v1/pages/' + pageId, {
