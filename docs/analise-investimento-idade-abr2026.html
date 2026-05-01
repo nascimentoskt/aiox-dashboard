@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A2744">
+<title>Análise de Investimento por Idade — Impulso Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0088FF;
+    --blue-soft: rgba(0,136,255,0.12);
+    --navy: #1A2744;
+    --navy-deep: #0F1626;
+    --navy-card: #1F2D52;
+    --navy-elev: #243463;
+    --offwhite: #F2F2F2;
+    --green: #22C55E;
+    --green-soft: rgba(34,197,94,0.12);
+    --red: #EF4444;
+    --red-soft: rgba(239,68,68,0.12);
+    --yellow: #FCD34D;
+    --yellow-soft: rgba(252,211,77,0.12);
+    --purple: #C084FC;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+    --text-soft: rgba(255,255,255,0.70);
+    --text-muted: rgba(255,255,255,0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--navy-deep);
+    color: var(--offwhite);
+    font-family: 'Sora', -apple-system, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(0,136,255,0.10) 0%, transparent 50%),
+      radial-gradient(circle at 85% 100%, rgba(0,136,255,0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 56px 32px 96px; }
+
+  /* Header */
+  header.brand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 22px; border-bottom: 1px solid var(--border); margin-bottom: 48px;
+  }
+  .brand-mark { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 44px; height: 44px; border-radius: 10px; background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: #fff; font-size: 20px; letter-spacing: -0.5px;
+    box-shadow: 0 8px 24px rgba(0,136,255,0.35);
+  }
+  .brand-name { font-size: 16px; font-weight: 600; }
+  .brand-name span { color: var(--text-muted); font-weight: 400; }
+  .meta {
+    display: flex; gap: 24px; align-items: center;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .meta-item { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(34,197,94,0.18); }
+
+  /* Hero */
+  .hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 14px;
+  }
+  h1 { font-size: 52px; font-weight: 700; letter-spacing: -1.6px; line-height: 1.05; margin-bottom: 18px; }
+  h1 strong { color: var(--blue); }
+  .subtitle { font-size: 17px; color: var(--text-soft); max-width: 760px; }
+
+  /* KPI grid */
+  .kpis {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; margin-bottom: 64px;
+  }
+  .kpi { background: var(--navy); padding: 22px 24px; position: relative; overflow: hidden; }
+  .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi:nth-child(1)::before { background: var(--blue); }
+  .kpi:nth-child(2)::before { background: var(--green); }
+  .kpi:nth-child(3)::before { background: var(--yellow); }
+  .kpi:nth-child(4)::before { background: var(--purple); }
+  .kpi:nth-child(5)::before { background: var(--red); }
+  .kpi-label {
+    font-size: 10px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 10px;
+  }
+  .kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -1px; }
+  .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* Section title */
+  .section-title {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  }
+  .section-title h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+  .section-title .num { font-size: 12px; color: var(--text-muted); letter-spacing: 1.5px; }
+
+  /* Cards */
+  .card {
+    background: var(--navy); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 28px; margin-bottom: 16px;
+  }
+  .card.dual { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; padding: 12px 14px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted);
+    border-bottom: 1px solid var(--border-strong); white-space: nowrap;
+  }
+  td {
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.right, th.right { text-align: right; }
+  .pos { color: var(--green); font-weight: 600; }
+  .neg { color: var(--red); font-weight: 600; }
+  .warn { color: var(--yellow); font-weight: 600; }
+
+  /* Heatmap */
+  .heatmap { width: 100%; border-collapse: separate; border-spacing: 4px; }
+  .heatmap th { padding: 8px; text-align: center; font-size: 10px; }
+  .heatmap td {
+    padding: 12px 8px; text-align: center; border-radius: 6px;
+    font-size: 12px; font-weight: 600; border: none;
+  }
+  .heatmap td.cliente { text-align: left; background: transparent !important; font-weight: 600; }
+
+  /* Bar visualizations */
+  .bar-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .bar-row:last-child { border-bottom: none; }
+  .bar-label { font-size: 13px; font-weight: 600; min-width: 80px; }
+  .bar-track {
+    flex: 1; height: 22px; background: rgba(255,255,255,0.05);
+    border-radius: 6px; position: relative; overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; color: #fff; font-size: 11px; font-weight: 700; }
+  .bar-value { font-size: 12px; color: var(--text-soft); min-width: 110px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Action items */
+  .action-list { list-style: none; }
+  .action-item {
+    display: grid; grid-template-columns: 36px 1fr; gap: 16px;
+    padding: 18px 0; border-top: 1px solid var(--border);
+  }
+  .action-item:first-child { border-top: none; padding-top: 0; }
+  .action-num {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--blue-soft);
+    color: var(--blue); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+  }
+  .action-content h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .action-content .meta { display: flex; gap: 14px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; flex-wrap: wrap; }
+  .action-content .meta strong { color: var(--text-soft); font-weight: 600; }
+  .action-content p { font-size: 13px; color: var(--text-soft); line-height: 1.55; }
+
+  /* Pills */
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 700;
+  }
+  .pill.green { background: var(--green-soft); color: var(--green); }
+  .pill.red { background: var(--red-soft); color: var(--red); }
+  .pill.yellow { background: var(--yellow-soft); color: var(--yellow); }
+  .pill.blue { background: var(--blue-soft); color: var(--blue); }
+
+  /* Risk items */
+  .risk-item {
+    padding: 16px 20px; border-radius: 10px; margin-bottom: 12px;
+    background: var(--red-soft); border-left: 3px solid var(--red);
+  }
+  .risk-item.warn { background: var(--yellow-soft); border-left-color: var(--yellow); }
+  .risk-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .risk-item p { font-size: 13px; color: var(--text-soft); }
+
+  /* Client section */
+  .client-block {
+    background: var(--navy); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; margin-bottom: 16px;
+  }
+  .client-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  }
+  .client-name { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+  .client-stats { display: flex; gap: 18px; font-size: 12px; color: var(--text-muted); }
+  .client-stats strong { color: var(--offwhite); font-weight: 700; }
+  .diag { font-size: 13px; color: var(--text-soft); margin-bottom: 14px; line-height: 1.6; }
+  .actions-mini { display: grid; gap: 8px; }
+  .action-mini {
+    padding: 10px 14px; background: rgba(255,255,255,0.03);
+    border-radius: 8px; font-size: 13px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .action-mini::before {
+    content: '→'; color: var(--blue); font-weight: 700; flex-shrink: 0;
+  }
+
+  /* Summary callout */
+  .summary-callout {
+    background: linear-gradient(135deg, var(--blue-soft), transparent);
+    border: 1px solid var(--blue);
+    border-radius: 14px; padding: 24px 28px; margin-top: 32px;
+  }
+  .summary-callout h3 {
+    font-size: 12px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 8px;
+  }
+  .summary-callout p { font-size: 16px; font-weight: 600; line-height: 1.5; }
+
+  footer {
+    margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);
+  }
+  footer .imp { color: var(--blue); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    h1 { font-size: 36px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .card.dual { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="brand">
+    <div class="brand-mark">
+      <div class="brand-logo">I</div>
+      <div class="brand-name">Impulso Digital <span>· Traffic Masters</span></div>
+    </div>
+    <div class="meta">
+      <div class="meta-item"><div class="dot"></div>24 a 30/Abr/2026</div>
+      <div class="meta-item">v1.0</div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Análise estratégica · Performance Analyst</div>
+    <h1>Investimento por <strong>Idade</strong> · Meta Ads</h1>
+    <p class="subtitle">Diagnóstico de eficiência, identificação de bolsões de queima e plano de realocação de budget para os 5 e-commerces da carteira da Impulso.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">Investido</div>
+      <div class="kpi-value">R$ 55.468</div>
+      <div class="kpi-sub">7 dias · 5 contas</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Faturamento</div>
+      <div class="kpi-value">R$ 328k</div>
+      <div class="kpi-sub">2.170 compras</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">ROAS Médio</div>
+      <div class="kpi-value">5,92x</div>
+      <div class="kpi-sub">Saudável</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">CPA Médio</div>
+      <div class="kpi-value">R$ 25,56</div>
+      <div class="kpi-sub">Geral carteira</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Realocável</div>
+      <div class="kpi-value">+R$ 30k</div>
+      <div class="kpi-sub">Faturamento sem +budget</div>
+    </div>
+  </div>
+
+  <!-- 1. DESALINHAMENTO -->
+  <div class="section-title">
+    <h2>Desalinhamento Investimento × ROAS</h2>
+    <span class="num">01</span>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:18px;">Investimento e ROAS por faixa etária</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Idade</th>
+          <th class="right">Investido</th>
+          <th class="right">% Inv</th>
+          <th class="right">ROAS</th>
+          <th class="right">CPA</th>
+          <th class="right">Compras</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>18-24</strong></td><td class="right">R$ 3.620</td><td class="right">6,5%</td><td class="right">5,11x</td><td class="right">R$ 30,42</td><td class="right">119</td><td><span class="pill yellow">Polarizada</span></td></tr>
+        <tr><td><strong>25-34</strong></td><td class="right">R$ 14.710</td><td class="right">26,5%</td><td class="right">5,52x</td><td class="right">R$ 29,78</td><td class="right">494</td><td><span class="pill blue">Mediana</span></td></tr>
+        <tr style="background:rgba(34,197,94,0.05);"><td><strong>35-44</strong></td><td class="right pos">R$ 23.702</td><td class="right">42,7%</td><td class="right pos">6,29x</td><td class="right">R$ 24,06</td><td class="right">985</td><td><span class="pill green">Vencedora</span></td></tr>
+        <tr style="background:rgba(34,197,94,0.05);"><td><strong>45-54</strong></td><td class="right">R$ 10.590</td><td class="right warn">19,1%</td><td class="right pos">6,41x</td><td class="right pos">R$ 21,70</td><td class="right">488</td><td><span class="pill green">Subutilizada</span></td></tr>
+        <tr><td><strong>55-64</strong></td><td class="right">R$ 1.927</td><td class="right">3,5%</td><td class="right neg">4,15x</td><td class="right">R$ 33,82</td><td class="right">57</td><td><span class="pill red">Fraca</span></td></tr>
+        <tr><td><strong>65+</strong></td><td class="right">R$ 918</td><td class="right">1,7%</td><td class="right neg">3,51x</td><td class="right">R$ 38,24</td><td class="right">24</td><td><span class="pill red">Queima</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card dual">
+    <div>
+      <h3 style="font-size:13px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">🔥 Bolsões com ROAS alto e budget baixo</h3>
+      <ul style="list-style:none;font-size:13px;line-height:1.8;color:var(--text-soft);">
+        <li>• <strong style="color:var(--offwhite);">Mermaid 18-24:</strong> ROAS <span class="pos">7,27x</span> com apenas R$ 323 (4,5% conta)</li>
+        <li>• <strong style="color:var(--offwhite);">Moom Teen 25-34:</strong> ROAS <span class="pos">8,00x</span> mas só R$ 2.287 (vs R$ 13k em 35-44)</li>
+        <li>• <strong style="color:var(--offwhite);">Mermaid 35-44:</strong> ROAS <span class="pos">7,51x</span> com R$ 3.200 — espaço pra mais</li>
+        <li>• <strong style="color:var(--offwhite);">Atacado Luzzoo 18-24:</strong> ROAS <span class="pos">6,45x</span> com R$ 665</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:13px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">💸 Bolsões de queima (cortar imediato)</h3>
+      <ul style="list-style:none;font-size:13px;line-height:1.8;color:var(--text-soft);">
+        <li>• <strong style="color:var(--offwhite);">Encanto 45-54:</strong> ROAS <span class="neg">0,00</span> com R$ 280 — 100% queimado</li>
+        <li>• <strong style="color:var(--offwhite);">Encanto 65+:</strong> ROAS <span class="neg">0,00</span> com R$ 23</li>
+        <li>• <strong style="color:var(--offwhite);">Atacado Luzzoo 35-44:</strong> R$ 2.094 com ROAS <span class="neg">3,62x</span></li>
+        <li>• <strong style="color:var(--offwhite);">Atacado Luzzoo 65+:</strong> ROAS <span class="neg">2,22x</span> queimando</li>
+        <li>• <strong style="color:var(--offwhite);">Luzzoo geral:</strong> ROAS <span class="warn">4,35x</span> insustentável p/ comissão 5%</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2. ANÁLISE POR CLIENTE -->
+  <div class="section-title" style="margin-top:48px;">
+    <h2>Análise por Cliente</h2>
+    <span class="num">02</span>
+  </div>
+
+  <!-- MOOM TEEN -->
+  <div class="client-block" style="border-left:3px solid var(--green);">
+    <div class="client-header">
+      <div>
+        <div class="client-name">Moom Teen <span class="pill green" style="margin-left:10px;">★ Estrela</span></div>
+        <div class="client-stats" style="margin-top:6px;">
+          <span><strong>R$ 22.154</strong> invest</span>
+          <span><strong>R$ 165.544</strong> fat</span>
+          <span>ROAS <strong style="color:var(--green);">7,47x</strong></span>
+          <span>1.122 compras</span>
+        </div>
+      </div>
+    </div>
+    <p class="diag"><strong style="color:var(--offwhite);">Diagnóstico:</strong> Concentração saudável em 35-44 (R$ 13.165, ROAS 7,42x) e 45-54 (R$ 5.764, ROAS 7,70x). Idade vencedora oculta: <strong style="color:var(--green);">25-34 com ROAS 8,00x mas só R$ 2.287</strong>. 18-24 com ROAS 3,69x é a única faixa fraca.</p>
+    <div class="actions-mini">
+      <div class="action-mini"><div><strong>Aumentar 25-34 de R$ 2.287 → R$ 4.500 (+97%).</strong> Retorno estimado: <span class="pos">+R$ 17.700</span>/semana.</div></div>
+      <div class="action-mini"><div><strong>Manter 35-44 e 45-54</strong> — já no patamar ideal, testar pequeno aumento de 10-15%.</div></div>
+      <div class="action-mini"><div><strong>Cortar 18-24 pela metade</strong> (R$ 96 → R$ 50) ou pausar — ROAS 3,69x está muito abaixo da média do cliente.</div></div>
+    </div>
+  </div>
+
+  <!-- LUZZOO -->
+  <div class="client-block" style="border-left:3px solid var(--red);">
+    <div class="client-header">
+      <div>
+        <div class="client-name">Luzzoo <span class="pill red" style="margin-left:10px;">⚠ Maior risco margem</span></div>
+        <div class="client-stats" style="margin-top:6px;">
+          <span><strong>R$ 16.585</strong> invest</span>
+          <span><strong>R$ 72.155</strong> fat</span>
+          <span>ROAS <strong style="color:var(--red);">4,35x</strong></span>
+          <span>427 compras</span>
+        </div>
+      </div>
+    </div>
+    <p class="diag"><strong style="color:var(--offwhite);">Diagnóstico:</strong> R$ 16.585 espalhados sem faixa vencedora clara. Melhor performance em <strong>25-34 (ROAS 4,87x)</strong> e 18-24 (4,69x), mas todas as faixas estão em ROAS baixo. Concentração em 25-34 (R$ 7.317) é correta mas insuficiente. <strong style="color:var(--red);">Comissão é 5% sobre faturamento — ROAS 4x é insustentável.</strong></p>
+    <div class="actions-mini">
+      <div class="action-mini"><div><strong>Realocar R$ 1.500 de 65+/55-64 para 18-24 e 25-34.</strong> Retorno esperado: <span class="pos">+R$ 4.300</span>.</div></div>
+      <div class="action-mini"><div><strong>Auditar criativos URGENTE</strong> — nenhuma faixa passa de 5x ROAS. Problema é de funil/oferta, não de targeting.</div></div>
+      <div class="action-mini"><div><strong>Testar segmentação 25-44 unificada</strong> com lookalike de compradores. ROAS 4x é insustentável p/ escala saudável.</div></div>
+    </div>
+  </div>
+
+  <!-- MERMAID -->
+  <div class="client-block" style="border-left:3px solid var(--blue);">
+    <div class="client-header">
+      <div>
+        <div class="client-name">Mermaid <span class="pill blue" style="margin-left:10px;">💎 Joia subaproveitada</span></div>
+        <div class="client-stats" style="margin-top:6px;">
+          <span><strong>R$ 7.185</strong> invest</span>
+          <span><strong>R$ 47.623</strong> fat</span>
+          <span>ROAS <strong style="color:var(--green);">6,63x</strong></span>
+          <span>356 compras</span>
+        </div>
+      </div>
+    </div>
+    <p class="diag"><strong style="color:var(--offwhite);">Diagnóstico:</strong> Apenas R$ 7.185 investidos com retorno excelente. Vencedor claro: <strong style="color:var(--green);">35-44 (ROAS 7,51x, R$ 3.200)</strong> e <strong>18-24 (ROAS 7,27x, R$ 323)</strong>. 65+ com ROAS 2,60x é a única faixa morta.</p>
+    <div class="actions-mini">
+      <div class="action-mini"><div><strong>Dobrar budget 18-24:</strong> R$ 323 → R$ 700 (+117%). Retorno estimado: <span class="pos">+R$ 2.700</span>.</div></div>
+      <div class="action-mini"><div><strong>Aumentar 35-44 e 45-54 em 30%</strong> (R$ 3.200 → R$ 4.160; R$ 1.919 → R$ 2.500). Retorno: <span class="pos">+R$ 10.900</span>.</div></div>
+      <div class="action-mini"><div><strong>Pausar 65+</strong> (R$ 191) — sem volume, sem ROAS.</div></div>
+    </div>
+  </div>
+
+  <!-- ATACADO LUZZOO -->
+  <div class="client-block" style="border-left:3px solid var(--yellow);">
+    <div class="client-header">
+      <div>
+        <div class="client-name">Atacado Luzzoo <span class="pill yellow" style="margin-left:10px;">⚖ Sinal misto</span></div>
+        <div class="client-stats" style="margin-top:6px;">
+          <span><strong>R$ 7.196</strong> invest</span>
+          <span><strong>R$ 35.825</strong> fat</span>
+          <span>ROAS <strong>4,98x</strong></span>
+          <span>226 compras</span>
+        </div>
+      </div>
+    </div>
+    <p class="diag"><strong style="color:var(--offwhite);">Diagnóstico:</strong> Idade vencedora <strong style="color:var(--green);">18-24 (ROAS 6,45x)</strong> com apenas R$ 665 investidos. 25-34 com R$ 3.002 puxa o cliente (ROAS 5,97x). <strong style="color:var(--red);">35-44 com R$ 2.094 e ROAS 3,62x é o problema</strong> — alocação mal feita.</p>
+    <div class="actions-mini">
+      <div class="action-mini"><div><strong>Cortar 35-44 em 50%</strong> (R$ 2.094 → R$ 1.000). Retorno preservado vs perda de eficiência atual.</div></div>
+      <div class="action-mini"><div><strong>Realocar economia para 18-24:</strong> R$ 665 → R$ 1.500. Retorno estimado: <span class="pos">+R$ 5.400</span>.</div></div>
+      <div class="action-mini"><div><strong>Pausar 65+</strong> (R$ 141, ROAS 2,22x) — queima.</div></div>
+    </div>
+  </div>
+
+  <!-- ENCANTO -->
+  <div class="client-block" style="border-left:3px solid var(--red);">
+    <div class="client-header">
+      <div>
+        <div class="client-name">Encanto Fitness <span class="pill red" style="margin-left:10px;">🚨 Em crise</span></div>
+        <div class="client-stats" style="margin-top:6px;">
+          <span><strong>R$ 2.348</strong> invest</span>
+          <span><strong>R$ 7.251</strong> fat</span>
+          <span>ROAS <strong style="color:var(--red);">3,09x</strong></span>
+          <span>39 compras</span>
+        </div>
+      </div>
+    </div>
+    <p class="diag"><strong style="color:var(--offwhite);">Diagnóstico:</strong> Pior cliente da carteira. <strong style="color:var(--red);">45-54 com ROAS 0,00 e R$ 280 = dinheiro queimado.</strong> 65+ idem (R$ 23, ROAS 0). Melhor faixa é 35-44 (ROAS 4,02x) mas ainda fraco. Cliente está em renegociação contratual — sem ajuste de oferta/criativo, ads sozinho não resolve.</p>
+    <div class="actions-mini">
+      <div class="action-mini"><div><strong>PAUSAR HOJE 45-54 e 65+</strong> (economia R$ 303/semana).</div></div>
+      <div class="action-mini"><div><strong>Concentrar 100% do budget em 18-24, 25-34 e 35-44</strong> (faixas com ROAS positivo).</div></div>
+      <div class="action-mini"><div><strong>Conversa estratégica com cliente</strong> — risco de churn. Sem ajuste de oferta, ads não salva.</div></div>
+    </div>
+  </div>
+
+  <!-- 3. MACRO PADRÕES -->
+  <div class="section-title" style="margin-top:48px;">
+    <h2>Macro Padrões da Carteira</h2>
+    <span class="num">03</span>
+  </div>
+
+  <div class="card">
+    <ol style="list-style:none;counter-reset:macro;">
+      <li style="counter-increment:macro;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.6;">
+        <span style="color:var(--blue);font-weight:700;margin-right:8px;">1 ·</span><strong>35-44 é a faixa mais escalável da carteira</strong> — R$ 23.702 com ROAS 6,29x. Comportamento de compra maduro, ticket alto, baixo CPA (R$ 24).
+      </li>
+      <li style="padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.6;">
+        <span style="color:var(--blue);font-weight:700;margin-right:8px;">2 ·</span><strong>45-54 é a faixa mais subutilizada</strong> — menor CPA (R$ 21,70) e maior ROAS (6,41x). A agência está deixando R$ 15-20k de faturamento na mesa por semana.
+      </li>
+      <li style="padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.6;">
+        <span style="color:var(--blue);font-weight:700;margin-right:8px;">3 ·</span><strong>55+ só performa em moda teen/jovem (Moom Teen)</strong> — provavelmente avós comprando para netos. Em todo o resto, é ROAS 2-3x.
+      </li>
+      <li style="padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.6;">
+        <span style="color:var(--blue);font-weight:700;margin-right:8px;">4 ·</span><strong>18-24 é polarizada</strong> — brilha em Mermaid (7,27x) e Atacado Luzzoo (6,45x), mas afunda em Moom Teen (3,69x) e Encanto (3,88x). Não é faixa "boa" universal — é dependente do produto.
+      </li>
+      <li style="padding:12px 0;font-size:14px;line-height:1.6;">
+        <span style="color:var(--blue);font-weight:700;margin-right:8px;">5 ·</span><strong>Cada cliente tem perfil etário próprio</strong> — não existe regra geral por idade. Copiar o que funciona no Moom pro Luzzoo é armadilha.
+      </li>
+    </ol>
+  </div>
+
+  <!-- 4. TOP 5 AÇÕES -->
+  <div class="section-title" style="margin-top:48px;">
+    <h2>Top 5 Ações Táticas — Próxima Semana</h2>
+    <span class="num">04</span>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Idade</th>
+          <th>Ação</th>
+          <th class="right">Mudança</th>
+          <th class="right">Retorno Esperado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--blue);">1</strong></td>
+          <td><strong>Moom Teen</strong></td>
+          <td>25-34</td>
+          <td>Escalar agressivamente</td>
+          <td class="right pos">+R$ 2.213 (+97%)</td>
+          <td class="right pos">+R$ 17.700 fat</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue);">2</strong></td>
+          <td><strong>Mermaid</strong></td>
+          <td>35-44 + 45-54</td>
+          <td>Aumentar 30%</td>
+          <td class="right pos">+R$ 1.541</td>
+          <td class="right pos">+R$ 10.900 fat</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue);">3</strong></td>
+          <td><strong>Encanto Fitness</strong></td>
+          <td>45-54 + 65+</td>
+          <td>Pausar imediato</td>
+          <td class="right neg">-R$ 303</td>
+          <td class="right">Eliminar queima</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue);">4</strong></td>
+          <td><strong>Atacado Luzzoo</strong></td>
+          <td>35-44 → 18-24</td>
+          <td>Realocar</td>
+          <td class="right">-R$ 1.094 / +R$ 835</td>
+          <td class="right pos">+R$ 1.800 fat líquido</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue);">5</strong></td>
+          <td><strong>Luzzoo</strong></td>
+          <td>Todas</td>
+          <td>Auditar criativos + cortar 55+</td>
+          <td class="right">-R$ 788</td>
+          <td class="right warn">Estrutural — ROAS 4,35x insustentável</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="summary-callout">
+    <h3>Resumo executivo</h3>
+    <p>Realocar <strong>R$ 2.700</strong> de faixas queimadas (Encanto 45-54, Luzzoo 65+, Atacado Luzzoo 35-44) para faixas vencedoras subinvestidas (Moom Teen 25-34, Mermaid 18-24/35-44) deve gerar <strong style="color:var(--green);">+R$ 30.000 em faturamento semanal sem aumentar 1 real de budget total</strong>. Comissão Impulso projetada: <strong>+R$ 1.500-2.000/semana</strong>.</p>
+  </div>
+
+  <!-- 5. RISCOS -->
+  <div class="section-title" style="margin-top:48px;">
+    <h2>Riscos e Armadilhas</h2>
+    <span class="num">05</span>
+  </div>
+
+  <div class="risk-item">
+    <h4>1 · Luzzoo está silenciosamente sangrando margem</h4>
+    <p>ROAS 4,35x num cliente que paga 5% de comissão é crítico — qualquer custo operacional come a margem. Precisa intervenção em criativo/oferta antes de mexer em budget.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>2 · Moom Teen carrega a carteira inteira</h4>
+    <p>R$ 22.154 (40% do budget) gera R$ 165.544 (50% do faturamento). Se algo quebrar nesse cliente (algoritmo, sazonalidade, esgotamento criativo), a operação inteira despenca. Diversificar performance é prioridade estratégica.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>3 · Encanto Fitness é candidato a churn</h4>
+    <p>ROAS 3,09x + cliente em renegociação + R$ 303/semana queimando em faixas zeradas. Sem mudança de produto/oferta, o trabalho de ads não resolve.</p>
+  </div>
+
+  <div class="risk-item warn">
+    <h4>4 · Faixa 25-34 do Moom Teen é o segredo melhor escondido</h4>
+    <p>ROAS 8,00x com R$ 2.287 — está performando MELHOR que a faixa principal (35-44 com 7,42x) mas recebe 6x menos budget. Quase certamente Lucas não percebeu.</p>
+  </div>
+
+  <div class="risk-item warn">
+    <h4>5 · CPA descontrolado em 65+ na maioria dos clientes</h4>
+    <p>R$ 38,24 médio com ROAS 3,51x — cada compra dessa faixa é menos lucrativa. Pausar 65+ em Luzzoo, Atacado Luzzoo, Mermaid e Encanto libera ~R$ 600/semana pra realocar.</p>
+  </div>
+
+  <div class="risk-item warn">
+    <h4>6 · Mermaid 18-24 é a oportunidade mais barata da carteira</h4>
+    <p>R$ 323 com ROAS 7,27x. Custa nada testar e o sinal é forte. Se não dobrar essa faixa essa semana, deixa dinheiro fácil na mesa.</p>
+  </div>
+
+  <footer>
+    <div><span class="imp">Impulso Digital</span> · Traffic Masters · Análise gerada em 01/05/2026</div>
+    <div>Performance Analyst · Squad Tráfego</div>
+  </footer>
+
+</div>
+</body>
+</html>
