@@ -3369,25 +3369,15 @@ h1, h2, h3, h4, h5, h6,
 .lucas-status.pendente { background: rgba(252,211,77,0.15); color: #FCD34D; }
 .lucas-status.atrasado { background: rgba(239,68,68,0.15); color: #F87171; }
 
-/* ===== Lucas Pie / Donut ===== */
+/* ===== Lucas Pie ===== */
 .lucas-pie-wrap {
   display: flex; flex-direction: column; align-items: center;
-  gap: 14px; padding: 14px 0 4px;
+  padding: 8px 0 0;
 }
-.lucas-pie-wrap svg { width: 180px; height: 180px; flex-shrink: 0; }
-.lucas-pie-wrap .pie-legend { display: flex; flex-direction: column; gap: 6px; width: 100%; max-height: 220px; overflow-y: auto; padding-right: 4px; }
-.lucas-pie-wrap .pie-legend-item {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 12px; padding: 3px 0;
-}
-.lucas-pie-wrap .pie-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-.lucas-pie-wrap .pie-name { color: var(--text-primary); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lucas-pie-wrap .pie-empty { color: var(--text-caption); font-style: italic; padding: 24px 0; text-align: center; }
-.lucas-pie-wrap path { transition: opacity 0.15s, transform 0.15s; transform-origin: 100px 100px; }
-.lucas-pie-wrap path:hover { opacity: 0.85; transform: scale(1.03); }
-.lucas-pie-wrap::-webkit-scrollbar { width: 4px; }
-.lucas-pie-wrap .pie-legend::-webkit-scrollbar { width: 4px; }
-.lucas-pie-wrap .pie-legend::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.lucas-pie-svg { width: 100%; height: auto; max-width: 100%; display: block; }
+.lucas-pie-wrap .pie-empty { color: var(--text-caption); font-style: italic; padding: 60px 0; text-align: center; }
+.lucas-pie-wrap path { transition: opacity 0.15s, transform 0.15s; transform-origin: 200px 170px; }
+.lucas-pie-wrap path:hover { opacity: 0.88; transform: scale(1.03); }
 
 /* ===== Lucas Timeline (compromissos 24m) ===== */
 .lucas-timeline-wrap {
@@ -9636,40 +9626,81 @@ function lucasRenderPie(containerId, data, opts) {
     return;
   }
   var sorted = data.slice().sort(function(a, b) { return b.valor - a.valor; });
-  var cx = 100, cy = 100, r = 92;
+
+  // viewBox 400x340 - mais largura que altura para caber labels nos lados
+  var vbW = 400, vbH = 340;
+  var cx = 200, cy = 170, r = 100;
   var svgPaths = '';
-  var svgLabels = '';
-  var legend = '';
+  var svgInsidePct = '';
+  var svgOutsideLabels = '';
   var startAngle = 0;
-  // Special case: single slice (avoid Z-only path)
+
+  // Special case: single slice
   if (sorted.length === 1) {
     var color1 = LUCAS_PIE_COLORS[0];
     svgPaths += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + color1 + '"><title>' + escHtml(sorted[0].nome) + ': ' + lucasFmt(sorted[0].valor) + '</title></circle>';
-    svgLabels += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="14" font-weight="700" pointer-events="none">100%</text>';
+    svgInsidePct += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" pointer-events="none">100%</text>';
+    svgOutsideLabels += '<text x="' + cx + '" y="' + (cy + r + 28) + '" text-anchor="middle" fill="' + color1 + '" font-size="13" font-weight="700">' + escHtml(sorted[0].nome) + '</text>';
   } else {
+    // Track label positions per side to avoid overlap
+    var leftLabels = [];
+    var rightLabels = [];
+
     sorted.forEach(function(slice, i) {
       var pct = slice.valor / total;
       var endAngle = startAngle + pct * 360;
       var color = LUCAS_PIE_COLORS[i % LUCAS_PIE_COLORS.length];
+      var midAngle = startAngle + (endAngle - startAngle) / 2;
+
       svgPaths += '<path d="' + lucasArcPath(cx, cy, r, startAngle, endAngle) + '" fill="' + color + '" stroke="var(--navy)" stroke-width="2"><title>' + escHtml(slice.nome) + ': ' + lucasFmt(slice.valor) + ' (' + (pct*100).toFixed(1) + '%)</title></path>';
-      // Show % label inside slice (only if slice >= 5% to avoid clutter)
-      if (pct >= 0.05) {
-        var midAngle = startAngle + (endAngle - startAngle) / 2;
-        var labelPos = lucasPolarToCartesian(cx, cy, r * 0.62, midAngle);
+
+      // % inside slice (only if >= 4%)
+      if (pct >= 0.04) {
+        var pctPos = lucasPolarToCartesian(cx, cy, r * 0.62, midAngle);
         var pctText = (pct * 100).toFixed(0) + '%';
-        svgLabels += '<text x="' + labelPos[0].toFixed(1) + '" y="' + labelPos[1].toFixed(1) + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="700" pointer-events="none" style="text-shadow:0 1px 2px rgba(0,0,0,0.5);">' + pctText + '</text>';
+        svgInsidePct += '<text x="' + pctPos[0].toFixed(1) + '" y="' + pctPos[1].toFixed(1) + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="14" font-weight="700" pointer-events="none" style="text-shadow:0 1px 2px rgba(0,0,0,0.6);">' + pctText + '</text>';
       }
+
+      // External label with leader line
+      var arcEnd = lucasPolarToCartesian(cx, cy, r, midAngle);
+      var labelEnd = lucasPolarToCartesian(cx, cy, r + 18, midAngle);
+      var isRight = labelEnd[0] >= cx;
+      var labelArr = isRight ? rightLabels : leftLabels;
+      labelArr.push({ slice: slice, color: color, midAngle: midAngle, anchorX: labelEnd[0], anchorY: labelEnd[1], arcEnd: arcEnd });
+
       startAngle = endAngle;
     });
+
+    // Helper to render labels with vertical anti-overlap
+    var renderLabels = function(arr, side) {
+      // Sort by Y to lay them out top to bottom
+      arr.sort(function(a, b) { return a.anchorY - b.anchorY; });
+      var minGap = 18;
+      var prevY = -Infinity;
+      arr.forEach(function(L) {
+        var ly = Math.max(L.anchorY, prevY + minGap);
+        L.labelY = ly;
+        prevY = ly;
+      });
+
+      arr.forEach(function(L) {
+        var labelX = side === 'right' ? cx + r + 24 : cx - r - 24;
+        var textAnchor = side === 'right' ? 'start' : 'end';
+        var textPad = side === 'right' ? 6 : -6;
+
+        // Leader line: arc edge -> elbow -> label
+        var elbowX = side === 'right' ? labelX - 4 : labelX + 4;
+        svgOutsideLabels += '<polyline points="' + L.arcEnd[0].toFixed(1) + ',' + L.arcEnd[1].toFixed(1) + ' ' + L.anchorX.toFixed(1) + ',' + L.labelY.toFixed(1) + ' ' + elbowX + ',' + L.labelY.toFixed(1) + '" fill="none" stroke="' + L.color + '" stroke-width="1.2" opacity="0.6"/>';
+        svgOutsideLabels += '<circle cx="' + (elbowX + (side === 'right' ? -2 : 2)) + '" cy="' + L.labelY.toFixed(1) + '" r="3" fill="' + L.color + '"/>';
+        svgOutsideLabels += '<text x="' + (labelX + textPad) + '" y="' + L.labelY.toFixed(1) + '" text-anchor="' + textAnchor + '" dominant-baseline="central" fill="var(--text-primary)" font-size="12" font-weight="600" font-family="Sora,sans-serif">' + escHtml(L.slice.nome) + '</text>';
+      });
+    };
+
+    renderLabels(rightLabels, 'right');
+    renderLabels(leftLabels, 'left');
   }
-  sorted.forEach(function(slice, i) {
-    var color = LUCAS_PIE_COLORS[i % LUCAS_PIE_COLORS.length];
-    legend += '<div class="pie-legend-item">'
-      + '<span class="pie-dot" style="background:' + color + ';"></span>'
-      + '<span class="pie-name">' + escHtml(slice.nome) + '</span>'
-      + '</div>';
-  });
-  c.innerHTML = '<svg viewBox="0 0 200 200">' + svgPaths + svgLabels + '</svg><div class="pie-legend">' + legend + '</div>';
+
+  c.innerHTML = '<svg viewBox="0 0 ' + vbW + ' ' + vbH + '" class="lucas-pie-svg">' + svgPaths + svgInsidePct + svgOutsideLabels + '</svg>';
 }
 
 function renderLucasPieDespesas(d) {
