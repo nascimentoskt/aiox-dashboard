@@ -4968,6 +4968,10 @@ sidebarOverlay.addEventListener('click', () => {
 
 // Tab-based navigation — show/hide sections
 function showSection(sectionId) {
+  // Reset Lucas in-memory unlock when navigating away from Lucas tab
+  if (sectionId !== 'financeiro-lucas' && typeof lucasUnlockedNow !== 'undefined') {
+    lucasUnlockedNow = false;
+  }
   // Hide all sections
   document.querySelectorAll('.content > section, .content > .section-wrapper').forEach(s => {
     s.classList.remove('active-section');
@@ -8592,20 +8596,21 @@ var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v5';
 var lucasPin = '';
 var lucasPeriodSelected = 'all';
 
-function isLucasUnlocked() {
-  return sessionStorage.getItem(LUCAS_SESSION_KEY) === '1';
-}
+// Lucas tab requires PIN on EVERY click (no session memory).
+// We use a short-lived in-memory flag that is cleared as soon as user
+// navigates away from the section.
+var lucasUnlockedNow = false;
+
+function isLucasUnlocked() { return lucasUnlockedNow === true; }
 function setLucasUnlocked(v) {
-  if (v) sessionStorage.setItem(LUCAS_SESSION_KEY, '1');
-  else sessionStorage.removeItem(LUCAS_SESSION_KEY);
+  lucasUnlockedNow = !!v;
+  // also clear any legacy session storage so old sessions don't bypass
+  try { sessionStorage.removeItem(LUCAS_SESSION_KEY); } catch (e) {}
 }
 
 function openLucasFinanceiro(e) {
   if (e) e.preventDefault();
-  if (isLucasUnlocked()) {
-    showLucasSection();
-    return false;
-  }
+  // Always require PIN, even if already entered before in this session
   showLockScreen();
   return false;
 }
@@ -9153,10 +9158,8 @@ window.addEventListener('hashchange', function() {
   }
 });
 
-// First render if already unlocked
-if (window.location.hash === '#financeiro-lucas' && isLucasUnlocked()) {
-  setTimeout(renderLucasAll, 100);
-}
+// Clear any legacy session unlock flag so old sessions don't bypass
+try { sessionStorage.removeItem('impulso-hub-lucas-unlocked'); } catch (e) {}
 
 </script>
 </body>
