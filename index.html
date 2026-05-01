@@ -8866,7 +8866,7 @@ function submitKanbanModal(e) {
 
 var LUCAS_LOCK_PIN = '9151'; // pin numerico (cliente-side, nao seguro mas suficiente)
 var LUCAS_SESSION_KEY = 'impulso-hub-lucas-unlocked';
-var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v8';
+var LUCAS_DATA_KEY = 'impulso-hub-lucas-pf-v9';
 var lucasPin = '';
 var lucasPeriodSelected = 'all';
 
@@ -9033,15 +9033,15 @@ function seedLucas() {
     despesasParcelas.push({ id: 'utv' + (i+1), nome: 'UTV - parcela ' + (i+1) + '/8', categoria: 'Ve\u00edculo', valor: 7000, status: 'Pendente', data: d });
   });
 
-  // Emprestimo Allan Cabral - ja pagos jan-abr/2026 (R$ 158k de R$ 260k)
-  despesasParcelas.push({ id: 'allanP1', nome: 'Empr\u00e9stimo Allan Cabral - parcela 1/7', categoria: 'Empr\u00e9stimo', valor: 50000, status: 'Pago', data: '2026-01-10' });
-  despesasParcelas.push({ id: 'allanP2', nome: 'Empr\u00e9stimo Allan Cabral - parcela 2/7', categoria: 'Empr\u00e9stimo', valor: 48000, status: 'Pago', data: '2026-02-10' });
-  despesasParcelas.push({ id: 'allanP3', nome: 'Empr\u00e9stimo Allan Cabral - parcela 3/7', categoria: 'Empr\u00e9stimo', valor: 30000, status: 'Pago', data: '2026-03-10' });
-  despesasParcelas.push({ id: 'allanP4', nome: 'Empr\u00e9stimo Allan Cabral - parcela 4/7', categoria: 'Empr\u00e9stimo', valor: 30000, status: 'Pago', data: '2026-04-10' });
-  // 3 parcelas restantes (mai/jun/jul 2026) - 3x R$ 34.000
-  despesasParcelas.push({ id: 'allanP5', nome: 'Empr\u00e9stimo Allan Cabral - parcela 5/7', categoria: 'Empr\u00e9stimo', valor: 34000, status: 'Pendente', data: '2026-05-10' });
-  despesasParcelas.push({ id: 'allanP6', nome: 'Empr\u00e9stimo Allan Cabral - parcela 6/7', categoria: 'Empr\u00e9stimo', valor: 34000, status: 'Pendente', data: '2026-06-10' });
-  despesasParcelas.push({ id: 'allanP7', nome: 'Empr\u00e9stimo Allan Cabral - parcela 7/7', categoria: 'Empr\u00e9stimo', valor: 34000, status: 'Pendente', data: '2026-07-10' });
+  // Emprestimo Allan Cabral - R$ 200k a 3% a.m. real (renegociado em 01/05/2026)
+  // Jan-abr/2026 ja pagos. Mai-jun/2026 quitacao em 2 parcelas iguais a 3% real.
+  despesasParcelas.push({ id: 'allanP1', nome: 'Empr\u00e9stimo Allan Cabral - parcela 1/6', categoria: 'Empr\u00e9stimo', valor: 50000, status: 'Pago', data: '2026-01-10' });
+  despesasParcelas.push({ id: 'allanP2', nome: 'Empr\u00e9stimo Allan Cabral - parcela 2/6', categoria: 'Empr\u00e9stimo', valor: 48000, status: 'Pago', data: '2026-02-10' });
+  despesasParcelas.push({ id: 'allanP3', nome: 'Empr\u00e9stimo Allan Cabral - parcela 3/6', categoria: 'Empr\u00e9stimo', valor: 30000, status: 'Pago', data: '2026-03-10' });
+  despesasParcelas.push({ id: 'allanP4', nome: 'Empr\u00e9stimo Allan Cabral - parcela 4/6', categoria: 'Empr\u00e9stimo', valor: 30000, status: 'Pago', data: '2026-04-10' });
+  // 2 parcelas finais renegociadas a 3% real (saldo R$ 58.642,21 em 2 PMTs)
+  despesasParcelas.push({ id: 'allanP5', nome: 'Empr\u00e9stimo Allan Cabral - parcela 5/6 (renegociada 3%)', categoria: 'Empr\u00e9stimo', valor: 30640.89, status: 'Pendente', data: '2026-05-10' });
+  despesasParcelas.push({ id: 'allanP6', nome: 'Empr\u00e9stimo Allan Cabral - parcela 6/6 (renegociada 3%, quita\u00e7\u00e3o)', categoria: 'Empr\u00e9stimo', valor: 30653.41, status: 'Pendente', data: '2026-06-10' });
 
   // 14 cheques da venda de um carro (total R$ 170.000)
   var chequesCarro = [
@@ -9072,8 +9072,17 @@ function seedLucas() {
     });
   });
 
-  // Pre-popular primeira analise CFO com o resumo da sessao
+  // Pre-popular analises CFO
   var analisesCFO = [
+    {
+      id: 'cfo-002',
+      data: '2026-05-01',
+      autor: 'CFO',
+      titulo: 'Renegocia\u00e7\u00e3o Allan Cabral \u2014 economia de R$ 40.7k',
+      tags: ['allan', 'juros', 'renegocia\u00e7\u00e3o', 'economia'],
+      pinned: true,
+      conteudo: '## Achado\n\nO cronograma original do empr\u00e9stimo Allan Cabral (R$ 200k) estava cobrando **5,00% a.m. real** apesar de combinado **3% a.m.**\n\nO credor calculou juros sobre o **principal original** (R$ 200k) em vez de aplicar 3% sobre **saldo decrescente**. Erro cl\u00e1ssico de cr\u00e9dito informal.\n\n## Como deveria ser (3% real)\n\n| M\u00eas | Saldo in\u00edcio | + Juros 3% | Pagou | Saldo final |\n|---|---|---|---|---|\n| Jan/26 | R$ 200.000 | R$ 6.000 | R$ 50.000 | **R$ 156.000** |\n| Fev/26 | R$ 156.000 | R$ 4.680 | R$ 48.000 | **R$ 112.680** |\n| Mar/26 | R$ 112.680 | R$ 3.380 | R$ 30.000 | **R$ 86.060** |\n| Abr/26 | R$ 86.060 | R$ 2.582 | R$ 30.000 | **R$ 58.642** |\n\n## Quita\u00e7\u00e3o renegociada\n\n- Mai/26: **R$ 30.640,89**\n- Jun/26: **R$ 30.653,41**\n- Total restante: **R$ 61.294,30**\n\n## Compara\u00e7\u00e3o\n\n| | Cobrado | Correto | Diferen\u00e7a |\n|---|---|---|---|\n| Saldo abr | R$ 102.000 | R$ 58.642 | -R$ 43.358 |\n| Mai+Jun+Jul | R$ 102.000 | R$ 61.294 | -R$ 40.706 |\n\n**Economia total: R$ 40.705,70**\n\n## Aprendizado\n\nTodo empr\u00e9stimo informal precisa cronograma escrito **com saldo devedor mostrado a cada parcela**. Sem isso, o credor pode aplicar juros simples sobre principal e cobrar 5%+ achando que est\u00e1 cobrando 3%.\n\nPr\u00f3xima vez: usar Home Equity (1,2-1,8% a.m.) ou consignado (1,5-2% a.m.) com garantia formal.'
+    },
     {
       id: 'cfo-001',
       data: '2026-05-01',

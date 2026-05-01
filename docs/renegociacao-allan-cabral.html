@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A2744">
+<title>Renegociação Empréstimo · Allan Cabral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0088FF;
+    --blue-soft: rgba(0,136,255,0.12);
+    --navy: #1A2744;
+    --navy-deep: #0F1626;
+    --navy-card: #1F2D52;
+    --navy-elev: #243463;
+    --offwhite: #F2F2F2;
+    --green: #22C55E;
+    --green-soft: rgba(34,197,94,0.14);
+    --red: #EF4444;
+    --red-soft: rgba(239,68,68,0.14);
+    --yellow: #FCD34D;
+    --yellow-soft: rgba(252,211,77,0.14);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+    --text-soft: rgba(255,255,255,0.72);
+    --text-muted: rgba(255,255,255,0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--navy-deep);
+    color: var(--offwhite);
+    font-family: 'Sora', -apple-system, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(0,136,255,0.10) 0%, transparent 50%),
+      radial-gradient(circle at 85% 100%, rgba(0,136,255,0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 56px 32px 96px; }
+
+  header.brand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 22px; border-bottom: 1px solid var(--border); margin-bottom: 48px;
+  }
+  .brand-mark { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 44px; height: 44px; border-radius: 10px; background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: #fff; font-size: 20px;
+    box-shadow: 0 8px 24px rgba(0,136,255,0.35);
+  }
+  .brand-name { font-size: 16px; font-weight: 600; }
+  .brand-name span { color: var(--text-muted); font-weight: 400; }
+  .meta { font-size: 13px; color: var(--text-muted); }
+
+  .hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 14px;
+  }
+  h1 { font-size: 44px; font-weight: 700; letter-spacing: -1.4px; line-height: 1.1; margin-bottom: 18px; }
+  h1 strong { color: var(--blue); }
+  .subtitle { font-size: 16px; color: var(--text-soft); max-width: 740px; }
+
+  .alert-callout {
+    background: var(--red-soft); border: 1px solid var(--red);
+    border-radius: 14px; padding: 22px 28px; margin-bottom: 40px;
+  }
+  .alert-callout h3 {
+    font-size: 12px; font-weight: 700; color: var(--red);
+    text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 10px;
+  }
+  .alert-callout p { font-size: 16px; font-weight: 600; line-height: 1.5; }
+  .alert-callout strong { color: #fff; }
+
+  .section-title {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .section-title h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+  .section-title .num { font-size: 12px; color: var(--text-muted); letter-spacing: 1.5px; }
+
+  .kpis {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; margin-bottom: 48px;
+  }
+  .kpi { background: var(--navy); padding: 20px 22px; }
+  .kpi-label {
+    font-size: 10px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px;
+  }
+  .kpi-value { font-size: 22px; font-weight: 700; letter-spacing: -0.6px; }
+  .kpi-value.neg { color: var(--red); }
+  .kpi-value.pos { color: var(--green); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    background: var(--navy); border-radius: 12px; overflow: hidden;
+    margin-bottom: 32px;
+  }
+  th {
+    text-align: left; padding: 12px 14px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted);
+    border-bottom: 1px solid var(--border-strong); background: var(--navy-deep);
+  }
+  td {
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.right, th.right { text-align: right; }
+  .pos { color: var(--green); font-weight: 600; }
+  .neg { color: var(--red); font-weight: 600; }
+  .yellow-row { background: rgba(252,211,77,0.06); }
+
+  .compare-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    margin-bottom: 40px;
+  }
+  .compare-card {
+    background: var(--navy); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px;
+  }
+  .compare-card.error { border-color: var(--red); }
+  .compare-card.success { border-color: var(--green); }
+  .compare-card h4 {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.2px; margin-bottom: 12px;
+  }
+  .compare-card.error h4 { color: var(--red); }
+  .compare-card.success h4 { color: var(--green); }
+  .compare-row {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .compare-row:last-child { border-bottom: none; padding-top: 12px; font-weight: 700; }
+
+  .summary-callout {
+    background: linear-gradient(135deg, var(--green-soft), transparent);
+    border: 1px solid var(--green);
+    border-radius: 14px; padding: 26px 32px; margin: 40px 0;
+  }
+  .summary-callout h3 {
+    font-size: 12px; font-weight: 700; color: var(--green);
+    text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 8px;
+  }
+  .summary-callout .big-number { font-size: 36px; font-weight: 800; color: var(--green); margin-bottom: 8px; letter-spacing: -1.2px; }
+  .summary-callout p { font-size: 15px; font-weight: 500; color: var(--text-soft); line-height: 1.55; }
+
+  .proposal-box {
+    background: var(--navy); border: 1px solid var(--blue);
+    border-radius: 14px; padding: 26px 30px; margin-bottom: 40px;
+    position: relative; overflow: hidden;
+  }
+  .proposal-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--blue);
+  }
+  .proposal-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+  .proposal-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .proposal-row:last-of-type { border-bottom: none; }
+  .proposal-label { font-size: 13px; color: var(--text-soft); }
+  .proposal-value { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .proposal-total { background: var(--navy-deep); margin: 14px -30px -26px; padding: 18px 30px; border-top: 1px solid var(--border); }
+  .proposal-total .proposal-row { padding: 0; border: none; }
+  .proposal-total .proposal-value { color: var(--blue); }
+
+  footer {
+    margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); flex-wrap: wrap; gap: 12px;
+  }
+  footer .imp { color: var(--blue); font-weight: 600; }
+
+  @media (max-width: 760px) {
+    h1 { font-size: 32px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="brand">
+    <div class="brand-mark">
+      <div class="brand-logo">I</div>
+      <div class="brand-name">Impulso Digital <span>· Análise Financeira</span></div>
+    </div>
+    <div class="meta">01/05/2026 · v1.0</div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Renegociação · Confidencial</div>
+    <h1>Empréstimo <strong>Allan Cabral</strong> · Recálculo do cronograma</h1>
+    <p class="subtitle">Análise do empréstimo de R$ 200.000 com taxa combinada de 3% a.m. sobre saldo devedor decrescente. Identificação de divergência no cronograma original e proposta de quitação corrigida.</p>
+  </div>
+
+  <div class="alert-callout">
+    <h3>⚠ Achado principal</h3>
+    <p>O cronograma original aplicava juros sobre o <strong>principal original (R$ 200.000)</strong> em vez do <strong>saldo decrescente</strong>, resultando em taxa efetiva de <strong>5,00% a.m.</strong> em vez dos <strong>3% a.m. combinados</strong>. Sobrecobrança total identificada: <strong>R$ 40.705,70</strong>.</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">Principal</div>
+      <div class="kpi-value">R$ 200.000</div>
+      <div class="kpi-sub">Recebido em jan/2026</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Taxa combinada</div>
+      <div class="kpi-value pos">3,00% a.m.</div>
+      <div class="kpi-sub">Sobre saldo devedor</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Taxa cobrada</div>
+      <div class="kpi-value neg">5,00% a.m.</div>
+      <div class="kpi-sub">Conforme cronograma original</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Diferença</div>
+      <div class="kpi-value neg">+2,00 p.p.</div>
+      <div class="kpi-sub">≈ 67% acima do combinado</div>
+    </div>
+  </div>
+
+  <!-- 1. Pagamentos realizados -->
+  <div class="section-title">
+    <h2>Pagamentos realizados (jan a abr/2026)</h2>
+    <span class="num">01</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Mês</th>
+        <th>Data</th>
+        <th class="right">Saldo início</th>
+        <th class="right">Juros 3% (correto)</th>
+        <th class="right">Pagamento</th>
+        <th class="right">Saldo final (correto)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td><td>10/01/26</td>
+        <td class="right">R$ 200.000,00</td>
+        <td class="right">R$ 6.000,00</td>
+        <td class="right pos">R$ 50.000,00</td>
+        <td class="right"><strong>R$ 156.000,00</strong></td>
+      </tr>
+      <tr>
+        <td>2</td><td>10/02/26</td>
+        <td class="right">R$ 156.000,00</td>
+        <td class="right">R$ 4.680,00</td>
+        <td class="right pos">R$ 48.000,00</td>
+        <td class="right"><strong>R$ 112.680,00</strong></td>
+      </tr>
+      <tr>
+        <td>3</td><td>10/03/26</td>
+        <td class="right">R$ 112.680,00</td>
+        <td class="right">R$ 3.380,40</td>
+        <td class="right pos">R$ 30.000,00</td>
+        <td class="right"><strong>R$ 86.060,40</strong></td>
+      </tr>
+      <tr class="yellow-row">
+        <td>4</td><td>10/04/26</td>
+        <td class="right">R$ 86.060,40</td>
+        <td class="right">R$ 2.581,81</td>
+        <td class="right pos">R$ 30.000,00</td>
+        <td class="right"><strong>R$ 58.642,21</strong></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2"><strong>TOTAL PAGO ATÉ ABRIL</strong></td>
+        <td class="right">—</td>
+        <td class="right"><strong>R$ 16.642,21</strong></td>
+        <td class="right pos"><strong>R$ 158.000,00</strong></td>
+        <td class="right"><strong>R$ 58.642,21</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- 2. Comparativo -->
+  <div class="section-title">
+    <h2>Comparativo · Saldo após abril/2026</h2>
+    <span class="num">02</span>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card error">
+      <h4>Cobrado pelo cronograma original</h4>
+      <div class="compare-row"><span>Saldo declarado</span><span class="neg">R$ 102.000,00</span></div>
+      <div class="compare-row"><span>Taxa efetiva implícita</span><span class="neg">5,00% a.m.</span></div>
+      <div class="compare-row"><span>Total a quitar (3 parcelas)</span><span class="neg">R$ 102.000,00</span></div>
+    </div>
+    <div class="compare-card success">
+      <h4>Correto a 3% a.m. sobre saldo</h4>
+      <div class="compare-row"><span>Saldo real</span><span class="pos">R$ 58.642,21</span></div>
+      <div class="compare-row"><span>Taxa aplicada</span><span class="pos">3,00% a.m.</span></div>
+      <div class="compare-row"><span>Total a quitar (2 parcelas)</span><span class="pos">R$ 61.294,30</span></div>
+    </div>
+  </div>
+
+  <div class="summary-callout">
+    <h3>Economia da renegociação</h3>
+    <div class="big-number">R$ 40.705,70</div>
+    <p>Diferença entre o cobrado no cronograma original (R$ 102.000) e o valor correto a 3% a.m. sobre saldo decrescente (R$ 61.294). Aplicando os pagamentos já realizados, esse é o ajuste necessário para alinhar com o combinado.</p>
+  </div>
+
+  <!-- 3. Proposta de quitação -->
+  <div class="section-title">
+    <h2>Proposta de quitação · 2 parcelas</h2>
+    <span class="num">03</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Mês</th>
+        <th>Data</th>
+        <th class="right">Saldo início</th>
+        <th class="right">Juros 3%</th>
+        <th class="right">Pagamento</th>
+        <th class="right">Saldo final</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>5</td><td>10/05/26</td>
+        <td class="right">R$ 58.642,21</td>
+        <td class="right">R$ 1.759,27</td>
+        <td class="right pos">R$ 30.640,89</td>
+        <td class="right">R$ 29.760,59</td>
+      </tr>
+      <tr class="yellow-row">
+        <td>6</td><td>10/06/26</td>
+        <td class="right">R$ 29.760,59</td>
+        <td class="right">R$ 892,82</td>
+        <td class="right pos">R$ 30.653,41</td>
+        <td class="right"><strong>R$ 0,00</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="proposal-box">
+    <h3>Resumo da proposta</h3>
+    <div class="proposal-row">
+      <span class="proposal-label">Mai/2026 (vencimento 10/05)</span>
+      <span class="proposal-value">R$ 30.640,89</span>
+    </div>
+    <div class="proposal-row">
+      <span class="proposal-label">Jun/2026 (vencimento 10/06)</span>
+      <span class="proposal-value">R$ 30.653,41</span>
+    </div>
+    <div class="proposal-total">
+      <div class="proposal-row">
+        <span class="proposal-label" style="font-weight:700;color:#fff;">Total para quitação</span>
+        <span class="proposal-value">R$ 61.294,30</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Resumo final -->
+  <div class="section-title">
+    <h2>Resumo final do empréstimo</h2>
+    <span class="num">04</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Métrica</th>
+        <th class="right">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Principal recebido</td><td class="right">R$ 200.000,00</td></tr>
+      <tr><td>Total pago jan-abr/2026</td><td class="right">R$ 158.000,00</td></tr>
+      <tr><td>Saldo correto após abril</td><td class="right">R$ 58.642,21</td></tr>
+      <tr><td>Quitação proposta (mai+jun)</td><td class="right">R$ 61.294,30</td></tr>
+      <tr><td><strong>TOTAL PAGO NA RENEGOCIAÇÃO</strong></td><td class="right"><strong>R$ 219.294,30</strong></td></tr>
+      <tr><td>Juros totais pagos (a 3% real)</td><td class="right pos">R$ 19.294,30</td></tr>
+      <tr><td>Juros que seriam pagos (cronograma original)</td><td class="right neg">R$ 60.000,00</td></tr>
+      <tr><td><strong>ECONOMIA TOTAL</strong></td><td class="right pos"><strong>R$ 40.705,70</strong></td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <div><span class="imp">Impulso Digital</span> · Análise gerada em 01/05/2026</div>
+    <div>Documento de uso interno · Confidencial</div>
+  </footer>
+
+</div>
+</body>
+</html>
