@@ -6,8 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1A2744">
-<meta name="description" content="AIOX Command Center - Impulso Digital">
-<title>AIOX Command Center | Impulso Digital</title>
+<meta name="description" content="Impulso HUB - Painel da Impulso Digital">
+<title>Impulso HUB</title>
+<link rel="icon" type="image/png" href="/logo-impulso-branca.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -88,19 +89,36 @@ body {
   pointer-events: none;
 }
 .sidebar-logo {
-  padding: 24px 20px 16px;
+  padding: 24px 20px 18px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 .sidebar-logo svg { height: 28px; }
-.sidebar-logo .logo-text {
-  font-size: 22px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; display: block;
+.sidebar-logo .logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(0,136,255,0.18));
 }
-.sidebar-logo .logo-text .imp { color: var(--blue); }
-.sidebar-logo .logo-text .ulso { color: #FFFFFF; }
 .sidebar-logo .logo-sub {
-  display: block; font-size: 10px; color: rgba(255,255,255,0.35);
-  letter-spacing: 0.06em; text-transform: uppercase; margin-top: 5px; font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.sidebar-logo .logo-sub::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: rgba(255,255,255,0.25);
 }
 .sidebar-nav {
   flex: 1; padding: 12px 0; overflow-y: auto; scrollbar-width: none;
@@ -2943,8 +2961,8 @@ body {
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <span class="logo-text"><span class="imp">imp</span><span class="ulso">ulso</span></span>
-    <span class="logo-sub">AIOX Command Center</span>
+    <img src="logo-impulso-branca.png" alt="Impulso Digital" class="logo-img">
+    <span class="logo-sub">Impulso HUB</span>
   </div>
 
   <nav class="sidebar-nav">
