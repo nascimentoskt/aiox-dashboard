@@ -975,32 +975,33 @@ body {
   min-width: 0;
 }
 .evo-bar {
-  width: 60%;
-  max-width: 44px;
-  min-width: 18px;
+  width: 70%;
+  max-width: 64px;
+  min-width: 28px;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  border-radius: 6px 6px 0 0;
-  overflow: hidden;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
   position: relative;
   cursor: pointer;
-  transition: filter 0.2s ease, box-shadow 0.2s ease;
+  transition: filter 0.2s ease;
 }
 .evo-bar:hover {
   filter: brightness(1.08);
-  box-shadow: 0 0 16px rgba(0,136,255,0.12);
 }
-.evo-bar-receita {
-  background: #22C55E;
-  width: 100%;
-  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.evo-bar-receita,
 .evo-bar-despesa {
-  background: #EF4444;
-  width: 100%;
+  flex: 1;
+  min-width: 8px;
+  max-width: 22px;
+  border-radius: 4px 4px 0 0;
   transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
 }
+.evo-bar-receita { background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%); }
+.evo-bar-despesa { background: linear-gradient(180deg, #EF4444 0%, #DC2626 100%); }
 .evo-bar-x-label {
   font-size: 10px;
   font-weight: 600;
@@ -5009,18 +5010,14 @@ function renderFinEvoChart() {
   legend += '</div>';
 
   // Compute Y-axis scale (nice round numbers)
+  // Both modes now use max(receita, despesa) for a tight, readable scale.
   var maxVal = 1;
   var i, rec, desp;
   for (i = 0; i < summaries.length; i++) {
     rec = summaries[i].receita || 0;
     desp = summaries[i].custos || 0;
-    if (finEvoMode === 'barras') {
-      var total = rec + desp;
-      if (total > maxVal) maxVal = total;
-    } else {
-      if (rec > maxVal) maxVal = rec;
-      if (desp > maxVal) maxVal = desp;
-    }
+    if (rec > maxVal) maxVal = rec;
+    if (desp > maxVal) maxVal = desp;
   }
   maxVal = maxVal * 1.15;
   // Round up to nice number
@@ -5065,10 +5062,11 @@ function renderFinEvoChart() {
       html += '<div style="margin-bottom:2px;font-size:10px;color:rgba(255,255,255,0.6);">' + label + '</div>';
       html += '<div style="color:#22C55E;">Receita: ' + fmt(rec) + '</div>';
       html += '<div style="color:#EF4444;">Despesas: ' + fmt(desp) + '</div>';
+      html += '<div style="margin-top:2px;font-size:10px;color:rgba(255,255,255,0.6);">Lucro: ' + fmt(rec - desp) + '</div>';
       html += '</div>';
-      html += '<div class="evo-bar" style="animation: evoBarGrow 0.7s cubic-bezier(0.4,0,0.2,1) ' + delay + 'ms both; transform-origin: bottom;">';
-      html += '<div class="evo-bar-receita" style="height:' + recH.toFixed(1) + '%;"></div>';
-      html += '<div class="evo-bar-despesa" style="height:' + despH.toFixed(1) + '%;"></div>';
+      html += '<div class="evo-bar">';
+      html += '<div class="evo-bar-receita" style="height:' + recH.toFixed(1) + '%; animation: evoBarGrow 0.7s cubic-bezier(0.4,0,0.2,1) ' + delay + 'ms both; transform-origin: bottom;"></div>';
+      html += '<div class="evo-bar-despesa" style="height:' + despH.toFixed(1) + '%; animation: evoBarGrow 0.7s cubic-bezier(0.4,0,0.2,1) ' + (delay + 60) + 'ms both; transform-origin: bottom;"></div>';
       html += '</div>';
       html += '<div class="evo-bar-x-label">' + label + '</div>';
       html += '</div>';
@@ -5134,9 +5132,9 @@ function renderFinEvoChart() {
     svgOut += '<path class="evo-area-receita" d="' + recAreaPath + '"/>';
     svgOut += '<path class="evo-area-despesa" d="' + despAreaPath + '"/>';
 
-    // Lines
-    svgOut += '<path class="evo-path-receita" d="' + recPath + '" style="stroke-dasharray:1000;stroke-dashoffset:1000;animation:evoPathDraw 1.2s ease forwards;"/>';
-    svgOut += '<path class="evo-path-despesa" d="' + despPath + '" style="stroke-dasharray:1000;stroke-dashoffset:1000;animation:evoPathDraw 1.2s ease 0.15s forwards;"/>';
+    // Lines (animation via JS getTotalLength after render — keyframe var(--path-length) approach was buggy)
+    svgOut += '<path class="evo-path-receita evo-anim-path" data-delay="0" d="' + recPath + '"/>';
+    svgOut += '<path class="evo-path-despesa evo-anim-path" data-delay="150" d="' + despPath + '"/>';
 
     // Dots
     for (i = 0; i < numPts; i++) {
@@ -5160,6 +5158,24 @@ function renderFinEvoChart() {
     svgOut += '<div class="evo-line-tooltip" id="evoLineTooltip"></div>';
 
     container.innerHTML = svgOut;
+
+    // Animate paths with real lengths (fixes the broken var(--path-length) animation)
+    var animPaths = container.querySelectorAll('.evo-anim-path');
+    for (i = 0; i < animPaths.length; i++) {
+      (function(path) {
+        var len = 0;
+        try { len = path.getTotalLength(); } catch (e) { len = 0; }
+        if (len > 0) {
+          path.style.strokeDasharray = len;
+          path.style.strokeDashoffset = len;
+          var delay = parseInt(path.getAttribute('data-delay') || '0', 10);
+          // Force reflow then animate
+          path.getBoundingClientRect();
+          path.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(0.4,0,0.2,1) ' + delay + 'ms';
+          path.style.strokeDashoffset = '0';
+        }
+      })(animPaths[i]);
+    }
 
     // Attach hover events to dots
     var dots = container.querySelectorAll('.evo-dot');
