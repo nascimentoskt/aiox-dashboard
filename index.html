@@ -3373,11 +3373,34 @@ h1, h2, h3, h4, h5, h6,
 .lucas-pie-wrap {
   display: flex; flex-direction: column; align-items: center;
   padding: 8px 0 0;
+  position: relative;
 }
 .lucas-pie-svg { width: 100%; height: auto; max-width: 100%; display: block; }
 .lucas-pie-wrap .pie-empty { color: var(--text-caption); font-style: italic; padding: 60px 0; text-align: center; }
-.lucas-pie-wrap path { transition: opacity 0.15s, transform 0.15s; transform-origin: 200px 170px; }
-.lucas-pie-wrap path:hover { opacity: 0.88; transform: scale(1.03); }
+.lucas-pie-wrap .lucas-pie-slice { transition: opacity 0.15s, transform 0.15s; transform-origin: 200px 170px; cursor: pointer; }
+.lucas-pie-wrap .lucas-pie-slice:hover { opacity: 0.88; transform: scale(1.04); }
+.lucas-pie-tooltip {
+  position: absolute;
+  background: var(--navy-deep);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.12s, transform 0.12s;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  min-width: 140px;
+}
+.lucas-pie-tooltip.show { opacity: 1; transform: translateY(0); }
+.lucas-pie-tooltip .lpt-nome { font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+.lucas-pie-tooltip .lpt-row { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
+.lucas-pie-tooltip .lpt-pct { color: var(--blue); font-weight: 700; font-size: 13px; }
+.lucas-pie-tooltip .lpt-val { color: var(--text-secondary); font-variant-numeric: tabular-nums; font-weight: 600; }
 
 /* ===== Lucas Timeline (compromissos 24m) ===== */
 .lucas-timeline-wrap {
@@ -9638,7 +9661,7 @@ function lucasRenderPie(containerId, data, opts) {
   // Special case: single slice
   if (sorted.length === 1) {
     var color1 = LUCAS_PIE_COLORS[0];
-    svgPaths += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + color1 + '"><title>' + escHtml(sorted[0].nome) + ': ' + lucasFmt(sorted[0].valor) + '</title></circle>';
+    svgPaths += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + color1 + '" data-nome="' + escAttr(sorted[0].nome) + '" data-valor="' + lucasFmt(sorted[0].valor) + '" data-pct="100%" class="lucas-pie-slice"></circle>';
     svgInsidePct += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" pointer-events="none">100%</text>';
     svgOutsideLabels += '<text x="' + cx + '" y="' + (cy + r + 28) + '" text-anchor="middle" fill="' + color1 + '" font-size="13" font-weight="700">' + escHtml(sorted[0].nome) + '</text>';
   } else {
@@ -9652,7 +9675,7 @@ function lucasRenderPie(containerId, data, opts) {
       var color = LUCAS_PIE_COLORS[i % LUCAS_PIE_COLORS.length];
       var midAngle = startAngle + (endAngle - startAngle) / 2;
 
-      svgPaths += '<path d="' + lucasArcPath(cx, cy, r, startAngle, endAngle) + '" fill="' + color + '" stroke="var(--navy)" stroke-width="2"><title>' + escHtml(slice.nome) + ': ' + lucasFmt(slice.valor) + ' (' + (pct*100).toFixed(1) + '%)</title></path>';
+      svgPaths += '<path d="' + lucasArcPath(cx, cy, r, startAngle, endAngle) + '" fill="' + color + '" stroke="var(--navy)" stroke-width="2" class="lucas-pie-slice" data-nome="' + escAttr(slice.nome) + '" data-valor="' + lucasFmt(slice.valor) + '" data-pct="' + (pct*100).toFixed(1) + '%"></path>';
 
       // % inside slice (only if >= 4%)
       if (pct >= 0.04) {
@@ -9700,7 +9723,36 @@ function lucasRenderPie(containerId, data, opts) {
     renderLabels(leftLabels, 'left');
   }
 
-  c.innerHTML = '<svg viewBox="0 0 ' + vbW + ' ' + vbH + '" class="lucas-pie-svg">' + svgPaths + svgInsidePct + svgOutsideLabels + '</svg>';
+  c.innerHTML = '<svg viewBox="0 0 ' + vbW + ' ' + vbH + '" class="lucas-pie-svg">' + svgPaths + svgInsidePct + svgOutsideLabels + '</svg>'
+    + '<div class="lucas-pie-tooltip" id="' + containerId + '-tooltip"></div>';
+
+  // Attach mouse events
+  var tooltip = document.getElementById(containerId + '-tooltip');
+  var slices = c.querySelectorAll('.lucas-pie-slice');
+  slices.forEach(function(s) {
+    s.addEventListener('mouseenter', function(e) {
+      var nome = s.getAttribute('data-nome') || '';
+      var valor = s.getAttribute('data-valor') || '';
+      var pct = s.getAttribute('data-pct') || '';
+      tooltip.innerHTML = '<div class="lpt-nome">' + escHtml(nome) + '</div><div class="lpt-row"><span class="lpt-pct">' + pct + '</span><span class="lpt-val">' + valor + '</span></div>';
+      tooltip.classList.add('show');
+    });
+    s.addEventListener('mousemove', function(e) {
+      var rect = c.getBoundingClientRect();
+      var tw = tooltip.offsetWidth;
+      var th = tooltip.offsetHeight;
+      var x = e.clientX - rect.left + 14;
+      var y = e.clientY - rect.top - th - 10;
+      // keep inside container
+      if (x + tw > rect.width) x = e.clientX - rect.left - tw - 14;
+      if (y < 0) y = e.clientY - rect.top + 18;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    });
+    s.addEventListener('mouseleave', function() {
+      tooltip.classList.remove('show');
+    });
+  });
 }
 
 function renderLucasPieDespesas(d) {
