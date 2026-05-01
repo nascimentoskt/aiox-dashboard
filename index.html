@@ -3369,6 +3369,31 @@ h1, h2, h3, h4, h5, h6,
 .lucas-status.pendente { background: rgba(252,211,77,0.15); color: #FCD34D; }
 .lucas-status.atrasado { background: rgba(239,68,68,0.15); color: #F87171; }
 
+/* ===== Lucas section spacing (padroniza espacos entre blocos) ===== */
+#financeiro-lucas > .fin-card,
+#financeiro-lucas > .fin-card.full-width {
+  margin-bottom: 24px;
+}
+#financeiro-lucas > .fin-card:last-of-type {
+  margin-bottom: 0;
+}
+#financeiro-lucas .fin-kpi-row {
+  margin-bottom: 24px;
+}
+#financeiro-lucas > div[style*="grid-template-columns"] {
+  margin-bottom: 24px;
+}
+#financeiro-lucas .section-header {
+  margin-bottom: 28px;
+}
+/* Mais respiro interno nos cards do Lucas */
+#financeiro-lucas .fin-card {
+  padding: 26px 28px;
+}
+#financeiro-lucas .fin-card-title {
+  margin-bottom: 22px;
+}
+
 /* ===== Lucas Pie ===== */
 .lucas-pie-wrap {
   display: flex; flex-direction: column; align-items: center;
@@ -4647,7 +4672,7 @@ h1, h2, h3, h4, h5, h6,
       </div>
 
       <!-- Liquidez & Runway -->
-      <div class="fin-card full-width" style="margin-bottom:24px;">
+      <div class="fin-card full-width">
         <div class="fin-card-title" style="display:flex;justify-content:space-between;align-items:center;">
           <div style="display:flex;align-items:center;gap:8px;">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -4680,7 +4705,7 @@ h1, h2, h3, h4, h5, h6,
       </div>
 
       <!-- Periodo -->
-      <div id="lucasPeriodBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;"></div>
+      <div id="lucasPeriodBtns" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
 
       <!-- Fluxo Mensal -->
       <div class="fin-card full-width">
@@ -4692,7 +4717,7 @@ h1, h2, h3, h4, h5, h6,
       </div>
 
       <!-- Pizza Despesas (categoria + item) + Concentracao Receita -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;">
         <div class="fin-card">
           <div class="fin-card-title" style="display:flex;align-items:center;gap:8px;">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
