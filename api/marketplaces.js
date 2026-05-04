@@ -35,8 +35,7 @@ async function handleList(res, token, dbCamp, dbAds) {
       marketplace: sel(pr.Marketplace),
       status: sel(pr.Status),
       gasto: num(pr['Valor Gasto']),
-      vendaPago: num(pr['Venda Pago']),
-      vendaOrganico: num(pr['Venda Organico']),
+      vendaTotal: num(pr['Venda ADS + Organico']),
       roas: num(pr.ROAS),
       acos: num(pr.ACOS),
       ctr: num(pr.CTR),
@@ -53,10 +52,11 @@ async function handleList(res, token, dbCamp, dbAds) {
       data: pr.Data && pr.Data.date ? pr.Data.date.start : '',
       loja: sel(pr.Loja),
       marketplace: sel(pr.Marketplace),
+      categoria: sel(pr.Categoria),
       link: pr.Link && pr.Link.url ? pr.Link.url : '',
       campanhaId: pr.Campanha && pr.Campanha.relation && pr.Campanha.relation[0] ? pr.Campanha.relation[0].id : '',
       gasto: num(pr['Valor Gasto']),
-      vendas: num(pr.Vendas),
+      vendaTotal: num(pr['Venda ADS + Organico']),
       roas: num(pr.ROAS),
       ctr: num(pr.CTR),
       seo: txt(pr.SEO && pr.SEO.rich_text),
@@ -78,10 +78,9 @@ async function handleAdd(req, res, token, dbCamp, dbAds) {
   if (kind === 'campanha') {
     dbId = dbCamp;
     var gasto = parseFloat(body.gasto) || 0;
-    var vPago = parseFloat(body.vendaPago) || 0;
-    var vOrg = parseFloat(body.vendaOrganico) || 0;
-    var roas = gasto > 0 ? vPago / gasto : 0;
-    var acos = vPago > 0 ? gasto / vPago : 0;
+    var vTotal = parseFloat(body.vendaTotal) || 0;
+    var roas = gasto > 0 ? vTotal / gasto : 0;
+    var acos = vTotal > 0 ? gasto / vTotal : 0;
     var ctr = parseFloat(body.ctr) || 0;
     properties = {
       Campanha: { title: [{ text: { content: body.campanha || 'Sem nome' } }] },
@@ -90,8 +89,7 @@ async function handleAdd(req, res, token, dbCamp, dbAds) {
       Marketplace: { select: { name: body.marketplace || 'Shopee' } },
       Status: { select: { name: body.status || 'Em andamento' } },
       'Valor Gasto': { number: gasto },
-      'Venda Pago': { number: vPago },
-      'Venda Organico': { number: vOrg },
+      'Venda ADS + Organico': { number: vTotal },
       ROAS: { number: Math.round(roas * 100) / 100 },
       ACOS: { number: Math.round(acos * 10000) / 10000 },
       CTR: { number: Math.round(ctr * 10000) / 10000 },
@@ -100,7 +98,7 @@ async function handleAdd(req, res, token, dbCamp, dbAds) {
   } else {
     dbId = dbAds;
     var aGasto = parseFloat(body.gasto) || 0;
-    var aVendas = parseFloat(body.vendas) || 0;
+    var aVendas = parseFloat(body.vendaTotal) || 0;
     var aRoas = aGasto > 0 ? aVendas / aGasto : 0;
     var aCtr = parseFloat(body.ctr) || 0;
     properties = {
@@ -109,11 +107,12 @@ async function handleAdd(req, res, token, dbCamp, dbAds) {
       Loja: { select: { name: body.loja || 'Luzzoo' } },
       Marketplace: { select: { name: body.marketplace || 'Shopee' } },
       'Valor Gasto': { number: aGasto },
-      Vendas: { number: aVendas },
+      'Venda ADS + Organico': { number: aVendas },
       ROAS: { number: Math.round(aRoas * 100) / 100 },
       CTR: { number: Math.round(aCtr * 10000) / 10000 },
       SEO: { rich_text: [{ text: { content: body.seo || '' } }] }
     };
+    if (body.categoria) properties.Categoria = { select: { name: body.categoria } };
     if (body.link) properties.Link = { url: body.link };
     if (body.campanhaId) properties.Campanha = { relation: [{ id: body.campanhaId }] };
   }
@@ -134,8 +133,8 @@ async function handleUpdate(req, res, token) {
   if (!pageId || !field) return res.status(400).json({ error: 'pageId and field required' });
 
   var properties = {};
-  var numFields = ['Valor Gasto', 'Venda Pago', 'Venda Organico', 'ROAS', 'ACOS', 'CTR', 'Vendas'];
-  var selFields = ['Loja', 'Marketplace', 'Status'];
+  var numFields = ['Valor Gasto', 'Venda ADS + Organico', 'ROAS', 'ACOS', 'CTR'];
+  var selFields = ['Loja', 'Marketplace', 'Status', 'Categoria'];
   var textFields = ['SEO'];
 
   if (numFields.indexOf(field) >= 0) properties[field] = { number: parseFloat(value) || 0 };
