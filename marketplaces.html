@@ -443,7 +443,7 @@ async function save() {
       if (!r.ok) throw new Error(d.error || 'Erro ao salvar');
       toast('Edição salva', 'success');
       cancelEdit();
-      loadData();
+      setTimeout(loadData, 1200);
       return;
     }
 
@@ -556,7 +556,7 @@ async function deleteRow(pageId, kind) {
 // ===== DATA =====
 async function loadData() {
   try {
-    var r = await fetch('/api/marketplaces');
+    var r = await fetch('/api/marketplaces?_=' + Date.now());
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro');
     dataCache = d;
