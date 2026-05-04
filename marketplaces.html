@@ -251,9 +251,10 @@ tr:hover td { background: var(--card-hover); }
       <div class="kpi-grid" id="kpiGrid"></div>
       <div class="dash-grid">
         <div class="dash-card"><h3>Gasto por Marketplace</h3><div id="chartGasto"></div></div>
+        <div class="dash-card"><h3>Venda por Marketplace</h3><div id="chartVendaMkt"></div></div>
         <div class="dash-card"><h3>ROAS por Marketplace</h3><div id="chartRoas"></div></div>
         <div class="dash-card"><h3>Vendas por Loja</h3><div id="chartLoja"></div></div>
-        <div class="dash-card"><h3>Top 5 Campanhas (ROAS)</h3><div id="chartTop"></div></div>
+        <div class="dash-card" style="grid-column:1/-1"><h3>Top 5 Campanhas (ROAS)</h3><div id="chartTop"></div></div>
       </div>
     </section>
   </main>
@@ -501,6 +502,12 @@ function renderDashboard() {
   document.getElementById('chartGasto').innerHTML = Object.keys(byMkt).sort(function(a,b){return byMkt[b].gasto-byMkt[a].gasto;}).map(function(k) {
     var pct = maxGasto > 0 ? (byMkt[k].gasto / maxGasto * 100) : 0;
     return bar(k, pct, brl(byMkt[k].gasto));
+  }).join('') || empty();
+
+  var maxVendaMkt = 0; Object.keys(byMkt).forEach(function(k) { if (byMkt[k].venda > maxVendaMkt) maxVendaMkt = byMkt[k].venda; });
+  document.getElementById('chartVendaMkt').innerHTML = Object.keys(byMkt).sort(function(a,b){return byMkt[b].venda-byMkt[a].venda;}).map(function(k) {
+    var pct = maxVendaMkt > 0 ? (byMkt[k].venda / maxVendaMkt * 100) : 0;
+    return bar(k, pct, brl(byMkt[k].venda));
   }).join('') || empty();
 
   var maxRoas = 0; Object.keys(byMkt).forEach(function(k) { var r = byMkt[k].gasto > 0 ? byMkt[k].venda / byMkt[k].gasto : 0; if (r > maxRoas) maxRoas = r; });
