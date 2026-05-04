@@ -1,1 +1,5 @@
-{}
+{
+  "rewrites": [
+    { "source": "/api/update-financial", "destination": "/api/add-financial" }
+  ]
+}

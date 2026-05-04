@@ -20,6 +20,14 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = await parseBody(req);
+
+    // Update path: callers send { pageId, field, value } to edit existing record.
+    // Kept here so /api/update-financial (rewritten to this fn) keeps working without
+    // burning a separate Vercel serverless slot.
+    if (body.pageId && body.field) {
+      return await handleUpdate(body, NOTION_TOKEN, res);
+    }
+
     const { type, nome, valor, status, categoria, modelo, cnpj, vencimento, mesAno, cliente } = body;
 
     if (!nome || valor === undefined || valor === null) {
@@ -92,6 +100,42 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 };
+
+async function handleUpdate(params, token, res) {
+  var pageId = params.pageId;
+  var field = params.field;
+  var value = params.value;
+  var properties = {};
+
+  if (field === 'receita' || field === 'valor') {
+    var n1 = parseFloat(String(value).replace(/[^\d.-]/g, '')) || 0;
+    properties['Receita Impulso'] = { number: n1 };
+    properties['Lucro'] = { number: n1 };
+  } else if (field === 'custos') {
+    var n2 = parseFloat(String(value).replace(/[^\d.-]/g, '')) || 0;
+    properties['Custos Operacionais'] = { number: n2 };
+    properties['Lucro'] = { number: -n2 };
+  } else if (field === 'status') {
+    properties['Status Pgto'] = { select: { name: value } };
+  } else if (field === 'nome') {
+    properties['Registro'] = { title: [{ text: { content: value } }] };
+  } else if (field === 'modelo') {
+    properties['Modelo'] = { select: { name: value } };
+  } else if (field === 'cliente') {
+    properties['Cliente'] = { select: { name: value } };
+  }
+
+  var r = await fetch('https://api.notion.com/v1/pages/' + pageId, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + token, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ properties: properties })
+  });
+  if (!r.ok) {
+    var err = await r.json();
+    return res.status(r.status).json({ error: err.message });
+  }
+  return res.status(200).json({ success: true, pageId: pageId, field: field, value: value });
+}
 
 function parseBody(req) {
   return new Promise((resolve, reject) => {
