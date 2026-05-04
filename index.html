@@ -5988,7 +5988,7 @@ function statusBadgeHtml(status) {
 
 // ========== LOAD FINANCEIRO FROM API ==========
 function loadFinanceiro() {
-  fetch('/api/financeiro')
+  fetch('/api/financeiro?_=' + Date.now())
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.error) { console.log('[AIOX] Financeiro error:', data.error); return; }
@@ -6806,8 +6806,8 @@ function finishEdit(td, newVal, field) {
       indicator.style.cssText = 'position:absolute;top:-8px;right:4px;font-size:10px;color:' + (data.success ? '#22C55E' : '#F44336') + ';font-weight:600;pointer-events:none;z-index:10;';
       td.appendChild(indicator);
       setTimeout(function() { if (indicator.parentNode) indicator.parentNode.removeChild(indicator); }, 2000);
-      // Refresh all data from API after Notion processes
-      setTimeout(function() { loadFinanceiro(); }, 1500);
+      // Refresh all data from API after Notion processes (cache-busted to avoid Vercel CDN serving stale)
+      setTimeout(function() { loadFinanceiro(); }, 2500);
     })
     .catch(function() {
       var indicator = document.createElement('span');
