@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impulso · Marketplaces</title>
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0088FF;
+  --navy: #1A2744;
+  --navy-2: #0F1830;
+  --bege: #E8E4DE;
+  --green: #34C759;
+  --yellow: #FFB020;
+  --red: #EF4444;
+  --text: #F2F2F2;
+  --muted: rgba(255,255,255,0.55);
+  --border: rgba(255,255,255,0.08);
+  --card: rgba(255,255,255,0.04);
+  --card-hover: rgba(255,255,255,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--navy-2); color: var(--text); font-family: 'Sora', sans-serif; min-height: 100vh; }
+body { display: flex; flex-direction: column; }
+
+/* ============ LOGIN ============ */
+#loginOverlay {
+  position: fixed; inset: 0; background: linear-gradient(135deg, var(--navy-2), var(--navy));
+  display: flex; align-items: center; justify-content: center; z-index: 999;
+}
+.login-card { text-align: center; }
+.login-logo { font-size: 14px; letter-spacing: 4px; color: var(--blue); margin-bottom: 8px; font-weight: 600; }
+.login-title { font-size: 22px; font-weight: 300; margin-bottom: 32px; }
+.login-dots { display: flex; gap: 16px; justify-content: center; margin-bottom: 36px; }
+.dash-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: transparent; transition: all .15s; }
+.login-keypad { display: grid; grid-template-columns: repeat(3, 78px); gap: 18px; justify-content: center; }
+.lock-key { width: 78px; height: 78px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.06); color: var(--text); font-size: 32px; font-weight: 300; font-family: Sora, sans-serif; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; transition: background .12s; }
+.lock-key:hover { background: rgba(255,255,255,0.14); }
+.lock-key span { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; margin-top: 3px; opacity: 0.55; }
+.lock-empty { background: transparent !important; border: none !important; cursor: default !important; pointer-events: none; }
+.lock-back { background: transparent !important; border: none !important; }
+
+/* ============ APP ============ */
+#app { display: none; flex-direction: column; min-height: 100vh; }
+header.topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid var(--border); background: var(--navy-2); position: sticky; top: 0; z-index: 50; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.brand-name { font-weight: 600; font-size: 15px; letter-spacing: 1px; }
+.brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+.tabs { display: flex; gap: 4px; background: var(--card); padding: 4px; border-radius: 10px; }
+.tab { padding: 8px 18px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); transition: all .15s; border: none; background: transparent; font-family: inherit; }
+.tab.active { background: var(--blue); color: #fff; }
+.tab:hover:not(.active) { background: rgba(255,255,255,0.06); color: var(--text); }
+.logout-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.logout-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+main { flex: 1; padding: 32px; max-width: 1400px; width: 100%; margin: 0 auto; }
+.section { display: none; }
+.section.active { display: block; }
+
+h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+.section-sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+/* ============ FORM ============ */
+.form-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; max-width: 900px; }
+.form-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+.form-row { display: flex; flex-direction: column; gap: 6px; }
+.form-row.full { grid-column: 1 / -1; }
+.form-row label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+.form-row input, .form-row select, .form-row textarea {
+  background: rgba(0,0,0,0.25); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; transition: border-color .15s;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--blue); }
+.form-row textarea { resize: vertical; min-height: 60px; }
+.form-actions { display: flex; gap: 12px; margin-top: 24px; align-items: center; }
+.btn-primary { background: var(--blue); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; }
+.btn-primary:hover { background: #0070d6; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 12px 18px; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.kind-toggle { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); padding: 4px; border-radius: 10px; width: fit-content; margin-bottom: 24px; }
+.kind-btn { padding: 8px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: transparent; font-family: inherit; }
+.kind-btn.active { background: var(--blue); color: #fff; }
+.toast { position: fixed; bottom: 32px; right: 32px; padding: 14px 22px; border-radius: 10px; font-size: 13px; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all .25s; z-index: 200; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: rgba(52,199,89,0.15); border: 1px solid var(--green); color: var(--green); }
+.toast.error { background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: var(--red); }
+
+/* ============ TABLE ============ */
+.filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+.filter-bar select, .filter-bar input { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-family: inherit; }
+.table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: auto; max-height: 70vh; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: var(--navy); padding: 12px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; position: sticky; top: 0; }
+td { padding: 12px 14px; border-top: 1px solid var(--border); white-space: nowrap; }
+tr:hover td { background: var(--card-hover); }
+.tag { display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 500; }
+.tag-luzzoo { background: rgba(0,136,255,0.15); color: #4DA9FF; }
+.tag-nobrand { background: rgba(156,39,176,0.18); color: #C570D9; }
+.tag-status-em-andamento { background: rgba(52,199,89,0.15); color: var(--green); }
+.tag-status-pausada { background: rgba(255,176,32,0.15); color: var(--yellow); }
+.tag-status-encerrada { background: rgba(255,255,255,0.08); color: var(--muted); }
+.empty { padding: 40px; text-align: center; color: var(--muted); }
+
+/* ============ DASHBOARD ============ */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+.kpi-value { font-size: 24px; font-weight: 600; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.dash-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+.dash-card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 16px; font-weight: 600; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+.bar-label { width: 110px; color: var(--muted); }
+.bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--blue); border-radius: 4px; }
+.bar-val { width: 90px; text-align: right; font-weight: 500; }
+
+@media (max-width: 800px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid { grid-template-columns: 1fr; }
+  main { padding: 18px; }
+  header.topbar { padding: 14px 18px; flex-wrap: wrap; gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">IMPULSO</div>
+    <div class="login-title">Marketplaces</div>
+    <div id="dashDots" class="login-dots">
+      <div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div>
+    </div>
+    <div class="login-keypad" id="keypad"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">Marketplaces</div>
+        <div class="brand-sub">Impulso · Luzzoo & Nobrand</div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-section="lancar">Lançar Diário</button>
+      <button class="tab" data-section="tabela">Tabela</button>
+      <button class="tab" data-section="dashboard">Dashboard</button>
+    </nav>
+    <button class="logout-btn" onclick="logout()">Sair</button>
+  </header>
+
+  <main>
+    <!-- LAUNCH -->
+    <section class="section active" id="sec-lancar">
+      <h2>Lançar dados do dia</h2>
+      <div class="section-sub">Preenchimento diário · cada campanha vira uma linha por dia. Anúncios são vinculados à campanha do mesmo dia.</div>
+
+      <div class="kind-toggle">
+        <button class="kind-btn active" data-kind="campanha" onclick="setKind('campanha')">Campanha</button>
+        <button class="kind-btn" data-kind="anuncio" onclick="setKind('anuncio')">Anúncio</button>
+      </div>
+
+      <div class="form-card">
+        <div class="form-title" id="formTitle">Nova campanha</div>
+        <div class="section-sub" id="formSub">Cabeçalho da campanha do dia. Métricas agregadas dos anúncios.</div>
+
+        <div class="form-grid">
+          <div class="form-row full"><label id="lblNome">Nome da campanha</label><input id="f-nome" placeholder="Ex: Campanha Verão Bermudas"></div>
+          <div class="form-row"><label>Data</label><input id="f-data" type="date"></div>
+          <div class="form-row"><label>Loja</label>
+            <select id="f-loja"><option>Luzzoo</option><option>Nobrand</option></select>
+          </div>
+          <div class="form-row"><label>Marketplace</label>
+            <select id="f-marketplace"><option>Mercado Livre</option><option>Shopee</option><option>Netshoes</option><option>Shein</option><option>TikTok Shop</option></select>
+          </div>
+
+          <!-- Campanha-only -->
+          <div class="form-row campanha-only"><label>Status</label>
+            <select id="f-status"><option>Em andamento</option><option>Pausada</option><option>Encerrada</option></select>
+          </div>
+          <div class="form-row campanha-only"><label>Valor Gasto (R$)</label><input id="f-gasto" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="form-row campanha-only"><label>Venda Pago (R$)</label><input id="f-vpago" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="form-row campanha-only"><label>Venda Orgânico (R$)</label><input id="f-vorg" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="form-row campanha-only"><label>CTR médio (%)</label><input id="f-ctr" type="number" step="0.01" placeholder="Ex: 2.5"></div>
+
+          <!-- Anuncio-only -->
+          <div class="form-row anuncio-only" style="display:none"><label>Campanha vinculada</label>
+            <select id="f-camp-rel"><option value="">— selecione —</option></select>
+          </div>
+          <div class="form-row anuncio-only full" style="display:none"><label>Link do anúncio</label><input id="f-link" placeholder="https://..."></div>
+          <div class="form-row anuncio-only" style="display:none"><label>Valor Gasto (R$)</label><input id="f-gasto-ad" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="form-row anuncio-only" style="display:none"><label>Vendas (R$)</label><input id="f-vendas-ad" type="number" step="0.01" placeholder="0,00"></div>
+          <div class="form-row anuncio-only" style="display:none"><label>CTR (%)</label><input id="f-ctr-ad" type="number" step="0.01" placeholder="Ex: 1.8"></div>
+
+          <div class="form-row full"><label>SEO (palavras-chave / observações)</label><textarea id="f-seo" rows="2" placeholder="Ex: bermuda dry fit | shorts academia | 3 keywords no título"></textarea></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" id="btnSave" onclick="save()">Salvar lançamento</button>
+          <button class="btn-ghost" onclick="resetForm()">Limpar</button>
+          <span id="calcHint" style="margin-left:auto;color:var(--muted);font-size:11px;">ROAS, ACOS calculados automaticamente</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLE -->
+    <section class="section" id="sec-tabela">
+      <h2>Histórico</h2>
+      <div class="section-sub">Todos os lançamentos. Use os filtros para refinar.</div>
+
+      <div class="filter-bar">
+        <select id="flt-tipo"><option value="campanha">Campanhas</option><option value="anuncio">Anúncios</option></select>
+        <select id="flt-loja"><option value="">Todas as lojas</option><option>Luzzoo</option><option>Nobrand</option></select>
+        <select id="flt-mkt"><option value="">Todos marketplaces</option><option>Mercado Livre</option><option>Shopee</option><option>Netshoes</option><option>Shein</option><option>TikTok Shop</option></select>
+        <input id="flt-data" type="date" title="Data específica">
+        <button class="btn-ghost" onclick="loadData()">Atualizar</button>
+      </div>
+
+      <div class="table-wrap" id="tableWrap"><div class="empty">Carregando…</div></div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section class="section" id="sec-dashboard">
+      <h2>Dashboard</h2>
+      <div class="section-sub">Visão consolidada — últimos 30 dias.</div>
+
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="dash-grid">
+        <div class="dash-card"><h3>Gasto por Marketplace</h3><div id="chartGasto"></div></div>
+        <div class="dash-card"><h3>ROAS por Marketplace</h3><div id="chartRoas"></div></div>
+        <div class="dash-card"><h3>Vendas por Loja</h3><div id="chartLoja"></div></div>
+        <div class="dash-card"><h3>Top 5 Campanhas (ROAS)</h3><div id="chartTop"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var PASS = '2026';
+var pin = '';
+var STORAGE_KEY = 'mkt_authed';
+var currentKind = 'campanha';
+var dataCache = { campanhas: [], anuncios: [] };
+
+// ===== LOGIN =====
+function buildKeypad() {
+  var k = document.getElementById('keypad');
+  var keys = [['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['empty',''],['0',''],['back','']];
+  k.innerHTML = keys.map(function(kk) {
+    if (kk[0] === 'empty') return '<button class="lock-key lock-empty"></button>';
+    if (kk[0] === 'back') return '<button class="lock-key lock-back" onclick="pinBack()" aria-label="Apagar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l4-7h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H7l-4-7z"/><line x1="11" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="11" y2="15"/></svg></button>';
+    return '<button class="lock-key" onclick="pinTap(\'' + kk[0] + '\')">' + kk[0] + (kk[1] ? '<span>' + kk[1] + '</span>' : '') + '</button>';
+  }).join('');
+}
+function pinTap(d) {
+  if (pin.length >= 4) return;
+  pin += d;
+  updateDots();
+  if (pin.length === 4) setTimeout(checkPin, 150);
+}
+function pinBack() { if (pin.length === 0) return; pin = pin.slice(0, -1); updateDots(); }
+function updateDots() {
+  var dots = document.querySelectorAll('#dashDots .dash-dot');
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].style.background = i < pin.length ? '#F2F2F2' : 'transparent';
+    dots[i].style.borderColor = i < pin.length ? '#F2F2F2' : 'rgba(255,255,255,0.4)';
+  }
+}
+function checkPin() {
+  if (pin === PASS) {
+    sessionStorage.setItem(STORAGE_KEY, '1');
+    enterApp();
+  } else {
+    var d = document.getElementById('dashDots');
+    d.animate([{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(-8px)'},{transform:'translateX(0)'}], {duration:400});
+    var dots = document.querySelectorAll('#dashDots .dash-dot');
+    for (var i = 0; i < dots.length; i++) dots[i].style.borderColor = '#EF4444';
+    setTimeout(function() { pin = ''; updateDots(); }, 450);
+  }
+}
+function enterApp() {
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('f-data').value = new Date().toISOString().slice(0, 10);
+  loadData();
+}
+function logout() {
+  sessionStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ===== TABS =====
+document.addEventListener('click', function(e) {
+  if (e.target.classList && e.target.classList.contains('tab')) {
+    var s = e.target.getAttribute('data-section');
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('active', tabs[i] === e.target);
+    var secs = document.querySelectorAll('.section');
+    for (var j = 0; j < secs.length; j++) secs[j].classList.toggle('active', secs[j].id === 'sec-' + s);
+    if (s === 'tabela') renderTable();
+    if (s === 'dashboard') renderDashboard();
+  }
+});
+
+// ===== FORM =====
+function setKind(k) {
+  currentKind = k;
+  var btns = document.querySelectorAll('.kind-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', btns[i].getAttribute('data-kind') === k);
+  var camp = document.querySelectorAll('.campanha-only');
+  var anun = document.querySelectorAll('.anuncio-only');
+  for (var c = 0; c < camp.length; c++) camp[c].style.display = k === 'campanha' ? '' : 'none';
+  for (var a = 0; a < anun.length; a++) anun[a].style.display = k === 'anuncio' ? '' : 'none';
+  document.getElementById('formTitle').textContent = k === 'campanha' ? 'Nova campanha' : 'Novo anúncio';
+  document.getElementById('formSub').textContent = k === 'campanha' ? 'Cabeçalho da campanha do dia.' : 'Anúncio individual vinculado a uma campanha do mesmo dia.';
+  document.getElementById('lblNome').textContent = k === 'campanha' ? 'Nome da campanha' : 'Nome / SKU do anúncio';
+  populateCampanhasSelect();
+}
+function populateCampanhasSelect() {
+  var sel = document.getElementById('f-camp-rel');
+  if (!sel) return;
+  var data = document.getElementById('f-data').value;
+  var opts = '<option value="">— selecione —</option>';
+  dataCache.campanhas.filter(function(c) { return !data || c.data === data; }).forEach(function(c) {
+    opts += '<option value="' + c.id + '">' + esc(c.campanha) + ' · ' + c.marketplace + ' · ' + c.data + '</option>';
+  });
+  sel.innerHTML = opts;
+}
+function resetForm() {
+  ['f-nome','f-gasto','f-vpago','f-vorg','f-ctr','f-link','f-gasto-ad','f-vendas-ad','f-ctr-ad','f-seo'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('f-data').value = new Date().toISOString().slice(0, 10);
+}
+async function save() {
+  var btn = document.getElementById('btnSave');
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    var payload;
+    if (currentKind === 'campanha') {
+      payload = {
+        kind: 'campanha',
+        campanha: document.getElementById('f-nome').value,
+        data: document.getElementById('f-data').value,
+        loja: document.getElementById('f-loja').value,
+        marketplace: document.getElementById('f-marketplace').value,
+        status: document.getElementById('f-status').value,
+        gasto: document.getElementById('f-gasto').value,
+        vendaPago: document.getElementById('f-vpago').value,
+        vendaOrganico: document.getElementById('f-vorg').value,
+        ctr: parseFloat(document.getElementById('f-ctr').value || 0) / 100,
+        seo: document.getElementById('f-seo').value
+      };
+      if (!payload.campanha) { toast('Informe o nome da campanha', 'error'); btn.disabled = false; btn.textContent = 'Salvar lançamento'; return; }
+    } else {
+      payload = {
+        kind: 'anuncio',
+        anuncio: document.getElementById('f-nome').value,
+        data: document.getElementById('f-data').value,
+        loja: document.getElementById('f-loja').value,
+        marketplace: document.getElementById('f-marketplace').value,
+        campanhaId: document.getElementById('f-camp-rel').value || null,
+        link: document.getElementById('f-link').value,
+        gasto: document.getElementById('f-gasto-ad').value,
+        vendas: document.getElementById('f-vendas-ad').value,
+        ctr: parseFloat(document.getElementById('f-ctr-ad').value || 0) / 100,
+        seo: document.getElementById('f-seo').value
+      };
+      if (!payload.anuncio) { toast('Informe o nome do anúncio', 'error'); btn.disabled = false; btn.textContent = 'Salvar lançamento'; return; }
+    }
+    var r = await fetch('/api/marketplaces-add', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erro ao salvar');
+    toast('Salvo com sucesso', 'success');
+    resetForm();
+    loadData();
+  } catch (e) {
+    toast(e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvar lançamento';
+  }
+}
+
+// ===== DATA =====
+async function loadData() {
+  try {
+    var r = await fetch('/api/marketplaces-list');
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erro');
+    dataCache = d;
+    populateCampanhasSelect();
+    if (document.getElementById('sec-tabela').classList.contains('active')) renderTable();
+    if (document.getElementById('sec-dashboard').classList.contains('active')) renderDashboard();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+// ===== TABLE =====
+function renderTable() {
+  var tipo = document.getElementById('flt-tipo').value;
+  var loja = document.getElementById('flt-loja').value;
+  var mkt = document.getElementById('flt-mkt').value;
+  var data = document.getElementById('flt-data').value;
+  var rows = tipo === 'campanha' ? dataCache.campanhas : dataCache.anuncios;
+  rows = rows.filter(function(r) {
+    if (loja && r.loja !== loja) return false;
+    if (mkt && r.marketplace !== mkt) return false;
+    if (data && r.data !== data) return false;
+    return true;
+  });
+  var wrap = document.getElementById('tableWrap');
+  if (!rows.length) { wrap.innerHTML = '<div class="empty">Nenhum lançamento ainda.</div>'; return; }
+  var html = '<table><thead><tr>';
+  if (tipo === 'campanha') {
+    html += '<th>Data</th><th>Campanha</th><th>Loja</th><th>Marketplace</th><th>Status</th><th>Gasto</th><th>V. Pago</th><th>V. Orgânico</th><th>ROAS</th><th>ACOS</th><th>CTR</th><th>SEO</th>';
+  } else {
+    html += '<th>Data</th><th>Anúncio</th><th>Loja</th><th>Marketplace</th><th>Link</th><th>Gasto</th><th>Vendas</th><th>ROAS</th><th>CTR</th><th>SEO</th>';
+  }
+  html += '</tr></thead><tbody>';
+  rows.forEach(function(r) {
+    html += '<tr>';
+    if (tipo === 'campanha') {
+      html += '<td>' + r.data + '</td><td>' + esc(r.campanha) + '</td>';
+      html += '<td><span class="tag tag-' + r.loja.toLowerCase() + '">' + r.loja + '</span></td>';
+      html += '<td>' + r.marketplace + '</td>';
+      html += '<td><span class="tag tag-status-' + slug(r.status) + '">' + r.status + '</span></td>';
+      html += '<td>' + brl(r.gasto) + '</td><td>' + brl(r.vendaPago) + '</td><td>' + brl(r.vendaOrganico) + '</td>';
+      html += '<td>' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
+      html += '<td>' + (r.acos ? (r.acos * 100).toFixed(1) + '%' : '—') + '</td>';
+      html += '<td>' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
+      html += '<td title="' + esc(r.seo) + '">' + esc(r.seo.slice(0, 40)) + (r.seo.length > 40 ? '…' : '') + '</td>';
+    } else {
+      html += '<td>' + r.data + '</td><td>' + esc(r.anuncio) + '</td>';
+      html += '<td><span class="tag tag-' + r.loja.toLowerCase() + '">' + r.loja + '</span></td>';
+      html += '<td>' + r.marketplace + '</td>';
+      html += '<td>' + (r.link ? '<a href="' + esc(r.link) + '" target="_blank" style="color:var(--blue);">abrir</a>' : '—') + '</td>';
+      html += '<td>' + brl(r.gasto) + '</td><td>' + brl(r.vendas) + '</td>';
+      html += '<td>' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
+      html += '<td>' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
+      html += '<td title="' + esc(r.seo) + '">' + esc(r.seo.slice(0, 40)) + (r.seo.length > 40 ? '…' : '') + '</td>';
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+['flt-tipo','flt-loja','flt-mkt','flt-data'].forEach(function(id) {
+  document.addEventListener('change', function(e) { if (e.target.id === id) renderTable(); });
+});
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+  var camp = dataCache.campanhas.filter(function(c) { return c.data && new Date(c.data) >= cutoff; });
+  var totGasto = 0, totPago = 0, totOrg = 0;
+  camp.forEach(function(c) { totGasto += c.gasto; totPago += c.vendaPago; totOrg += c.vendaOrganico; });
+  var totVenda = totPago + totOrg;
+  var roasGeral = totGasto > 0 ? totPago / totGasto : 0;
+
+  document.getElementById('kpiGrid').innerHTML = [
+    kpi('Gasto (30d)', brl(totGasto), camp.length + ' campanhas'),
+    kpi('Venda Total', brl(totVenda), 'Pago + orgânico'),
+    kpi('Venda Pago', brl(totPago), 'Atribuído a ads'),
+    kpi('ROAS Geral', roasGeral.toFixed(2), totPago > 0 && totGasto > 0 ? 'Saudável: > 3' : '—')
+  ].join('');
+
+  var byMkt = {};
+  camp.forEach(function(c) {
+    if (!byMkt[c.marketplace]) byMkt[c.marketplace] = { gasto: 0, vPago: 0 };
+    byMkt[c.marketplace].gasto += c.gasto;
+    byMkt[c.marketplace].vPago += c.vendaPago;
+  });
+  var maxGasto = 0; Object.keys(byMkt).forEach(function(k) { if (byMkt[k].gasto > maxGasto) maxGasto = byMkt[k].gasto; });
+  document.getElementById('chartGasto').innerHTML = Object.keys(byMkt).sort(function(a,b){return byMkt[b].gasto-byMkt[a].gasto;}).map(function(k) {
+    var pct = maxGasto > 0 ? (byMkt[k].gasto / maxGasto * 100) : 0;
+    return bar(k, pct, brl(byMkt[k].gasto));
+  }).join('') || empty();
+
+  var maxRoas = 0; Object.keys(byMkt).forEach(function(k) { var r = byMkt[k].gasto > 0 ? byMkt[k].vPago / byMkt[k].gasto : 0; if (r > maxRoas) maxRoas = r; });
+  document.getElementById('chartRoas').innerHTML = Object.keys(byMkt).map(function(k) {
+    var roas = byMkt[k].gasto > 0 ? byMkt[k].vPago / byMkt[k].gasto : 0;
+    var pct = maxRoas > 0 ? (roas / maxRoas * 100) : 0;
+    return bar(k, pct, roas.toFixed(2));
+  }).join('') || empty();
+
+  var byLoja = {};
+  camp.forEach(function(c) { byLoja[c.loja] = (byLoja[c.loja] || 0) + c.vendaPago + c.vendaOrganico; });
+  var maxLoja = 0; Object.keys(byLoja).forEach(function(k) { if (byLoja[k] > maxLoja) maxLoja = byLoja[k]; });
+  document.getElementById('chartLoja').innerHTML = Object.keys(byLoja).map(function(k) {
+    var pct = maxLoja > 0 ? (byLoja[k] / maxLoja * 100) : 0;
+    return bar(k, pct, brl(byLoja[k]));
+  }).join('') || empty();
+
+  var top = camp.slice().sort(function(a,b){
+    var ra = a.gasto > 0 ? a.vendaPago / a.gasto : 0;
+    var rb = b.gasto > 0 ? b.vendaPago / b.gasto : 0;
+    return rb - ra;
+  }).slice(0, 5);
+  var maxTop = top.length ? (top[0].gasto > 0 ? top[0].vendaPago / top[0].gasto : 0) : 0;
+  document.getElementById('chartTop').innerHTML = top.map(function(c) {
+    var roas = c.gasto > 0 ? c.vendaPago / c.gasto : 0;
+    var pct = maxTop > 0 ? (roas / maxTop * 100) : 0;
+    return bar(c.campanha + ' · ' + c.marketplace, pct, roas.toFixed(2));
+  }).join('') || empty();
+}
+function kpi(label, val, sub) { return '<div class="kpi"><div class="kpi-label">' + label + '</div><div class="kpi-value">' + val + '</div><div class="kpi-sub">' + sub + '</div></div>'; }
+function bar(label, pct, val) { return '<div class="bar-row"><div class="bar-label">' + esc(label) + '</div><div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div><div class="bar-val">' + val + '</div></div>'; }
+function empty() { return '<div style="color:var(--muted);font-size:12px;">Sem dados ainda.</div>'; }
+
+// ===== UTIL =====
+function brl(n) { return 'R$ ' + (n || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+function esc(s) { return (s || '').toString().replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function slug(s) { return (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-'); }
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || '') + ' show';
+  setTimeout(function() { t.className = 'toast ' + (type || ''); }, 2600);
+}
+
+// ===== INIT =====
+buildKeypad();
+if (sessionStorage.getItem(STORAGE_KEY) === '1') enterApp();
+</script>
+</body>
+</html>
