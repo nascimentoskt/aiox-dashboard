@@ -6454,8 +6454,8 @@ function renderFinPendencias() {
   var receitas = (finApiData.receitas || []).filter(function(r) { return r.status === 'Pendente'; });
   var despesas = (finApiData.despesas || []).filter(function(d) { return d.status === 'Pendente'; });
 
-  receitas.sort(function(a, b) { return monthSortKey(a.mesAno) - monthSortKey(b.mesAno); });
-  despesas.sort(function(a, b) { return monthSortKey(a.mesAno) - monthSortKey(b.mesAno); });
+  receitas.sort(function(a, b) { return (b.receita || 0) - (a.receita || 0); });
+  despesas.sort(function(a, b) { return (b.custos || 0) - (a.custos || 0); });
 
   var totalReceber = 0;
   var totalPagar = 0;
