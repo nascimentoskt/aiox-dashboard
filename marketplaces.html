@@ -383,7 +383,7 @@ async function save() {
       };
       if (!payload.anuncio) { toast('Informe o nome do anúncio', 'error'); btn.disabled = false; btn.textContent = 'Salvar lançamento'; return; }
     }
-    var r = await fetch('/api/marketplaces-add', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    var r = await fetch('/api/marketplaces', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro ao salvar');
     toast('Salvo com sucesso', 'success');
@@ -399,7 +399,7 @@ async function save() {
 // ===== DATA =====
 async function loadData() {
   try {
-    var r = await fetch('/api/marketplaces-list');
+    var r = await fetch('/api/marketplaces');
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro');
     dataCache = d;
