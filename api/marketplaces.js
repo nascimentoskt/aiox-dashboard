@@ -1,6 +1,6 @@
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -14,6 +14,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'GET') return await handleList(res, NOTION_TOKEN, DB_CAMP, DB_ADS);
     if (req.method === 'POST') return await handleAdd(req, res, NOTION_TOKEN, DB_CAMP, DB_ADS);
     if (req.method === 'PATCH') return await handleUpdate(req, res, NOTION_TOKEN);
+    if (req.method === 'DELETE') return await handleDelete(req, res, NOTION_TOKEN);
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (err) {
     return res.status(500).json({ error: err.message || 'Internal server error' });
@@ -129,21 +130,37 @@ async function handleAdd(req, res, token, dbCamp, dbAds) {
 
 async function handleUpdate(req, res, token) {
   var body = await parseBody(req);
-  var pageId = body.pageId, field = body.field, value = body.value;
-  if (!pageId || !field) return res.status(400).json({ error: 'pageId and field required' });
+  var pageId = body.pageId;
+  if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
-  var properties = {};
   var numFields = ['Valor Gasto', 'Venda ADS + Organico', 'ROAS', 'ACOS', 'CTR'];
   var selFields = ['Loja', 'Marketplace', 'Status', 'Categoria'];
   var textFields = ['SEO'];
 
-  if (numFields.indexOf(field) >= 0) properties[field] = { number: parseFloat(value) || 0 };
-  else if (selFields.indexOf(field) >= 0) properties[field] = { select: { name: value } };
-  else if (textFields.indexOf(field) >= 0) properties[field] = { rich_text: [{ text: { content: value || '' } }] };
-  else if (field === 'Link') properties[field] = { url: value || null };
-  else if (field === 'Data') properties[field] = { date: { start: value } };
-  else if (field === 'Campanha' || field === 'Anuncio') properties[field] = { title: [{ text: { content: value || '' } }] };
-  else return res.status(400).json({ error: 'Unsupported field: ' + field });
+  function buildProp(field, value) {
+    if (numFields.indexOf(field) >= 0) return { number: parseFloat(value) || 0 };
+    if (selFields.indexOf(field) >= 0) return value ? { select: { name: value } } : { select: null };
+    if (textFields.indexOf(field) >= 0) return { rich_text: [{ text: { content: value || '' } }] };
+    if (field === 'Link') return { url: value || null };
+    if (field === 'Data') return { date: { start: value } };
+    if (field === 'Campanha' || field === 'Anuncio') return { title: [{ text: { content: value || '' } }] };
+    return null;
+  }
+
+  var properties = {};
+  if (body.fields && typeof body.fields === 'object') {
+    var keys = Object.keys(body.fields);
+    for (var i = 0; i < keys.length; i++) {
+      var p = buildProp(keys[i], body.fields[keys[i]]);
+      if (p) properties[keys[i]] = p;
+    }
+    if (Object.keys(properties).length === 0) return res.status(400).json({ error: 'No supported fields' });
+  } else {
+    if (!body.field) return res.status(400).json({ error: 'field or fields required' });
+    var single = buildProp(body.field, body.value);
+    if (!single) return res.status(400).json({ error: 'Unsupported field: ' + body.field });
+    properties[body.field] = single;
+  }
 
   var r = await fetch('https://api.notion.com/v1/pages/' + pageId, {
     method: 'PATCH',
@@ -152,6 +169,20 @@ async function handleUpdate(req, res, token) {
   });
   var d = await r.json();
   if (!r.ok) return res.status(r.status).json({ error: d.message || 'Notion update failed' });
+  return res.status(200).json({ success: true });
+}
+
+async function handleDelete(req, res, token) {
+  var body = await parseBody(req);
+  var pageId = body.pageId;
+  if (!pageId) return res.status(400).json({ error: 'pageId required' });
+  var r = await fetch('https://api.notion.com/v1/pages/' + pageId, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + token, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ archived: true })
+  });
+  var d = await r.json();
+  if (!r.ok) return res.status(r.status).json({ error: d.message || 'Notion archive failed' });
   return res.status(200).json({ success: true });
 }
 

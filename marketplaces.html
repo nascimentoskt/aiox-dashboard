@@ -105,6 +105,13 @@ tr:hover td { background: var(--card-hover); }
 .tag-status-pausada { background: rgba(255,176,32,0.15); color: var(--yellow); }
 .tag-status-encerrada { background: rgba(255,255,255,0.08); color: var(--muted); }
 .empty { padding: 40px; text-align: center; color: var(--muted); }
+.row-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: inherit; }
+.row-btn:hover { background: rgba(255,255,255,0.12); }
+.row-btn-danger { color: var(--red); padding: 5px 8px; }
+.row-btn-danger:hover { background: rgba(239,68,68,0.15); border-color: var(--red); }
+.edit-banner { background: rgba(0,136,255,0.1); border: 1px solid var(--blue); color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; align-items: center; gap: 12px; }
+.edit-banner.show { display: flex; }
+.edit-banner b { color: var(--blue); }
 
 /* ============ DASHBOARD ============ */
 .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
@@ -167,6 +174,11 @@ tr:hover td { background: var(--card-hover); }
     <section class="section active" id="sec-lancar">
       <h2>Lançar dados do dia</h2>
       <div class="section-sub">Preenchimento diário · cada campanha vira uma linha por dia. Anúncios são vinculados à campanha do mesmo dia.</div>
+
+      <div class="edit-banner" id="editBanner">
+        <span>Editando: <b id="editBannerName"></b></span>
+        <button class="btn-ghost" style="margin-left:auto" onclick="cancelEdit()">Cancelar edição</button>
+      </div>
 
       <div class="kind-toggle">
         <button class="kind-btn active" data-kind="campanha" onclick="setKind('campanha')">Campanha</button>
@@ -284,6 +296,7 @@ var pin = '';
 var STORAGE_KEY = 'mkt_authed';
 var currentKind = 'campanha';
 var dataCache = { campanhas: [], anuncios: [] };
+var editing = null; // { pageId, kind } when editing existing row
 
 // ===== LOGIN =====
 function buildKeypad() {
@@ -377,8 +390,64 @@ function resetForm() {
 }
 async function save() {
   var btn = document.getElementById('btnSave');
+  var origLabel = editing ? 'Salvar edição' : 'Salvar lançamento';
   btn.disabled = true; btn.textContent = 'Salvando…';
   try {
+    if (editing) {
+      // PATCH bulk
+      var fields = {};
+      if (currentKind === 'campanha') {
+        var nome = document.getElementById('f-nome').value;
+        if (!nome) { toast('Informe o nome da campanha', 'error'); return; }
+        var gasto = parseFloat(document.getElementById('f-gasto').value) || 0;
+        var vTotal = parseFloat(document.getElementById('f-vtotal').value) || 0;
+        var ctr = parseFloat(document.getElementById('f-ctr').value || 0) / 100;
+        var roas = gasto > 0 ? vTotal / gasto : 0;
+        var acos = vTotal > 0 ? gasto / vTotal : 0;
+        fields = {
+          'Campanha': nome,
+          'Data': document.getElementById('f-data').value,
+          'Loja': document.getElementById('f-loja').value,
+          'Marketplace': document.getElementById('f-marketplace').value,
+          'Status': document.getElementById('f-status').value,
+          'Valor Gasto': gasto,
+          'Venda ADS + Organico': vTotal,
+          'ROAS': Math.round(roas * 100) / 100,
+          'ACOS': Math.round(acos * 10000) / 10000,
+          'CTR': Math.round(ctr * 10000) / 10000,
+          'SEO': document.getElementById('f-seo').value
+        };
+      } else {
+        var anuncio = document.getElementById('f-nome').value;
+        if (!anuncio) { toast('Informe o nome do anúncio', 'error'); return; }
+        var gA = parseFloat(document.getElementById('f-gasto-ad').value) || 0;
+        var vA = parseFloat(document.getElementById('f-vendas-ad').value) || 0;
+        var cA = parseFloat(document.getElementById('f-ctr-ad').value || 0) / 100;
+        var rA = gA > 0 ? vA / gA : 0;
+        fields = {
+          'Anuncio': anuncio,
+          'Data': document.getElementById('f-data').value,
+          'Loja': document.getElementById('f-loja').value,
+          'Marketplace': document.getElementById('f-marketplace').value,
+          'Categoria': document.getElementById('f-categoria').value || null,
+          'Link': document.getElementById('f-link').value || null,
+          'Valor Gasto': gA,
+          'Venda ADS + Organico': vA,
+          'ROAS': Math.round(rA * 100) / 100,
+          'CTR': Math.round(cA * 10000) / 10000,
+          'SEO': document.getElementById('f-seo').value
+        };
+      }
+      var r = await fetch('/api/marketplaces', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pageId: editing.pageId, fields: fields }) });
+      var d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Erro ao salvar');
+      toast('Edição salva', 'success');
+      cancelEdit();
+      loadData();
+      return;
+    }
+
+    // POST (novo lançamento)
     var payload;
     if (currentKind === 'campanha') {
       payload = {
@@ -393,7 +462,7 @@ async function save() {
         ctr: parseFloat(document.getElementById('f-ctr').value || 0) / 100,
         seo: document.getElementById('f-seo').value
       };
-      if (!payload.campanha) { toast('Informe o nome da campanha', 'error'); btn.disabled = false; btn.textContent = 'Salvar lançamento'; return; }
+      if (!payload.campanha) { toast('Informe o nome da campanha', 'error'); return; }
     } else {
       payload = {
         kind: 'anuncio',
@@ -409,18 +478,78 @@ async function save() {
         ctr: parseFloat(document.getElementById('f-ctr-ad').value || 0) / 100,
         seo: document.getElementById('f-seo').value
       };
-      if (!payload.anuncio) { toast('Informe o nome do anúncio', 'error'); btn.disabled = false; btn.textContent = 'Salvar lançamento'; return; }
+      if (!payload.anuncio) { toast('Informe o nome do anúncio', 'error'); return; }
     }
-    var r = await fetch('/api/marketplaces', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-    var d = await r.json();
-    if (!r.ok) throw new Error(d.error || 'Erro ao salvar');
+    var r2 = await fetch('/api/marketplaces', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    var d2 = await r2.json();
+    if (!r2.ok) throw new Error(d2.error || 'Erro ao salvar');
     toast('Salvo com sucesso', 'success');
     resetForm();
     loadData();
   } catch (e) {
     toast(e.message, 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Salvar lançamento';
+    btn.disabled = false; btn.textContent = origLabel;
+  }
+}
+
+function editRow(pageId, kind) {
+  var item = (kind === 'campanha' ? dataCache.campanhas : dataCache.anuncios).find(function(x){ return x.id === pageId; });
+  if (!item) { toast('Registro não encontrado', 'error'); return; }
+  editing = { pageId: pageId, kind: kind };
+  setKind(kind);
+  document.getElementById('f-data').value = item.data || '';
+  document.getElementById('f-loja').value = item.loja || 'Luzzoo';
+  document.getElementById('f-marketplace').value = item.marketplace || 'Shopee';
+  if (kind === 'campanha') {
+    document.getElementById('f-nome').value = item.campanha || '';
+    document.getElementById('f-status').value = item.status || 'Em andamento';
+    document.getElementById('f-gasto').value = item.gasto || '';
+    document.getElementById('f-vtotal').value = item.vendaTotal || '';
+    document.getElementById('f-ctr').value = item.ctr ? (item.ctr * 100).toFixed(2) : '';
+  } else {
+    document.getElementById('f-nome').value = item.anuncio || '';
+    document.getElementById('f-categoria').value = item.categoria || '';
+    document.getElementById('f-camp-rel').value = item.campanhaId || '';
+    document.getElementById('f-link').value = item.link || '';
+    document.getElementById('f-gasto-ad').value = item.gasto || '';
+    document.getElementById('f-vendas-ad').value = item.vendaTotal || '';
+    document.getElementById('f-ctr-ad').value = item.ctr ? (item.ctr * 100).toFixed(2) : '';
+  }
+  document.getElementById('f-seo').value = item.seo || '';
+
+  // Switch to launch tab
+  var lancarTab = document.querySelector('[data-section="lancar"]');
+  if (lancarTab) lancarTab.click();
+
+  // Edit affordance
+  var banner = document.getElementById('editBanner');
+  banner.classList.add('show');
+  document.getElementById('editBannerName').textContent = (kind === 'campanha' ? item.campanha : item.anuncio) + ' · ' + item.data;
+  document.getElementById('btnSave').textContent = 'Salvar edição';
+  document.getElementById('formTitle').textContent = 'Editando ' + (kind === 'campanha' ? 'campanha' : 'anúncio');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEdit() {
+  editing = null;
+  document.getElementById('editBanner').classList.remove('show');
+  document.getElementById('btnSave').textContent = 'Salvar lançamento';
+  document.getElementById('formTitle').textContent = currentKind === 'campanha' ? 'Nova campanha' : 'Novo anúncio';
+  resetForm();
+}
+
+async function deleteRow(pageId, kind) {
+  if (!confirm('Excluir este registro? A ação não pode ser desfeita.')) return;
+  try {
+    var r = await fetch('/api/marketplaces', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pageId: pageId }) });
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erro ao excluir');
+    toast('Registro excluído', 'success');
+    if (editing && editing.pageId === pageId) cancelEdit();
+    loadData();
+  } catch (e) {
+    toast(e.message, 'error');
   }
 }
 
@@ -456,9 +585,9 @@ function renderTable() {
   if (!rows.length) { wrap.innerHTML = '<div class="empty">Nenhum lançamento ainda.</div>'; return; }
   var html = '<table><thead><tr>';
   if (tipo === 'campanha') {
-    html += '<th>Data</th><th>Campanha</th><th>Loja</th><th>Marketplace</th><th>Status</th><th>Gasto</th><th>Venda ADS+Org</th><th>ROAS</th><th>ACOS</th><th>CTR</th><th>SEO</th>';
+    html += '<th>Data</th><th>Campanha</th><th>Loja</th><th>Marketplace</th><th>Status</th><th>Gasto</th><th>Venda ADS+Org</th><th>ROAS</th><th>ACOS</th><th>CTR</th><th>SEO</th><th>Ações</th>';
   } else {
-    html += '<th>Data</th><th>Anúncio</th><th>Loja</th><th>Marketplace</th><th>Categoria</th><th>Link</th><th>Gasto</th><th>Venda ADS+Org</th><th>ROAS</th><th>CTR</th><th>SEO</th>';
+    html += '<th>Data</th><th>Anúncio</th><th>Loja</th><th>Marketplace</th><th>Categoria</th><th>Link</th><th>Gasto</th><th>Venda ADS+Org</th><th>ROAS</th><th>CTR</th><th>SEO</th><th>Ações</th>';
   }
   html += '</tr></thead><tbody>';
   rows.forEach(function(r) {
@@ -473,6 +602,7 @@ function renderTable() {
       html += '<td>' + (r.acos ? (r.acos * 100).toFixed(1) + '%' : '—') + '</td>';
       html += '<td>' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
       html += '<td title="' + esc(r.seo) + '">' + esc(r.seo.slice(0, 40)) + (r.seo.length > 40 ? '…' : '') + '</td>';
+      html += '<td><button class="row-btn" onclick="editRow(\'' + r.id + '\',\'campanha\')">Editar</button> <button class="row-btn row-btn-danger" onclick="deleteRow(\'' + r.id + '\',\'campanha\')">×</button></td>';
     } else {
       html += '<td>' + r.data + '</td><td>' + esc(r.anuncio) + '</td>';
       html += '<td><span class="tag tag-' + r.loja.toLowerCase() + '">' + r.loja + '</span></td>';
@@ -483,6 +613,7 @@ function renderTable() {
       html += '<td>' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
       html += '<td>' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
       html += '<td title="' + esc(r.seo) + '">' + esc(r.seo.slice(0, 40)) + (r.seo.length > 40 ? '…' : '') + '</td>';
+      html += '<td><button class="row-btn" onclick="editRow(\'' + r.id + '\',\'anuncio\')">Editar</button> <button class="row-btn row-btn-danger" onclick="deleteRow(\'' + r.id + '\',\'anuncio\')">×</button></td>';
     }
     html += '</tr>';
   });
