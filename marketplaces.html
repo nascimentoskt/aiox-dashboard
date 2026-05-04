@@ -246,7 +246,23 @@ tr:hover td { background: var(--card-hover); }
     <!-- DASHBOARD -->
     <section class="section" id="sec-dashboard">
       <h2>Dashboard</h2>
-      <div class="section-sub">Visão consolidada — últimos 30 dias.</div>
+      <div class="section-sub" id="dashSub">Visão consolidada.</div>
+
+      <div class="filter-bar">
+        <select id="dash-periodo" onchange="onPeriodoChange()">
+          <option value="hoje">Hoje</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="30" selected>Últimos 30 dias</option>
+          <option value="90">Últimos 90 dias</option>
+          <option value="mes">Este mês</option>
+          <option value="mes-passado">Mês passado</option>
+          <option value="tudo">Todos os dados</option>
+          <option value="custom">Personalizado…</option>
+        </select>
+        <input id="dash-de" type="date" style="display:none" title="De">
+        <input id="dash-ate" type="date" style="display:none" title="Até">
+        <button class="btn-ghost" id="dash-aplicar" style="display:none" onclick="renderDashboard()">Aplicar</button>
+      </div>
 
       <div class="kpi-grid" id="kpiGrid"></div>
       <div class="dash-grid">
@@ -478,15 +494,62 @@ function renderTable() {
 });
 
 // ===== DASHBOARD =====
+function onPeriodoChange() {
+  var p = document.getElementById('dash-periodo').value;
+  var custom = p === 'custom';
+  document.getElementById('dash-de').style.display = custom ? '' : 'none';
+  document.getElementById('dash-ate').style.display = custom ? '' : 'none';
+  document.getElementById('dash-aplicar').style.display = custom ? '' : 'none';
+  if (!custom) renderDashboard();
+}
+function getPeriodoRange() {
+  var p = document.getElementById('dash-periodo').value;
+  var now = new Date();
+  var ini = null, fim = null, label = '';
+  if (p === 'hoje') {
+    ini = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    fim = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    label = 'Hoje';
+  } else if (p === '7' || p === '30' || p === '90') {
+    var dias = parseInt(p, 10);
+    ini = new Date(); ini.setDate(ini.getDate() - dias);
+    fim = now;
+    label = 'Últimos ' + dias + ' dias';
+  } else if (p === 'mes') {
+    ini = new Date(now.getFullYear(), now.getMonth(), 1);
+    fim = now;
+    label = 'Este mês';
+  } else if (p === 'mes-passado') {
+    ini = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    fim = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+    label = 'Mês passado';
+  } else if (p === 'tudo') {
+    ini = null; fim = null; label = 'Todos os dados';
+  } else if (p === 'custom') {
+    var de = document.getElementById('dash-de').value;
+    var ate = document.getElementById('dash-ate').value;
+    ini = de ? new Date(de + 'T00:00:00') : null;
+    fim = ate ? new Date(ate + 'T23:59:59') : null;
+    label = (de || '…') + ' até ' + (ate || '…');
+  }
+  return { ini: ini, fim: fim, label: label };
+}
 function renderDashboard() {
-  var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-  var camp = dataCache.campanhas.filter(function(c) { return c.data && new Date(c.data) >= cutoff; });
+  var range = getPeriodoRange();
+  document.getElementById('dashSub').textContent = 'Visão consolidada — ' + range.label + '.';
+  var camp = dataCache.campanhas.filter(function(c) {
+    if (!c.data) return false;
+    var d = new Date(c.data + (c.data.length === 10 ? 'T12:00:00' : ''));
+    if (range.ini && d < range.ini) return false;
+    if (range.fim && d > range.fim) return false;
+    return true;
+  });
   var totGasto = 0, totVenda = 0;
   camp.forEach(function(c) { totGasto += c.gasto; totVenda += c.vendaTotal; });
   var roasGeral = totGasto > 0 ? totVenda / totGasto : 0;
 
   document.getElementById('kpiGrid').innerHTML = [
-    kpi('Gasto (30d)', brl(totGasto), camp.length + ' campanhas'),
+    kpi('Gasto', brl(totGasto), camp.length + ' campanhas'),
     kpi('Venda ADS + Orgânico', brl(totVenda), 'Total atribuído'),
     kpi('ROAS Geral', roasGeral.toFixed(2), totVenda > 0 && totGasto > 0 ? 'Saudável: > 3' : '—'),
     kpi('Lojas ativas', countUnique(camp, 'loja') + ' · ' + countUnique(camp, 'marketplace') + ' MKTs', '')
