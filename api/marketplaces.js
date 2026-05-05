@@ -172,7 +172,7 @@ async function handleUpdate(req, res, token) {
 
   var numFields = ['Valor Gasto', 'Venda ADS + Organico', 'ROAS', 'ACOS', 'CTR'];
   var selFields = ['Loja', 'Marketplace', 'Status', 'Categoria', 'Funcionario'];
-  var textFields = ['SEO', 'VendaMais', 'Bloqueio', 'ProximoPasso'];
+  var textFields = ['SEO', 'VendaMais', 'Bloqueio', 'ProximoPasso', 'Reacoes'];
 
   function buildProp(field, value) {
     if (numFields.indexOf(field) >= 0) return { number: parseFloat(value) || 0 };
