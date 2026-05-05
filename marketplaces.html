@@ -134,15 +134,93 @@ tr:hover td { background: var(--card-hover); }
 .edit-banner b { color: var(--blue); }
 
 /* ============ DAILY ============ */
-.daily-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
-.daily-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-.daily-author { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
-.daily-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.daily-hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+.daily-hero h2 { color: #F2F2F2; font-weight: 600 !important; }
+.team-pulse { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; min-width: 220px; font-size: 12px; }
+.team-pulse-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.team-pulse-row:last-child { margin-bottom: 0; }
+.team-pulse-label { color: var(--muted); }
+.team-pulse-val { color: var(--text); font-weight: 600; }
+
+.daily-timeline-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; padding: 14px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center; font-size: 12px; }
+.daily-timeline-label { color: var(--muted); margin-right: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+.timeline-avatar { display: flex; align-items: center; gap: 6px; padding: 4px 8px 4px 4px; border-radius: 100px; transition: all .2s; }
+.timeline-avatar.posted { background: rgba(0,136,255,0.08); }
+.timeline-avatar.missing { opacity: 0.45; }
+.timeline-avatar .pulse-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.timeline-avatar .check { color: var(--blue); font-size: 11px; font-weight: 700; margin-left: 2px; }
+
+.daily-form { padding: 22px 24px; }
+.daily-form-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.dl-quem { background: rgba(0,0,0,0.25); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; font-weight: 500; outline: none; min-width: 160px; }
+.dl-quem:focus { border-color: var(--blue); }
+.dl-data-input { background: rgba(0,0,0,0.25); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-family: inherit; margin-left: auto; }
+
+.streak-strip { display: flex; gap: 5px; align-items: center; }
+.streak-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.08); transition: all .25s; }
+.streak-dot.filled { background: var(--blue); box-shadow: 0 0 0 2px rgba(0,136,255,0.18); }
+.streak-dot.today { background: var(--blue); animation: streakPulse 1.6s ease-in-out infinite; }
+.streak-dot.today.empty { background: rgba(0,136,255,0.35); }
+.streak-label { font-size: 11px; color: var(--muted); margin-left: 8px; }
+.streak-label b { color: var(--text); font-weight: 600; }
+.streak-label .fire { color: #FF8A4C; font-weight: 700; }
+@keyframes streakPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,136,255,0.6); }
+  50% { box-shadow: 0 0 0 6px rgba(0,136,255,0); }
+}
+
+.dl-tags-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; padding: 10px 0 0; border-top: 1px solid var(--border); padding-top: 14px; }
+.dl-tags-label { font-size: 11px; color: var(--muted); margin-right: 4px; }
+.tag-chip { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all .15s; }
+.tag-chip:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-1px); }
+.tag-chip.suggested { border-color: rgba(0,136,255,0.4); color: var(--blue); background: rgba(0,136,255,0.06); }
+
+.dl-fields { display: flex; flex-direction: column; gap: 10px; }
+.dl-textarea { background: rgba(0,0,0,0.25); border: 1px solid var(--border); color: var(--text); padding: 12px 14px; border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s, background .15s; resize: vertical; line-height: 1.5; font-weight: 500; }
+.dl-textarea:focus { border-color: var(--blue); background: rgba(0,0,0,0.35); }
+.dl-main { font-size: 15px; min-height: 78px; }
+.dl-sub { font-size: 13px; color: rgba(242,242,242,0.78); }
+.dl-next { color: rgba(0,136,255,0.92); }
+.dl-next::placeholder { color: rgba(0,136,255,0.45); }
+
+.dl-actions { display: flex; gap: 12px; margin-top: 16px; align-items: center; }
+.dl-submit { padding: 12px 26px; font-weight: 600; letter-spacing: 0.3px; }
+.dl-progress { margin-left: auto; height: 2px; flex: 1; max-width: 160px; background: transparent; border-radius: 2px; overflow: hidden; }
+.dl-progress.firing::after { content: ''; display: block; height: 100%; background: var(--blue); animation: dlBar 600ms ease-out forwards; }
+@keyframes dlBar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.daily-feed-head { display: flex; align-items: center; gap: 12px; margin: 36px 0 16px; }
+.daily-feed-head h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+.daily-feed-flt { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: inherit; }
+
+.daily-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; animation: cardIn .25s ease-out both; transition: border-color .15s, transform .15s; }
+.daily-card:hover { border-color: rgba(0,136,255,0.25); transform: translateY(-1px); }
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.daily-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.daily-author { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; color: var(--text); }
+.daily-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .daily-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
-.daily-q { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); font-weight: 700; margin-top: 12px; margin-bottom: 4px; }
-.daily-q.warn { color: var(--yellow); }
-.daily-q.next { color: var(--green); }
-.daily-text { font-size: 13px; line-height: 1.5; color: var(--text); white-space: pre-wrap; }
+
+.daily-main { font-size: 14px; line-height: 1.55; color: #F2F2F2; font-weight: 500; white-space: pre-wrap; word-break: break-word; }
+.daily-sub { font-size: 12.5px; line-height: 1.55; color: rgba(242,242,242,0.62); white-space: pre-wrap; word-break: break-word; margin-top: 8px; }
+.daily-sub .prefix { color: rgba(242,242,242,0.5); margin-right: 4px; }
+.daily-next { font-size: 12.5px; line-height: 1.55; color: rgba(0,136,255,0.92); white-space: pre-wrap; word-break: break-word; margin-top: 6px; }
+.daily-next .prefix { color: rgba(0,136,255,0.7); margin-right: 4px; }
+
+.daily-hashtag { color: var(--blue); background: rgba(0,136,255,0.08); padding: 1px 6px; border-radius: 4px; font-weight: 500; }
+
+.daily-reactions { display: flex; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; align-items: center; }
+.reaction-btn { background: transparent; border: 1px solid transparent; padding: 4px 10px; border-radius: 100px; font-size: 14px; cursor: pointer; transition: all .15s; font-family: inherit; display: inline-flex; align-items: center; gap: 5px; }
+.reaction-btn:hover { background: rgba(0,136,255,0.08); border-color: rgba(0,136,255,0.25); transform: scale(1.08); }
+.reaction-btn.has-count { background: rgba(0,136,255,0.06); border-color: rgba(0,136,255,0.18); }
+.reaction-btn .count { font-size: 11px; color: var(--text); font-weight: 600; }
+
 .daily-empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px dashed var(--border); border-radius: 12px; }
 .daily-action { background: transparent; border: none; color: var(--muted); font-size: 11px; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-family: inherit; }
 .daily-action:hover { background: rgba(255,255,255,0.06); color: var(--text); }
@@ -340,55 +418,74 @@ tr:hover td { background: var(--card-hover); }
 
     <!-- DAILY -->
     <section class="section" id="sec-daily">
-      <h2>Daily — O que fiz pra vender mais hoje?</h2>
-      <div class="section-sub">Registro diário de cada um. Time inteiro vê — pressão saudável + memória de venda.</div>
+      <div class="daily-hero">
+        <div>
+          <h2 style="font-size:26px;font-weight:600;letter-spacing:-0.3px;">o que você fez pra vender mais hoje?</h2>
+          <div class="section-sub">um post por dia · time inteiro vê · sem zoeira, foco em ação que move ponteiro</div>
+        </div>
+        <div id="dailyTeamPulse" class="team-pulse"></div>
+      </div>
 
-      <div class="form-card" style="max-width:760px">
-        <div class="form-title">Novo daily</div>
-        <div class="section-sub">3 perguntas rápidas. Foco em ação de venda, não em tarefa.</div>
+      <div id="dailyTimelineRow" class="daily-timeline-row"></div>
 
-        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="form-row"><label>Quem</label>
-            <select id="dl-funcionario">
-              <option value="">— selecione —</option>
-              <option>Lucas</option>
-              <option>Sergio</option>
-              <option>João</option>
-              <option>Laize</option>
-              <option>Pote</option>
-              <option>Dihon</option>
-              <option>Jenni</option>
-            </select>
-          </div>
-          <div class="form-row"><label>Data</label><input id="dl-data" type="date"></div>
-          <div class="form-row full"><label>O que fiz pra vender mais hoje?</label><textarea id="dl-vmais" rows="3" placeholder="Ex: Otimizei o título dos 12 anúncios top da Shopee, ativei BOGO no MercadoLivre, pedi 3 reviews aos clientes do mês."></textarea></div>
-          <div class="form-row full"><label>Maior bloqueio do dia</label><textarea id="dl-bloq" rows="2" placeholder="Ex: Estoque travado da bermuda dry fit, esperando reposição."></textarea></div>
-          <div class="form-row full"><label>Próximo passo amanhã</label><textarea id="dl-prox" rows="2" placeholder="Ex: Subir 2 criativos novos pra calça moletom + ligar pro fornecedor."></textarea></div>
+      <div class="form-card daily-form" style="max-width:780px">
+        <div class="daily-form-head">
+          <select id="dl-funcionario" class="dl-quem">
+            <option value="">quem é você?</option>
+            <option>Lucas</option>
+            <option>Sergio</option>
+            <option>João</option>
+            <option>Laize</option>
+            <option>Pote</option>
+            <option>Dihon</option>
+            <option>Jenni</option>
+          </select>
+          <div id="dl-streak" class="streak-strip" aria-label="Sua semana"></div>
+          <input id="dl-data" type="date" class="dl-data-input" title="Data">
         </div>
 
-        <div class="form-actions">
-          <button class="btn-primary" id="btnDailySave" onclick="saveDaily()">Enviar daily</button>
-          <button class="btn-ghost" onclick="resetDailyForm()">Limpar</button>
+        <div class="dl-tags-row">
+          <span class="dl-tags-label">tags rápidas:</span>
+          <button class="tag-chip" data-tag="vendi" onclick="addTag('vendi')">#vendi</button>
+          <button class="tag-chip" data-tag="prospectei" onclick="addTag('prospectei')">#prospectei</button>
+          <button class="tag-chip" data-tag="criativo" onclick="addTag('criativo')">#criativo</button>
+          <button class="tag-chip" data-tag="estoque" onclick="addTag('estoque')">#estoque</button>
+          <button class="tag-chip" data-tag="cliente" onclick="addTag('cliente')">#cliente</button>
+          <button class="tag-chip" data-tag="fechei" onclick="addTag('fechei')">#fechei</button>
+        </div>
+
+        <div class="dl-fields">
+          <textarea id="dl-vmais" class="dl-textarea dl-main" rows="3" placeholder="vendi, prospectei, fechei, recuperei…"></textarea>
+          <textarea id="dl-bloq" class="dl-textarea dl-sub" rows="2" placeholder="o que travou hoje?"></textarea>
+          <textarea id="dl-prox" class="dl-textarea dl-sub dl-next" rows="2" placeholder="primeira coisa amanhã cedo"></textarea>
+        </div>
+
+        <div class="dl-actions">
+          <button class="btn-primary dl-submit" id="btnDailySave" onclick="saveDaily()">mandar ver</button>
+          <button class="btn-ghost" onclick="resetDailyForm()">limpar</button>
+          <span id="dl-progress" class="dl-progress"></span>
         </div>
       </div>
 
-      <div style="display:flex;align-items:center;gap:12px;margin:32px 0 16px;">
-        <h3 style="font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);">Feed</h3>
-        <select id="daily-flt-func" onchange="renderDailyFeed()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;">
-          <option value="">Todos</option>
+      <div class="daily-feed-head">
+        <h3>feed</h3>
+        <select id="daily-flt-func" onchange="renderDailyFeed()" class="daily-feed-flt">
+          <option value="">todos</option>
           <option>Lucas</option><option>Sergio</option><option>João</option><option>Laize</option><option>Pote</option><option>Dihon</option><option>Jenni</option>
         </select>
-        <select id="daily-flt-periodo" onchange="renderDailyFeed()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;">
-          <option value="hoje" selected>Hoje</option>
-          <option value="7">Últimos 7 dias</option>
-          <option value="30">Últimos 30 dias</option>
-          <option value="tudo">Tudo</option>
+        <select id="daily-flt-periodo" onchange="renderDailyFeed()" class="daily-feed-flt">
+          <option value="hoje">hoje</option>
+          <option value="7" selected>últimos 7 dias</option>
+          <option value="30">últimos 30 dias</option>
+          <option value="tudo">tudo</option>
         </select>
-        <button class="btn-ghost" onclick="loadDaily()" style="margin-left:auto;">Atualizar</button>
+        <button class="btn-ghost" onclick="loadDaily()" style="margin-left:auto;">atualizar</button>
       </div>
 
       <div id="dailyFeed"></div>
     </section>
+
+    <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:300;display:none;"></canvas>
   </main>
 </div>
 
@@ -469,18 +566,147 @@ document.addEventListener('click', function(e) {
 });
 
 // ===== DAILY =====
+var TEAM = ['Lucas','Sergio','João','Laize','Pote','Dihon','Jenni'];
+var REACTIONS = ['🔥','💪','💰','🎯'];
+var MILESTONES = [3, 7, 15, 30, 60, 100];
+
+function avatarColor(name) {
+  // hash → hue, fixed sat/light, consistent per name
+  var h = 0;
+  for (var i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return 'hsl(' + (h % 360) + ', 62%, 52%)';
+}
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function dateMinus(days) {
+  var d = new Date(); d.setDate(d.getDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+function calcStreak(name) {
+  if (!name) return { count: 0, days: [] };
+  var byDate = {};
+  dailyCache.forEach(function(x) {
+    if (x.funcionario === name && x.data) byDate[x.data] = true;
+  });
+  // last 7 days strip
+  var days = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = dateMinus(i);
+    days.push({ date: d, filled: !!byDate[d], today: i === 0 });
+  }
+  // streak: walk back from today (skip today if not filled, count from yesterday)
+  var count = 0;
+  var startToday = byDate[todayISO()];
+  var i2 = startToday ? 0 : 1;
+  while (true) {
+    var d2 = dateMinus(i2);
+    if (byDate[d2]) { count++; i2++; } else break;
+    if (i2 > 365) break;
+  }
+  return { count: count, days: days, today: startToday };
+}
+function postedToday() {
+  var today = todayISO();
+  var set = {};
+  dailyCache.forEach(function(x) { if (x.data === today) set[x.funcionario] = true; });
+  return set;
+}
+function teamWeekAvg() {
+  var since = dateMinus(6);
+  var count = dailyCache.filter(function(x) { return x.data && x.data >= since; }).length;
+  return (count / TEAM.length).toFixed(1);
+}
+
+function renderTeamPulse() {
+  var el = document.getElementById('dailyTeamPulse');
+  if (!el) return;
+  var posted = postedToday();
+  var postedCount = Object.keys(posted).length;
+  el.innerHTML = ''
+    + '<div class="team-pulse-row"><span class="team-pulse-label">postaram hoje</span><span class="team-pulse-val">' + postedCount + '/' + TEAM.length + '</span></div>'
+    + '<div class="team-pulse-row"><span class="team-pulse-label">média do time · 7d</span><span class="team-pulse-val">' + teamWeekAvg() + ' / pessoa</span></div>'
+    + '<div class="team-pulse-row"><span class="team-pulse-label">total no feed</span><span class="team-pulse-val">' + dailyCache.length + '</span></div>';
+}
+function renderTimelineRow() {
+  var el = document.getElementById('dailyTimelineRow');
+  if (!el) return;
+  var posted = postedToday();
+  var html = '<span class="daily-timeline-label">hoje</span>';
+  TEAM.forEach(function(name) {
+    var has = !!posted[name];
+    html += '<div class="timeline-avatar ' + (has ? 'posted' : 'missing') + '" title="' + (has ? name + ' já postou hoje' : name + ' ainda não passou hoje') + '">'
+      +    '<div class="daily-avatar" style="background:' + avatarColor(name) + ';width:24px;height:24px;font-size:10px;' + (has ? '' : 'filter:grayscale(0.7);') + '">' + name.charAt(0).toUpperCase() + '</div>'
+      +    '<span class="pulse-name">' + name + '</span>'
+      +    (has ? '<span class="check">✓</span>' : '')
+      +    '</div>';
+  });
+  el.innerHTML = html;
+}
+function renderStreakStrip() {
+  var name = document.getElementById('dl-funcionario').value;
+  var box = document.getElementById('dl-streak');
+  if (!box) return;
+  if (!name) { box.innerHTML = ''; return; }
+  var s = calcStreak(name);
+  var dots = s.days.map(function(d) {
+    var classes = ['streak-dot'];
+    if (d.filled) classes.push('filled');
+    if (d.today) classes.push('today');
+    if (d.today && !d.filled) classes.push('empty');
+    return '<span class="' + classes.join(' ') + '" title="' + d.date + '"></span>';
+  }).join('');
+  var label = '';
+  if (s.count >= 3) label = '<span class="streak-label"><span class="fire">' + s.count + ' dias seguidos 🔥</span></span>';
+  else if (s.count > 0) label = '<span class="streak-label"><b>' + s.count + '</b> dia' + (s.count === 1 ? '' : 's') + ' seguidos</span>';
+  else label = '<span class="streak-label">comece sua sequência hoje</span>';
+  box.innerHTML = dots + label;
+}
+function renderSuggestedTag() {
+  var name = document.getElementById('dl-funcionario').value;
+  var chips = document.querySelectorAll('.tag-chip');
+  chips.forEach(function(c) { c.classList.remove('suggested'); });
+  if (!name) return;
+  var counts = {};
+  dailyCache.filter(function(x) { return x.funcionario === name; }).forEach(function(x) {
+    var t = (x.vendaMais || '').toLowerCase();
+    var m = t.match(/#(\w+)/g) || [];
+    m.forEach(function(tag) { tag = tag.slice(1); counts[tag] = (counts[tag] || 0) + 1; });
+  });
+  if (Object.keys(counts).length < 3) return; // só sugere após 3 dailies
+  var top = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; })[0];
+  chips.forEach(function(c) {
+    if (c.getAttribute('data-tag') === top) c.classList.add('suggested');
+  });
+}
+
+function addTag(tag) {
+  var ta = document.getElementById('dl-vmais');
+  var cur = ta.value;
+  // se já tem essa tag, ignora
+  if (new RegExp('#' + tag + '\\b').test(cur)) return;
+  ta.value = (cur ? cur.trimEnd() + ' ' : '') + '#' + tag + ' ';
+  ta.focus();
+}
+
 function resetDailyForm() {
   ['dl-vmais','dl-bloq','dl-prox'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('dl-data').value = new Date().toISOString().slice(0,10);
+  document.getElementById('dl-data').value = todayISO();
 }
+
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.id === 'dl-funcionario') {
+    renderStreakStrip();
+    renderSuggestedTag();
+  }
+});
+
 async function saveDaily() {
   var btn = document.getElementById('btnDailySave');
-  btn.disabled = true; btn.textContent = 'Enviando…';
+  btn.disabled = true; btn.textContent = 'mandando…';
   try {
     var func = document.getElementById('dl-funcionario').value;
     var vmais = document.getElementById('dl-vmais').value.trim();
-    if (!func) { toast('Selecione quem está respondendo', 'error'); return; }
-    if (!vmais) { toast('Conta o que você fez pra vender mais', 'error'); return; }
+    if (!func) { toast('escolhe quem é você primeiro', 'error'); return; }
+    if (!vmais) { toast('conta o que você fez pra vender mais', 'error'); return; }
     var payload = {
       kind: 'daily',
       funcionario: func,
@@ -492,24 +718,46 @@ async function saveDaily() {
     var r = await fetch('/api/marketplaces', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro ao enviar');
-    toast('Daily registrado', 'success');
+
+    // streak after this post
+    var prevStreak = calcStreak(func).count;
+    var newStreak = (payload.data === todayISO()) ? prevStreak + (calcStreak(func).today ? 0 : 1) : prevStreak;
+    var prog = document.getElementById('dl-progress');
+    prog.classList.remove('firing'); void prog.offsetWidth; prog.classList.add('firing');
+
+    if (MILESTONES.indexOf(newStreak) >= 0) {
+      fireConfetti();
+      toast('boa, ' + func.toLowerCase() + '. dia ' + newStreak + ' da sequência 🔥', 'success');
+    } else {
+      toast('boa, ' + func.toLowerCase() + '. dia ' + newStreak + ' da sequência.', 'success');
+    }
     resetDailyForm();
     setTimeout(loadDaily, 1200);
   } catch (e) {
     toast(e.message, 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Enviar daily';
+    btn.disabled = false; btn.textContent = 'mandar ver';
   }
 }
+
 async function loadDaily() {
   try {
     var r = await fetch('/api/marketplaces?type=daily&_=' + Date.now());
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro');
     dailyCache = d.daily || [];
+    renderTeamPulse();
+    renderTimelineRow();
+    renderStreakStrip();
+    renderSuggestedTag();
     renderDailyFeed();
   } catch (e) { toast(e.message, 'error'); }
 }
+
+function highlightTags(text) {
+  return esc(text).replace(/#(\w+)/g, '<span class="daily-hashtag">#$1</span>');
+}
+
 function renderDailyFeed() {
   var feed = document.getElementById('dailyFeed');
   if (!feed) return;
@@ -530,34 +778,124 @@ function renderDailyFeed() {
     return true;
   }).sort(function(a, b) { return (b.data || '').localeCompare(a.data || ''); });
 
-  if (!rows.length) { feed.innerHTML = '<div class="daily-empty">Nenhum daily nesse filtro ainda. 💪</div>'; return; }
+  if (!rows.length) {
+    feed.innerHTML = '<div class="daily-empty">silêncio. ninguém postou nesse filtro ainda — quer abrir a roda?</div>';
+    return;
+  }
 
   feed.innerHTML = rows.map(function(x) {
     var initial = (x.funcionario || '?').charAt(0).toUpperCase();
+    var color = avatarColor(x.funcionario);
+    var reactionData = parseReactions(x.reacoes);
+    var reactionsHtml = REACTIONS.map(function(em) {
+      var c = reactionData[em] || 0;
+      var hasCount = c >= 2;
+      return '<button class="reaction-btn ' + (hasCount ? 'has-count' : '') + '" onclick="reactDaily(\'' + x.id + '\',\'' + em + '\')">' + em + (hasCount ? '<span class="count">' + c + '</span>' : '') + '</button>';
+    }).join('');
+
     return '<div class="daily-card">'
       + '<div class="daily-card-head">'
-      +   '<div class="daily-author"><div class="daily-avatar">' + initial + '</div>' + esc(x.funcionario || '—') + '</div>'
+      +   '<div class="daily-author"><div class="daily-avatar" style="background:' + color + ';">' + initial + '</div>' + esc(x.funcionario || '—') + '</div>'
       +   '<div class="daily-meta">'
-      +     '<span>' + (x.data || '—') + '</span>'
-      +     '<button class="daily-action danger" onclick="deleteDaily(\'' + x.id + '\')">excluir</button>'
+      +     '<span>' + formatDailyDate(x.data) + '</span>'
+      +     '<button class="daily-action danger" onclick="deleteDaily(\'' + x.id + '\')" title="excluir">×</button>'
       +   '</div>'
       + '</div>'
-      + '<div class="daily-q">O que fiz pra vender mais</div>'
-      + '<div class="daily-text">' + esc(x.vendaMais || '—') + '</div>'
-      + (x.bloqueio ? '<div class="daily-q warn">Bloqueio</div><div class="daily-text">' + esc(x.bloqueio) + '</div>' : '')
-      + (x.proximoPasso ? '<div class="daily-q next">Próximo passo</div><div class="daily-text">' + esc(x.proximoPasso) + '</div>' : '')
+      + '<div class="daily-main">' + highlightTags(x.vendaMais || '—') + '</div>'
+      + (x.bloqueio ? '<div class="daily-sub"><span class="prefix">▸ travou em:</span>' + highlightTags(x.bloqueio) + '</div>' : '')
+      + (x.proximoPasso ? '<div class="daily-next"><span class="prefix">→ amanhã:</span>' + highlightTags(x.proximoPasso) + '</div>' : '')
+      + '<div class="daily-reactions">' + reactionsHtml + '</div>'
       + '</div>';
   }).join('');
 }
+
+function formatDailyDate(d) {
+  if (!d) return '—';
+  if (d === todayISO()) return 'hoje';
+  if (d === dateMinus(1)) return 'ontem';
+  var p = d.split('-');
+  return p[2] + '/' + p[1];
+}
+
+function parseReactions(s) {
+  if (!s) return {};
+  try { return JSON.parse(s); } catch (e) { return {}; }
+}
+
+async function reactDaily(pageId, emoji) {
+  var item = dailyCache.find(function(x) { return x.id === pageId; });
+  if (!item) return;
+  var data = parseReactions(item.reacoes);
+  data[emoji] = (data[emoji] || 0) + 1;
+  // optimistic update
+  item.reacoes = JSON.stringify(data);
+  renderDailyFeed();
+  try {
+    await fetch('/api/marketplaces', {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ pageId: pageId, fields: { 'Reacoes': JSON.stringify(data) } })
+    });
+  } catch (e) { toast('falhou ao salvar reação', 'error'); }
+}
+
 async function deleteDaily(pageId) {
-  if (!confirm('Excluir este daily?')) return;
+  if (!confirm('excluir este daily?')) return;
   try {
     var r = await fetch('/api/marketplaces', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pageId: pageId }) });
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro');
-    toast('Daily excluído', 'success');
+    toast('daily excluído', 'success');
     setTimeout(loadDaily, 1000);
   } catch (e) { toast(e.message, 'error'); }
+}
+
+// ===== CONFETTI (lightweight, only on milestones) =====
+function fireConfetti() {
+  var canvas = document.getElementById('confettiCanvas');
+  canvas.style.display = 'block';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext('2d');
+  var colors = ['#0088FF', '#FF8A4C', '#34C759', '#FFB020', '#E91E63', '#9C27B0'];
+  var particles = [];
+  for (var i = 0; i < 110; i++) {
+    particles.push({
+      x: window.innerWidth / 2 + (Math.random() - 0.5) * 80,
+      y: window.innerHeight / 3,
+      vx: (Math.random() - 0.5) * 12,
+      vy: -Math.random() * 14 - 4,
+      size: Math.random() * 6 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random() - 0.5) * 0.4,
+      life: 1
+    });
+  }
+  var start = Date.now();
+  function frame() {
+    var elapsed = Date.now() - start;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var alive = false;
+    particles.forEach(function(p) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.45;
+      p.rot += p.vrot;
+      p.life = Math.max(0, 1 - elapsed / 2200);
+      if (p.life > 0) alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.5);
+      ctx.restore();
+    });
+    if (alive) requestAnimationFrame(frame);
+    else canvas.style.display = 'none';
+  }
+  frame();
 }
 
 // ===== FORM =====

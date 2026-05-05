@@ -39,7 +39,8 @@ async function handleListDaily(res, token, dbDaily) {
       data: pr.Data && pr.Data.date ? pr.Data.date.start : '',
       vendaMais: txt(pr.VendaMais && pr.VendaMais.rich_text),
       bloqueio: txt(pr.Bloqueio && pr.Bloqueio.rich_text),
-      proximoPasso: txt(pr.ProximoPasso && pr.ProximoPasso.rich_text)
+      proximoPasso: txt(pr.ProximoPasso && pr.ProximoPasso.rich_text),
+      reacoes: txt(pr.Reacoes && pr.Reacoes.rich_text)
     };
   });
   return res.status(200).json({ daily: data, lastSync: new Date().toISOString() });
