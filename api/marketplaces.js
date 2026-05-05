@@ -8,11 +8,17 @@ module.exports = async function handler(req, res) {
   var NOTION_TOKEN = process.env.NOTION_LUZZOO_TOKEN || process.env.NOTION_TOKEN;
   var DB_CAMP = process.env.NOTION_MKT_CAMPANHAS_DB || '35688f8f-70b0-816d-b29c-ee0d76fbe290';
   var DB_ADS = process.env.NOTION_MKT_ANUNCIOS_DB || '35688f8f-70b0-8102-bed0-f04e5a88ed13';
+  var DB_DAILY = process.env.NOTION_DAILY_DB || '35788f8f-70b0-8135-af1a-f7858d243811';
   if (!NOTION_TOKEN) return res.status(500).json({ error: 'Notion token not configured' });
 
+  // Daily Feedback collection routes via ?type=daily or body.kind=daily
+  var url = new URL(req.url, 'http://x');
+  var isDaily = url.searchParams.get('type') === 'daily';
+
   try {
+    if (req.method === 'GET' && isDaily) return await handleListDaily(res, NOTION_TOKEN, DB_DAILY);
     if (req.method === 'GET') return await handleList(res, NOTION_TOKEN, DB_CAMP, DB_ADS);
-    if (req.method === 'POST') return await handleAdd(req, res, NOTION_TOKEN, DB_CAMP, DB_ADS);
+    if (req.method === 'POST') return await handleAdd(req, res, NOTION_TOKEN, DB_CAMP, DB_ADS, DB_DAILY);
     if (req.method === 'PATCH') return await handleUpdate(req, res, NOTION_TOKEN);
     if (req.method === 'DELETE') return await handleDelete(req, res, NOTION_TOKEN);
     return res.status(405).json({ error: 'Method not allowed' });
@@ -20,6 +26,24 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 };
+
+async function handleListDaily(res, token, dbDaily) {
+  res.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate=20');
+  var entries = await fetchAll(dbDaily, token);
+  var data = entries.map(function(p) {
+    var pr = p.properties;
+    return {
+      id: p.id,
+      registro: txt(pr.Registro && pr.Registro.title),
+      funcionario: sel(pr.Funcionario),
+      data: pr.Data && pr.Data.date ? pr.Data.date.start : '',
+      vendaMais: txt(pr.VendaMais && pr.VendaMais.rich_text),
+      bloqueio: txt(pr.Bloqueio && pr.Bloqueio.rich_text),
+      proximoPasso: txt(pr.ProximoPasso && pr.ProximoPasso.rich_text)
+    };
+  });
+  return res.status(200).json({ daily: data, lastSync: new Date().toISOString() });
+}
 
 async function handleList(res, token, dbCamp, dbAds) {
   res.setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30');
@@ -68,15 +92,27 @@ async function handleList(res, token, dbCamp, dbAds) {
   return res.status(200).json({ campanhas: campData, anuncios: adsData, lastSync: new Date().toISOString() });
 }
 
-async function handleAdd(req, res, token, dbCamp, dbAds) {
+async function handleAdd(req, res, token, dbCamp, dbAds, dbDaily) {
   var body = await parseBody(req);
   var kind = body.kind;
-  if (kind !== 'campanha' && kind !== 'anuncio') return res.status(400).json({ error: 'kind must be "campanha" or "anuncio"' });
+  if (kind !== 'campanha' && kind !== 'anuncio' && kind !== 'daily') return res.status(400).json({ error: 'kind must be campanha, anuncio or daily' });
 
   var properties = {};
   var dbId;
 
-  if (kind === 'campanha') {
+  if (kind === 'daily') {
+    dbId = dbDaily;
+    var func = body.funcionario || 'Sem nome';
+    var dailyData = body.data || new Date().toISOString().slice(0, 10);
+    properties = {
+      Registro: { title: [{ text: { content: func + ' - ' + dailyData } }] },
+      Funcionario: { select: { name: func } },
+      Data: { date: { start: dailyData } },
+      VendaMais: { rich_text: [{ text: { content: body.vendaMais || '' } }] },
+      Bloqueio: { rich_text: [{ text: { content: body.bloqueio || '' } }] },
+      ProximoPasso: { rich_text: [{ text: { content: body.proximoPasso || '' } }] }
+    };
+  } else if (kind === 'campanha') {
     dbId = dbCamp;
     var gasto = parseFloat(body.gasto) || 0;
     var vTotal = parseFloat(body.vendaTotal) || 0;
@@ -134,8 +170,8 @@ async function handleUpdate(req, res, token) {
   if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
   var numFields = ['Valor Gasto', 'Venda ADS + Organico', 'ROAS', 'ACOS', 'CTR'];
-  var selFields = ['Loja', 'Marketplace', 'Status', 'Categoria'];
-  var textFields = ['SEO'];
+  var selFields = ['Loja', 'Marketplace', 'Status', 'Categoria', 'Funcionario'];
+  var textFields = ['SEO', 'VendaMais', 'Bloqueio', 'ProximoPasso'];
 
   function buildProp(field, value) {
     if (numFields.indexOf(field) >= 0) return { number: parseFloat(value) || 0 };
@@ -143,7 +179,7 @@ async function handleUpdate(req, res, token) {
     if (textFields.indexOf(field) >= 0) return { rich_text: [{ text: { content: value || '' } }] };
     if (field === 'Link') return { url: value || null };
     if (field === 'Data') return { date: { start: value } };
-    if (field === 'Campanha' || field === 'Anuncio') return { title: [{ text: { content: value || '' } }] };
+    if (field === 'Campanha' || field === 'Anuncio' || field === 'Registro') return { title: [{ text: { content: value || '' } }] };
     return null;
   }
 

@@ -113,6 +113,21 @@ tr:hover td { background: var(--card-hover); }
 .edit-banner.show { display: flex; }
 .edit-banner b { color: var(--blue); }
 
+/* ============ DAILY ============ */
+.daily-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+.daily-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.daily-author { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+.daily-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.daily-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
+.daily-q { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); font-weight: 700; margin-top: 12px; margin-bottom: 4px; }
+.daily-q.warn { color: var(--yellow); }
+.daily-q.next { color: var(--green); }
+.daily-text { font-size: 13px; line-height: 1.5; color: var(--text); white-space: pre-wrap; }
+.daily-empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px dashed var(--border); border-radius: 12px; }
+.daily-action { background: transparent; border: none; color: var(--muted); font-size: 11px; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-family: inherit; }
+.daily-action:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.daily-action.danger:hover { color: var(--red); }
+
 /* ============ DASHBOARD ============ */
 .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
 .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
@@ -165,6 +180,7 @@ tr:hover td { background: var(--card-hover); }
       <button class="tab active" data-section="lancar">Lançar Diário</button>
       <button class="tab" data-section="tabela">Tabela</button>
       <button class="tab" data-section="dashboard">Dashboard</button>
+      <button class="tab" data-section="daily">Daily</button>
     </nav>
     <button class="logout-btn" onclick="logout()">Sair</button>
   </header>
@@ -285,6 +301,56 @@ tr:hover td { background: var(--card-hover); }
         <div class="dash-card" style="grid-column:1/-1"><h3>Top 5 Campanhas (ROAS)</h3><div id="chartTop"></div></div>
       </div>
     </section>
+
+    <!-- DAILY -->
+    <section class="section" id="sec-daily">
+      <h2>Daily — O que fiz pra vender mais hoje?</h2>
+      <div class="section-sub">Registro diário de cada um. Time inteiro vê — pressão saudável + memória de venda.</div>
+
+      <div class="form-card" style="max-width:760px">
+        <div class="form-title">Novo daily</div>
+        <div class="section-sub">3 perguntas rápidas. Foco em ação de venda, não em tarefa.</div>
+
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="form-row"><label>Quem</label>
+            <select id="dl-funcionario">
+              <option value="">— selecione —</option>
+              <option>Lucas</option>
+              <option>Diego</option>
+              <option>Iara</option>
+              <option>Guilherme</option>
+              <option>Joao</option>
+            </select>
+          </div>
+          <div class="form-row"><label>Data</label><input id="dl-data" type="date"></div>
+          <div class="form-row full"><label>O que fiz pra vender mais hoje?</label><textarea id="dl-vmais" rows="3" placeholder="Ex: Otimizei o título dos 12 anúncios top da Shopee, ativei BOGO no MercadoLivre, pedi 3 reviews aos clientes do mês."></textarea></div>
+          <div class="form-row full"><label>Maior bloqueio do dia</label><textarea id="dl-bloq" rows="2" placeholder="Ex: Estoque travado da bermuda dry fit, esperando reposição."></textarea></div>
+          <div class="form-row full"><label>Próximo passo amanhã</label><textarea id="dl-prox" rows="2" placeholder="Ex: Subir 2 criativos novos pra calça moletom + ligar pro fornecedor."></textarea></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" id="btnDailySave" onclick="saveDaily()">Enviar daily</button>
+          <button class="btn-ghost" onclick="resetDailyForm()">Limpar</button>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin:32px 0 16px;">
+        <h3 style="font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);">Feed</h3>
+        <select id="daily-flt-func" onchange="renderDailyFeed()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;">
+          <option value="">Todos</option>
+          <option>Lucas</option><option>Diego</option><option>Iara</option><option>Guilherme</option><option>Joao</option>
+        </select>
+        <select id="daily-flt-periodo" onchange="renderDailyFeed()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;">
+          <option value="hoje" selected>Hoje</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="30">Últimos 30 dias</option>
+          <option value="tudo">Tudo</option>
+        </select>
+        <button class="btn-ghost" onclick="loadDaily()" style="margin-left:auto;">Atualizar</button>
+      </div>
+
+      <div id="dailyFeed"></div>
+    </section>
   </main>
 </div>
 
@@ -296,6 +362,7 @@ var pin = '';
 var STORAGE_KEY = 'mkt_authed';
 var currentKind = 'campanha';
 var dataCache = { campanhas: [], anuncios: [] };
+var dailyCache = [];
 var editing = null; // { pageId, kind } when editing existing row
 
 // ===== LOGIN =====
@@ -338,7 +405,9 @@ function enterApp() {
   document.getElementById('loginOverlay').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   document.getElementById('f-data').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('dl-data').value = new Date().toISOString().slice(0, 10);
   loadData();
+  loadDaily();
 }
 function logout() {
   sessionStorage.removeItem(STORAGE_KEY);
@@ -355,8 +424,101 @@ document.addEventListener('click', function(e) {
     for (var j = 0; j < secs.length; j++) secs[j].classList.toggle('active', secs[j].id === 'sec-' + s);
     if (s === 'tabela') renderTable();
     if (s === 'dashboard') renderDashboard();
+    if (s === 'daily') { loadDaily(); }
   }
 });
+
+// ===== DAILY =====
+function resetDailyForm() {
+  ['dl-vmais','dl-bloq','dl-prox'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('dl-data').value = new Date().toISOString().slice(0,10);
+}
+async function saveDaily() {
+  var btn = document.getElementById('btnDailySave');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    var func = document.getElementById('dl-funcionario').value;
+    var vmais = document.getElementById('dl-vmais').value.trim();
+    if (!func) { toast('Selecione quem está respondendo', 'error'); return; }
+    if (!vmais) { toast('Conta o que você fez pra vender mais', 'error'); return; }
+    var payload = {
+      kind: 'daily',
+      funcionario: func,
+      data: document.getElementById('dl-data').value,
+      vendaMais: vmais,
+      bloqueio: document.getElementById('dl-bloq').value,
+      proximoPasso: document.getElementById('dl-prox').value
+    };
+    var r = await fetch('/api/marketplaces', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erro ao enviar');
+    toast('Daily registrado', 'success');
+    resetDailyForm();
+    setTimeout(loadDaily, 1200);
+  } catch (e) {
+    toast(e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Enviar daily';
+  }
+}
+async function loadDaily() {
+  try {
+    var r = await fetch('/api/marketplaces?type=daily&_=' + Date.now());
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erro');
+    dailyCache = d.daily || [];
+    renderDailyFeed();
+  } catch (e) { toast(e.message, 'error'); }
+}
+function renderDailyFeed() {
+  var feed = document.getElementById('dailyFeed');
+  if (!feed) return;
+  var func = document.getElementById('daily-flt-func').value;
+  var per = document.getElementById('daily-flt-periodo').value;
+  var now = new Date();
+  var cutoff = null;
+  if (per === 'hoje') { cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate()); }
+  else if (per === '7') { cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7); }
+  else if (per === '30') { cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30); }
+
+  var rows = dailyCache.filter(function(x) {
+    if (func && x.funcionario !== func) return false;
+    if (cutoff && x.data) {
+      var dt = new Date(x.data + (x.data.length === 10 ? 'T12:00:00' : ''));
+      if (dt < cutoff) return false;
+    }
+    return true;
+  }).sort(function(a, b) { return (b.data || '').localeCompare(a.data || ''); });
+
+  if (!rows.length) { feed.innerHTML = '<div class="daily-empty">Nenhum daily nesse filtro ainda. 💪</div>'; return; }
+
+  feed.innerHTML = rows.map(function(x) {
+    var initial = (x.funcionario || '?').charAt(0).toUpperCase();
+    return '<div class="daily-card">'
+      + '<div class="daily-card-head">'
+      +   '<div class="daily-author"><div class="daily-avatar">' + initial + '</div>' + esc(x.funcionario || '—') + '</div>'
+      +   '<div class="daily-meta">'
+      +     '<span>' + (x.data || '—') + '</span>'
+      +     '<button class="daily-action danger" onclick="deleteDaily(\'' + x.id + '\')">excluir</button>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="daily-q">O que fiz pra vender mais</div>'
+      + '<div class="daily-text">' + esc(x.vendaMais || '—') + '</div>'
+      + (x.bloqueio ? '<div class="daily-q warn">Bloqueio</div><div class="daily-text">' + esc(x.bloqueio) + '</div>' : '')
+      + (x.proximoPasso ? '<div class="daily-q next">Próximo passo</div><div class="daily-text">' + esc(x.proximoPasso) + '</div>' : '')
+      + '</div>';
+  }).join('');
+}
+async function deleteDaily(pageId) {
+  if (!confirm('Excluir este daily?')) return;
+  try {
+    var r = await fetch('/api/marketplaces', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pageId: pageId }) });
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erro');
+    toast('Daily excluído', 'success');
+    setTimeout(loadDaily, 1000);
+  } catch (e) { toast(e.message, 'error'); }
+}
 
 // ===== FORM =====
 function setKind(k) {
