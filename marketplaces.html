@@ -66,7 +66,8 @@ body { display: flex; flex-direction: column; }
 .logout-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; width: 100%; }
 .logout-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
 
-main { flex: 1; padding: 32px; max-width: 1400px; width: 100%; margin: 0 auto; }
+main { flex: 1; padding: 32px; max-width: 1400px; width: 100%; margin: 0 auto; transition: max-width .15s; }
+body.full-width main { max-width: none; }
 .section { display: none; }
 .section.active { display: block; }
 
@@ -729,6 +730,7 @@ function activateSection(s) {
   for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('active', tabs[i].getAttribute('data-section') === s);
   var secs = document.querySelectorAll('.section');
   for (var j = 0; j < secs.length; j++) secs[j].classList.toggle('active', secs[j].id === 'sec-' + s);
+  document.body.classList.toggle('full-width', s === 'excel');
   if (s === 'tabela') renderTable();
   if (s === 'dashboard') renderDashboard();
   if (s === 'daily') loadDaily();
