@@ -269,6 +269,8 @@ tr:hover td { background: var(--card-hover); }
 .excel-table tbody tr:hover td { background: var(--card-hover); }
 .excel-table tbody tr:hover td.date { background: rgba(0,136,255,0.1); }
 .excel-table .col-divider { border-left: 2px solid rgba(255,255,255,0.06); }
+.excel-table tbody td.resumo-cell { background: rgba(52,199,89,0.06); font-weight: 600; color: var(--text); }
+.excel-table tbody tr:hover td.resumo-cell { background: rgba(52,199,89,0.12); }
 .excel-table .pill-good { color: var(--green); }
 .excel-table .pill-bad { color: var(--red); }
 
@@ -1192,7 +1194,14 @@ function rowSums(r) {
     inv += (r[m.key + '|Investimento'] || {}).value || 0;
     fat += (r[m.key + '|Faturamento'] || {}).value || 0;
   });
-  return { inv: inv, fat: fat };
+  return { inv: inv, fat: fat, midia: fat > 0 ? inv / fat : 0 };
+}
+function rowResumoVal(r, metric) {
+  var s = rowSums(r);
+  if (metric === 'Investimento') return { type: 'money', value: s.inv, raw: '' };
+  if (metric === 'Faturamento') return { type: 'money', value: s.fat, raw: '' };
+  if (metric === 'Mídia') return { type: 'percent', value: s.midia, raw: '' };
+  return null;
 }
 function excelKpis(rows) {
   rows = rows || (excelData && excelData.rows) || [];
@@ -1259,7 +1268,11 @@ function renderExcelTable() {
   var wrap = document.getElementById('excelTableWrap');
   if (!filtered.length) { wrap.innerHTML = '<div class="empty">Sem dados pra ' + (fltSel.value || 'esse filtro') + '.</div>'; return; }
 
-  var cols = excelData.columns;
+  var cols = excelData.columns.concat([
+    { key: 'Resumo|Investimento', group: 'Resumo', metric: 'Investimento' },
+    { key: 'Resumo|Faturamento', group: 'Resumo', metric: 'Faturamento' },
+    { key: 'Resumo|Mídia', group: 'Resumo', metric: 'Mídia' }
+  ]);
   var groups = [];
   var subs = [];
   cols.forEach(function(c, idx) {
@@ -1298,9 +1311,10 @@ function renderExcelTable() {
     html += '<tr>';
     cols.forEach(function(c, i) {
       if (i === 0) { html += '<td class="date">' + esc(r.data) + (fltSel.value ? '' : '/' + (r.mes ? r.mes.split('/')[1].slice(2) : '')) + '</td>'; return; }
-      var val = r[c.key];
+      var val = c.group === 'Resumo' ? rowResumoVal(r, c.metric) : r[c.key];
       var cls = 'num';
       if (groupStarts[i]) cls += ' col-divider';
+      if (c.group === 'Resumo') cls += ' resumo-cell';
       if (!val || (val.value === 0 && val.type !== 'percent')) cls += ' zero';
       var disp = '—';
       if (val) {
@@ -1327,13 +1341,21 @@ function excelSortIcon(key) {
 }
 function sortExcelRows(rows) {
   var k = excelSort.key, dir = excelSort.dir === 'asc' ? 1 : -1;
+  function getVal(r) {
+    if (k === 'dataIso') return null;
+    if (k.indexOf('Resumo|') === 0) {
+      var metric = k.split('|')[1];
+      var v = rowResumoVal(r, metric);
+      return v && typeof v.value === 'number' ? v.value : -Infinity;
+    }
+    var x = r[k];
+    return (x && typeof x.value === 'number') ? x.value : -Infinity;
+  }
   return rows.sort(function(a, b) {
     if (k === 'dataIso') return ((a.dataIso || '').localeCompare(b.dataIso || '')) * dir;
-    var va = a[k], vb = b[k];
-    var na = (va && typeof va.value === 'number') ? va.value : (va && va.value === 0 ? 0 : -Infinity);
-    var nb = (vb && typeof vb.value === 'number') ? vb.value : (vb && vb.value === 0 ? 0 : -Infinity);
+    var na = getVal(a), nb = getVal(b);
     if (na === -Infinity && nb === -Infinity) return 0;
-    if (na === -Infinity) return 1; // empties at end
+    if (na === -Infinity) return 1;
     if (nb === -Infinity) return -1;
     return (na - nb) * dir;
   });
