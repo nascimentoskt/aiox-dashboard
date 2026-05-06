@@ -602,8 +602,16 @@ tr:hover td { background: var(--card-hover); }
       </div>
 
       <div class="excel-kpi-row" id="excelKpiRow"></div>
-      <div class="excel-table-wrap" id="excelTableWrap"><div class="empty">Carregando…</div></div>
+      <div class="excel-table-wrap" id="excelTableWrap" style="max-height:420px;"><div class="empty">Carregando…</div></div>
       <div class="section-sub" id="excelSync" style="margin-top:10px;"></div>
+
+      <div class="ed-card" style="margin-top:24px;">
+        <div class="ed-card-head">
+          <h3>Faturamento por marketplace · diário</h3>
+          <div class="ed-legend" id="excelLegend"></div>
+        </div>
+        <div id="excelChartLine" class="ed-line-wrap"></div>
+      </div>
     </section>
 
     <!-- DASHBOARD DIARIO -->
@@ -1338,6 +1346,10 @@ function renderExcelTable() {
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
+
+  // Line chart abaixo da tabela — mesma janela filtrada, ordem cronológica
+  var lineRows = filtered.slice().sort(function(a, b) { return (a.dataIso || '').localeCompare(b.dataIso || ''); });
+  renderExcelLine(lineRows);
 }
 
 function setExcelSort(key) {
@@ -1431,15 +1443,14 @@ function renderExcelDash() {
   renderEdBars(rows);
 }
 
-function renderEdLine(rows) {
-  var box = document.getElementById('edChartLine');
+function drawLineChart(boxId, legendId, rows, toggleFn) {
+  var box = document.getElementById(boxId);
   if (!box) return;
   if (!rows.length) { box.innerHTML = '<div class="empty">Sem dados.</div>'; return; }
 
   var W = box.clientWidth || 720, H = 320;
   var pad = { l: 56, r: 16, t: 18, b: 36 };
 
-  // Build series per marketplace (Faturamento)
   var series = EXCEL_MKTS.map(function(m) {
     var values = rows.map(function(r) {
       var v = rowFatMkt(r, m.key);
@@ -1453,7 +1464,6 @@ function renderEdLine(rows) {
     if (edHidden[s.mkt.key]) return;
     s.values.forEach(function(v) { if (v && v > maxY) maxY = v; });
   });
-  // round up to nice axis
   var step = niceStep(maxY / 4);
   var niceMax = Math.ceil(maxY / step) * step;
   if (niceMax === 0) niceMax = 1;
@@ -1463,14 +1473,12 @@ function renderEdLine(rows) {
 
   var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">';
 
-  // Grid + Y labels
   for (var g = 0; g <= 4; g++) {
     var yy = pad.t + (g / 4) * (H - pad.t - pad.b);
     var label = niceMax * (1 - g / 4);
     svg += '<line x1="' + pad.l + '" x2="' + (W - pad.r) + '" y1="' + yy + '" y2="' + yy + '" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2,4"/>';
     svg += '<text x="' + (pad.l - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.4)" font-family="Sora">' + abbrCurrency(label) + '</text>';
   }
-  // X labels (every Nth) — mostra mês quando período cruza
   var stepX = Math.max(1, Math.ceil(rows.length / 8));
   var multiMonth = new Set(rows.map(function(r){return r.mes;})).size > 1;
   rows.forEach(function(r, i) {
@@ -1479,7 +1487,6 @@ function renderEdLine(rows) {
     svg += '<text x="' + x(i) + '" y="' + (H - pad.b + 18) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="Sora">' + esc(label) + '</text>';
   });
 
-  // Lines
   series.forEach(function(s) {
     if (edHidden[s.mkt.key]) return;
     var pts = [];
@@ -1497,12 +1504,17 @@ function renderEdLine(rows) {
   svg += '</svg>';
   box.innerHTML = svg;
 
-  // Legend with toggles
-  var leg = document.getElementById('edLegend');
-  leg.innerHTML = EXCEL_MKTS.map(function(m) {
-    return '<span class="ed-legend-item ' + (edHidden[m.key] ? 'off' : '') + '" onclick="toggleEdSerie(\'' + m.key.replace(/'/g, "\\'") + '\')"><span class="ed-legend-dot" style="background:' + m.color + ';"></span>' + esc(m.label) + '</span>';
-  }).join('');
+  var leg = document.getElementById(legendId);
+  if (leg) {
+    var fn = toggleFn || 'toggleEdSerie';
+    leg.innerHTML = EXCEL_MKTS.map(function(m) {
+      return '<span class="ed-legend-item ' + (edHidden[m.key] ? 'off' : '') + '" onclick="' + fn + '(\'' + m.key.replace(/'/g, "\\'") + '\')"><span class="ed-legend-dot" style="background:' + m.color + ';"></span>' + esc(m.label) + '</span>';
+    }).join('');
+  }
 }
+function renderEdLine(rows) { drawLineChart('edChartLine', 'edLegend', rows, 'toggleEdSerie'); }
+function renderExcelLine(rows) { drawLineChart('excelChartLine', 'excelLegend', rows, 'toggleExcelSerie'); }
+function toggleExcelSerie(key) { edHidden[key] = !edHidden[key]; renderExcelTable(); }
 function toggleEdSerie(key) { edHidden[key] = !edHidden[key]; renderExcelDash(); }
 function niceStep(raw) {
   if (raw <= 0) return 1;
