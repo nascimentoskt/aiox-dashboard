@@ -4482,6 +4482,26 @@ h1, h2, h3, h4, h5, h6,
         </div>
       </div>
 
+      <!-- KPI Pendencias -->
+      <div class="fin-kpi-row" style="margin-bottom:24px;grid-template-columns:1fr 1fr;">
+        <div class="fin-kpi-card animate-in">
+          <div class="fin-kpi-icon" style="color:#4ADE80;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+          </div>
+          <div class="fin-kpi-value" id="kpi-receber" style="color:#4ADE80;">R$ 0</div>
+          <div class="fin-kpi-label" id="kpi-receber-label">A Receber Abr/26</div>
+          <span class="fin-kpi-trend" id="kpi-receber-trend">Receitas pendentes</span>
+        </div>
+        <div class="fin-kpi-card animate-in">
+          <div class="fin-kpi-icon" style="color:#F87171;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+          </div>
+          <div class="fin-kpi-value" id="kpi-pagar" style="color:#F87171;">R$ 0</div>
+          <div class="fin-kpi-label" id="kpi-pagar-label">A Pagar Abr/26</div>
+          <span class="fin-kpi-trend" id="kpi-pagar-trend">Despesas pendentes</span>
+        </div>
+      </div>
+
       <div class="financeiro-grid">
 
         <!-- Receita por Cliente (with toggle) -->
@@ -6144,6 +6164,20 @@ function renderFinKPIs() {
   if (el('kpi-margem')) el('kpi-margem').textContent = (typeof margem === 'number' && margem > 0) ? margem.toFixed(1) + '%' : '-';
   if (el('kpi-margem-label')) el('kpi-margem-label').textContent = 'Margem ' + periodLabel;
   if (el('kpi-margem-trend')) el('kpi-margem-trend').textContent = d.custos > 0 ? 'Lucro / Receita' : 'Aguardando despesas';
+
+  // A Receber / A Pagar — soma de pendentes do periodo
+  var receberTot = (d.receitas || []).filter(function(r) { return r.status === 'Pendente'; }).reduce(function(s, r) { return s + (r.receita || 0); }, 0);
+  var pagarTot = (d.despesas || []).filter(function(x) { return x.status === 'Pendente'; }).reduce(function(s, x) { return s + (x.custos || 0); }, 0);
+  var receberCount = (d.receitas || []).filter(function(r) { return r.status === 'Pendente'; }).length;
+  var pagarCount = (d.despesas || []).filter(function(x) { return x.status === 'Pendente'; }).length;
+
+  if (el('kpi-receber')) el('kpi-receber').textContent = receberTot > 0 ? fmt(receberTot) : 'R$ 0';
+  if (el('kpi-receber-label')) el('kpi-receber-label').textContent = 'A Receber ' + periodLabel;
+  if (el('kpi-receber-trend')) el('kpi-receber-trend').textContent = receberCount > 0 ? receberCount + ' receita' + (receberCount === 1 ? '' : 's') + ' pendente' + (receberCount === 1 ? '' : 's') : 'Tudo recebido';
+
+  if (el('kpi-pagar')) el('kpi-pagar').textContent = pagarTot > 0 ? fmt(pagarTot) : 'R$ 0';
+  if (el('kpi-pagar-label')) el('kpi-pagar-label').textContent = 'A Pagar ' + periodLabel;
+  if (el('kpi-pagar-trend')) el('kpi-pagar-trend').textContent = pagarCount > 0 ? pagarCount + ' despesa' + (pagarCount === 1 ? '' : 's') + ' pendente' + (pagarCount === 1 ? '' : 's') : 'Tudo pago';
 
   var badge = document.querySelector('#financeiro .section-badge');
   if (badge) badge.textContent = periodLabel;
