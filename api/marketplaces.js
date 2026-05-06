@@ -218,11 +218,17 @@ function parseExcelCsv(text) {
     var dataCell = (rr[0] || '').trim();
     if (!dataCell || !/\d/.test(dataCell)) continue; // skip empty / footer rows
     var rec = { data: dataCell };
+    var hasAnyValue = false;
     for (var k = 1; k < columns.length; k++) {
       var col = columns[k];
       var val = parseValue(rr[k]);
-      if (val) rec[col.key] = val;
+      if (val) {
+        rec[col.key] = val;
+        if (val.type === 'money' && val.value !== 0) hasAnyValue = true;
+        if (val.type === 'number' && val.value !== 0) hasAnyValue = true;
+      }
     }
+    if (!hasAnyValue) continue; // skip rows com data preenchida mas sem valores reais
     out.push(rec);
   }
   return { columns: columns, rows: out };
