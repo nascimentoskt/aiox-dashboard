@@ -124,18 +124,22 @@ function extractTabs(html) {
   return tabs;
 }
 
+var ALLOWED_MKTS = ['Shoppee (LUZZOO)', 'Shoppee (NO Brand)', 'Mercado livre', 'Shein', 'Netshoes', 'Tiktok Shop'];
+var ALLOWED_METRICS = ['Investimento', 'Faturamento', 'Faturamento Full', 'Mídia', 'Comissão'];
+
 function normalizeKey(k) {
-  // Drop "Resumo|*" — recalculamos no front a partir das partes
-  if (/^Resumo\|/.test(k)) return null;
-  // "Shoppee" sem (LUZZOO) → assume LUZZOO
+  if (/^Resumo\|/.test(k)) return null; // recalculamos no front
+  // legacy → canonical
   k = k.replace(/^Shoppee\|/, 'Shoppee (LUZZOO)|');
   k = k.replace(/^Shopee \(NOBRAND\)\|/, 'Shoppee (NO Brand)|');
-  // "Valor Gasto" → "Investimento"
   k = k.replace(/\|Valor Gasto$/, '|Investimento');
   k = k.replace(/\|ADS$/, '|Investimento');
-  k = k.replace(/\|Comissão$/, '|Comissão');
-  // Espaços extras
-  k = k.replace(/\s+\|/, '|').replace(/\|\s+/, '|');
+  k = k.replace(/\s+\|/, '|').replace(/\|\s+/, '|').trim();
+  var parts = k.split('|');
+  if (parts.length !== 2) return null;
+  // whitelist: drop anything that não é marketplace+métrica conhecido
+  if (ALLOWED_MKTS.indexOf(parts[0]) < 0) return null;
+  if (ALLOWED_METRICS.indexOf(parts[1]) < 0) return null;
   return k;
 }
 
@@ -176,16 +180,24 @@ function parseExcelCsv(text) {
   }
   if (field || cur.length) { cur.push(field); rows.push(cur); }
 
-  // First two rows are headers (group + metric). Forward-fill the group.
-  if (rows.length < 3) return { columns: [], rows: [] };
-  var groupRow = rows[0];
-  var metricRow = rows[1];
-  var lastGroup = '';
+  if (rows.length < 2) return { columns: [], rows: [] };
+  var legacyShopee = /^\d{1,2}\/\d{1,2}\s*$/.test((rows[1] && rows[1][0]) || '');
+  var groupRow, metricRow, dataStart;
+  if (legacyShopee) {
+    // Apenas 1 linha de header, dados começam na linha 1. Tudo é Shopee (LUZZOO).
+    groupRow = []; metricRow = rows[0]; dataStart = 1;
+  } else {
+    if (rows.length < 3) return { columns: [], rows: [] };
+    groupRow = rows[0]; metricRow = rows[1]; dataStart = 2;
+  }
+  var lastGroup = legacyShopee ? 'Shoppee (LUZZOO)' : '';
   var columns = [];
-  var maxCols = Math.max(groupRow.length, metricRow.length);
+  var maxCols = Math.max(groupRow.length || 0, metricRow.length);
   for (var c = 0; c < maxCols; c++) {
-    var g = (groupRow[c] || '').trim();
-    if (g) lastGroup = g;
+    if (!legacyShopee) {
+      var g = (groupRow[c] || '').trim();
+      if (g) lastGroup = g;
+    }
     var m = (metricRow[c] || '').trim();
     columns.push({ index: c, group: c === 0 ? '' : lastGroup, metric: m, key: c === 0 ? 'data' : (lastGroup + '|' + m) });
   }
@@ -213,7 +225,7 @@ function parseExcelCsv(text) {
   }
 
   var out = [];
-  for (var r2 = 2; r2 < rows.length; r2++) {
+  for (var r2 = dataStart; r2 < rows.length; r2++) {
     var rr = rows[r2];
     var dataCell = (rr[0] || '').trim();
     if (!dataCell || !/\d/.test(dataCell)) continue; // skip empty / footer rows
