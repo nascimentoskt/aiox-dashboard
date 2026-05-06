@@ -4846,7 +4846,14 @@ h1, h2, h3, h4, h5, h6,
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Receitas
           </div>
-          <button class="fin-action-btn green" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('receita')">+ Adicionar</button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <select id="filtroLucasReceitas" onchange="renderLucasReceitas()" style="background:rgba(0,0,0,0.25);border:1px solid var(--border);color:var(--text-primary);padding:6px 10px;border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;">
+              <option value="todos">Todos</option>
+              <option value="Pendente" selected>Pendente</option>
+              <option value="Pago">Pago</option>
+            </select>
+            <button class="fin-action-btn green" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('receita')">+ Adicionar</button>
+          </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="fin-table" id="lucasReceitasTable">
@@ -4869,7 +4876,14 @@ h1, h2, h3, h4, h5, h6,
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Despesas / Contas a Pagar
           </div>
-          <button class="fin-action-btn red" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('despesa')">+ Adicionar</button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <select id="filtroLucasDespesas" onchange="renderLucasDespesas()" style="background:rgba(0,0,0,0.25);border:1px solid var(--border);color:var(--text-primary);padding:6px 10px;border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;">
+              <option value="todos">Todos</option>
+              <option value="Pendente" selected>Pendente</option>
+              <option value="Pago">Pago</option>
+            </select>
+            <button class="fin-action-btn red" style="font-size:11px;padding:6px 14px;margin:0;" onclick="openLucasModal('despesa')">+ Adicionar</button>
+          </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="fin-table" id="lucasDespesasTable">
@@ -9393,8 +9407,12 @@ function lucasMarkPaid(id, tipo) {
 function renderLucasReceitas(d) {
   var b = document.getElementById('lucasReceitasBody');
   if (!b) return;
+  if (!d) d = lucasLoad();
+  var fEl = document.getElementById('filtroLucasReceitas');
+  var f = fEl ? fEl.value : 'todos';
   var rows = lucasFilterByPeriod(d.receitas || [], lucasPeriodSelected).slice().sort(function(a, b) { return (b.data || '').localeCompare(a.data || ''); });
-  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma receita cadastrada</td></tr>'
+  if (f && f !== 'todos') rows = rows.filter(function(x) { return (x.status || 'Pendente') === f; });
+  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma receita ' + (f && f !== 'todos' ? f.toLowerCase() : 'cadastrada') + '</td></tr>'
     : rows.map(function(x) {
       var stClass = x.status === 'Pago' ? 'pago' : 'pendente';
       return '<tr><td><span class="lucas-status ' + stClass + '">' + escHtml(x.status || 'Pendente') + '</span></td>'
@@ -9409,8 +9427,12 @@ function renderLucasReceitas(d) {
 function renderLucasDespesas(d) {
   var b = document.getElementById('lucasDespesasBody');
   if (!b) return;
+  if (!d) d = lucasLoad();
+  var fEl = document.getElementById('filtroLucasDespesas');
+  var f = fEl ? fEl.value : 'todos';
   var rows = lucasFilterByPeriod(d.despesas || [], lucasPeriodSelected).slice().sort(function(a, b) { return (a.data || '').localeCompare(b.data || ''); });
-  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma despesa cadastrada</td></tr>'
+  if (f && f !== 'todos') rows = rows.filter(function(x) { return (x.status || 'Pendente') === f; });
+  b.innerHTML = rows.length === 0 ? '<tr><td colspan="6" style="text-align:center;color:var(--text-caption);padding:24px;font-style:italic;">Nenhuma despesa ' + (f && f !== 'todos' ? f.toLowerCase() : 'cadastrada') + '</td></tr>'
     : rows.map(function(x) {
       var stClass = x.status === 'Pago' ? 'pago' : 'pendente';
       return '<tr><td><span class="lucas-status ' + stClass + '">' + escHtml(x.status || 'Pendente') + '</span></td>'
