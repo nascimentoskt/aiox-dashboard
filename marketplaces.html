@@ -226,6 +226,20 @@ tr:hover td { background: var(--card-hover); }
 .daily-action:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 .daily-action.danger:hover { color: var(--red); }
 
+/* Tabela ordenavel */
+.mkt-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.mkt-table thead th { background: var(--navy); padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; position: sticky; top: 0; user-select: none; }
+.mkt-table thead th.th-sort { cursor: pointer; transition: color .15s, background .15s; }
+.mkt-table thead th.th-sort:hover { color: var(--text); background: rgba(0,136,255,0.06); }
+.mkt-table thead th.th-static { cursor: default; }
+.mkt-table tbody td { padding: 10px 12px; border-top: 1px solid var(--border); white-space: nowrap; }
+.mkt-table tbody tr:hover td { background: var(--card-hover); }
+.mkt-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.mkt-table td.actions { text-align: right; white-space: nowrap; }
+.sort-i { display: inline-block; margin-left: 4px; font-size: 10px; }
+.sort-i.muted { color: rgba(255,255,255,0.25); }
+.sort-i.active { color: var(--blue); }
+
 /* ============ DASHBOARD ============ */
 .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
 .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
@@ -651,6 +665,7 @@ function checkMktPin() {
 var TEAM = ['Lucas','Sergio','João','Laize','Pote','Dihon','Jenni'];
 var REACTIONS = ['🔥','💪','💰','🎯'];
 var MILESTONES = [3, 7, 15, 30, 60, 100];
+var editingDaily = null; // pageId quando editando
 
 function avatarColor(name) {
   // hash → hue, fixed sat/light, consistent per name
@@ -783,20 +798,37 @@ document.addEventListener('change', function(e) {
 
 async function saveDaily() {
   var btn = document.getElementById('btnDailySave');
+  var origLabel = editingDaily ? 'salvar edição' : 'mandar ver';
   btn.disabled = true; btn.textContent = 'mandando…';
   try {
     var func = document.getElementById('dl-funcionario').value;
     var vmais = document.getElementById('dl-vmais').value.trim();
     if (!func) { toast('escolhe quem é você primeiro', 'error'); return; }
     if (!vmais) { toast('conta o que você fez pra vender mais', 'error'); return; }
-    var payload = {
-      kind: 'daily',
-      funcionario: func,
-      data: document.getElementById('dl-data').value,
-      vendaMais: vmais,
-      bloqueio: document.getElementById('dl-bloq').value,
-      proximoPasso: document.getElementById('dl-prox').value
-    };
+    var dataVal = document.getElementById('dl-data').value;
+    var bloq = document.getElementById('dl-bloq').value;
+    var prox = document.getElementById('dl-prox').value;
+
+    if (editingDaily) {
+      // PATCH bulk
+      var fields = {
+        Registro: func + ' - ' + dataVal,
+        Funcionario: func,
+        Data: dataVal,
+        VendaMais: vmais,
+        Bloqueio: bloq,
+        ProximoPasso: prox
+      };
+      var pr = await fetch('/api/marketplaces', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pageId: editingDaily, fields: fields }) });
+      var pd = await pr.json();
+      if (!pr.ok) throw new Error(pd.error || 'Erro ao salvar');
+      toast('daily editado', 'success');
+      cancelDailyEdit();
+      setTimeout(loadDaily, 1200);
+      return;
+    }
+
+    var payload = { kind: 'daily', funcionario: func, data: dataVal, vendaMais: vmais, bloqueio: bloq, proximoPasso: prox };
     var r = await fetch('/api/marketplaces', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
     var d = await r.json();
     if (!r.ok) throw new Error(d.error || 'Erro ao enviar');
@@ -818,8 +850,48 @@ async function saveDaily() {
   } catch (e) {
     toast(e.message, 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'mandar ver';
+    btn.disabled = false; btn.textContent = origLabel;
   }
+}
+
+function editDaily(pageId) {
+  var item = dailyCache.find(function(x) { return x.id === pageId; });
+  if (!item) { toast('registro não encontrado', 'error'); return; }
+  editingDaily = pageId;
+  document.getElementById('dl-funcionario').value = item.funcionario || '';
+  document.getElementById('dl-data').value = item.data || todayISO();
+  document.getElementById('dl-vmais').value = item.vendaMais || '';
+  document.getElementById('dl-bloq').value = item.bloqueio || '';
+  document.getElementById('dl-prox').value = item.proximoPasso || '';
+  renderStreakStrip();
+  renderSuggestedTag();
+  document.getElementById('btnDailySave').textContent = 'salvar edição';
+  showDailyEditBanner(item);
+  // scroll para o form
+  document.querySelector('.daily-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelDailyEdit() {
+  editingDaily = null;
+  document.getElementById('btnDailySave').textContent = 'mandar ver';
+  hideDailyEditBanner();
+  resetDailyForm();
+}
+
+function showDailyEditBanner(item) {
+  var existing = document.getElementById('dailyEditBanner');
+  var html = '<span>editando daily de <b>' + esc(item.funcionario) + '</b> · ' + esc(item.data) + '</span><button class="btn-ghost" style="margin-left:auto" onclick="cancelDailyEdit()">cancelar</button>';
+  if (existing) { existing.innerHTML = html; existing.classList.add('show'); return; }
+  var div = document.createElement('div');
+  div.id = 'dailyEditBanner';
+  div.className = 'edit-banner show';
+  div.innerHTML = html;
+  var form = document.querySelector('.daily-form');
+  form.parentNode.insertBefore(div, form);
+}
+function hideDailyEditBanner() {
+  var b = document.getElementById('dailyEditBanner');
+  if (b) b.classList.remove('show');
 }
 
 async function loadDaily() {
@@ -880,6 +952,7 @@ function renderDailyFeed() {
       +   '<div class="daily-author"><div class="daily-avatar" style="background:' + color + ';">' + initial + '</div>' + esc(x.funcionario || '—') + '</div>'
       +   '<div class="daily-meta">'
       +     '<span>' + formatDailyDate(x.data) + '</span>'
+      +     '<button class="daily-action" onclick="editDaily(\'' + x.id + '\')" title="editar">editar</button>'
       +     '<button class="daily-action danger" onclick="deleteDaily(\'' + x.id + '\')" title="excluir">×</button>'
       +   '</div>'
       + '</div>'
@@ -1191,6 +1264,67 @@ async function loadData() {
 }
 
 // ===== TABLE =====
+var tableSort = { tipo: { campanha: { key: 'data', dir: 'desc' }, anuncio: { key: 'data', dir: 'desc' } } };
+
+var COLS_CAMPANHA = [
+  { key: 'data', label: 'Data', type: 'date' },
+  { key: 'campanha', label: 'Campanha', type: 'text' },
+  { key: 'loja', label: 'Loja', type: 'text' },
+  { key: 'marketplace', label: 'Marketplace', type: 'text' },
+  { key: 'status', label: 'Status', type: 'text' },
+  { key: 'gasto', label: 'Gasto', type: 'num' },
+  { key: 'vendaTotal', label: 'Venda ADS+Org', type: 'num' },
+  { key: 'roas', label: 'ROAS', type: 'num' },
+  { key: 'acos', label: 'ACOS', type: 'num' },
+  { key: 'ctr', label: 'CTR', type: 'num' },
+  { key: 'seo', label: 'SEO', type: 'text', sortable: false }
+];
+var COLS_ANUNCIO = [
+  { key: 'data', label: 'Data', type: 'date' },
+  { key: 'anuncio', label: 'Anúncio', type: 'text' },
+  { key: 'loja', label: 'Loja', type: 'text' },
+  { key: 'marketplace', label: 'Marketplace', type: 'text' },
+  { key: 'categoria', label: 'Categoria', type: 'text' },
+  { key: 'link', label: 'Link', type: 'text', sortable: false },
+  { key: 'gasto', label: 'Gasto', type: 'num' },
+  { key: 'vendaTotal', label: 'Venda ADS+Org', type: 'num' },
+  { key: 'roas', label: 'ROAS', type: 'num' },
+  { key: 'ctr', label: 'CTR', type: 'num' },
+  { key: 'seo', label: 'SEO', type: 'text', sortable: false }
+];
+
+function setSort(tipo, key) {
+  var cur = tableSort.tipo[tipo];
+  if (cur.key === key) {
+    cur.dir = cur.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    cur.key = key;
+    // numbers/dates default desc, text default asc
+    var col = (tipo === 'campanha' ? COLS_CAMPANHA : COLS_ANUNCIO).find(function(c){return c.key===key;});
+    cur.dir = (col && (col.type === 'num' || col.type === 'date')) ? 'desc' : 'asc';
+  }
+  renderTable();
+}
+
+function sortRows(rows, tipo) {
+  var cur = tableSort.tipo[tipo];
+  var col = (tipo === 'campanha' ? COLS_CAMPANHA : COLS_ANUNCIO).find(function(c){return c.key===cur.key;});
+  var key = cur.key;
+  var dir = cur.dir === 'asc' ? 1 : -1;
+  return rows.slice().sort(function(a, b) {
+    var va = a[key]; var vb = b[key];
+    if (col && col.type === 'num') { va = va || 0; vb = vb || 0; return (va - vb) * dir; }
+    if (col && col.type === 'date') { return ((va || '').localeCompare(vb || '')) * dir; }
+    return ((va || '').toString().toLowerCase().localeCompare((vb || '').toString().toLowerCase())) * dir;
+  });
+}
+
+function sortIcon(tipo, key) {
+  var cur = tableSort.tipo[tipo];
+  if (cur.key !== key) return '<span class="sort-i muted">↕</span>';
+  return cur.dir === 'asc' ? '<span class="sort-i active">▲</span>' : '<span class="sort-i active">▼</span>';
+}
+
 function renderTable() {
   var tipo = document.getElementById('flt-tipo').value;
   var loja = document.getElementById('flt-loja').value;
@@ -1203,15 +1337,22 @@ function renderTable() {
     if (data && r.data !== data) return false;
     return true;
   });
+  rows = sortRows(rows, tipo);
+
   var wrap = document.getElementById('tableWrap');
-  if (!rows.length) { wrap.innerHTML = '<div class="empty">Nenhum lançamento ainda.</div>'; return; }
-  var html = '<table><thead><tr>';
-  if (tipo === 'campanha') {
-    html += '<th>Data</th><th>Campanha</th><th>Loja</th><th>Marketplace</th><th>Status</th><th>Gasto</th><th>Venda ADS+Org</th><th>ROAS</th><th>ACOS</th><th>CTR</th><th>SEO</th><th>Ações</th>';
-  } else {
-    html += '<th>Data</th><th>Anúncio</th><th>Loja</th><th>Marketplace</th><th>Categoria</th><th>Link</th><th>Gasto</th><th>Venda ADS+Org</th><th>ROAS</th><th>CTR</th><th>SEO</th><th>Ações</th>';
-  }
-  html += '</tr></thead><tbody>';
+  if (!rows.length) { wrap.innerHTML = '<div class="empty">Nenhum lançamento.</div>'; return; }
+
+  var cols = tipo === 'campanha' ? COLS_CAMPANHA : COLS_ANUNCIO;
+  var html = '<table class="mkt-table"><thead><tr>';
+  cols.forEach(function(c) {
+    if (c.sortable === false) {
+      html += '<th class="th-static">' + c.label + '</th>';
+    } else {
+      html += '<th class="th-sort" onclick="setSort(\'' + tipo + '\',\'' + c.key + '\')">' + c.label + ' ' + sortIcon(tipo, c.key) + '</th>';
+    }
+  });
+  html += '<th class="th-static">Ações</th></tr></thead><tbody>';
+
   rows.forEach(function(r) {
     html += '<tr>';
     if (tipo === 'campanha') {
@@ -1219,23 +1360,23 @@ function renderTable() {
       html += '<td><span class="tag tag-' + r.loja.toLowerCase() + '">' + r.loja + '</span></td>';
       html += '<td>' + r.marketplace + '</td>';
       html += '<td><span class="tag tag-status-' + slug(r.status) + '">' + r.status + '</span></td>';
-      html += '<td>' + brl(r.gasto) + '</td><td>' + brl(r.vendaTotal) + '</td>';
-      html += '<td>' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
-      html += '<td>' + (r.acos ? (r.acos * 100).toFixed(1) + '%' : '—') + '</td>';
-      html += '<td>' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
+      html += '<td class="num">' + brl(r.gasto) + '</td><td class="num">' + brl(r.vendaTotal) + '</td>';
+      html += '<td class="num">' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
+      html += '<td class="num">' + (r.acos ? (r.acos * 100).toFixed(1) + '%' : '—') + '</td>';
+      html += '<td class="num">' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
       html += '<td title="' + esc(r.seo) + '">' + esc(r.seo.slice(0, 40)) + (r.seo.length > 40 ? '…' : '') + '</td>';
-      html += '<td><button class="row-btn" onclick="editRow(\'' + r.id + '\',\'campanha\')">Editar</button> <button class="row-btn row-btn-danger" onclick="deleteRow(\'' + r.id + '\',\'campanha\')">×</button></td>';
+      html += '<td class="actions"><button class="row-btn" onclick="editRow(\'' + r.id + '\',\'campanha\')">Editar</button> <button class="row-btn row-btn-danger" onclick="deleteRow(\'' + r.id + '\',\'campanha\')">×</button></td>';
     } else {
       html += '<td>' + r.data + '</td><td>' + esc(r.anuncio) + '</td>';
       html += '<td><span class="tag tag-' + r.loja.toLowerCase() + '">' + r.loja + '</span></td>';
       html += '<td>' + r.marketplace + '</td>';
       html += '<td>' + (r.categoria || '—') + '</td>';
       html += '<td>' + (r.link ? '<a href="' + esc(r.link) + '" target="_blank" style="color:var(--blue);">abrir</a>' : '—') + '</td>';
-      html += '<td>' + brl(r.gasto) + '</td><td>' + brl(r.vendaTotal) + '</td>';
-      html += '<td>' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
-      html += '<td>' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
+      html += '<td class="num">' + brl(r.gasto) + '</td><td class="num">' + brl(r.vendaTotal) + '</td>';
+      html += '<td class="num">' + (r.roas ? r.roas.toFixed(2) : '—') + '</td>';
+      html += '<td class="num">' + (r.ctr ? (r.ctr * 100).toFixed(2) + '%' : '—') + '</td>';
       html += '<td title="' + esc(r.seo) + '">' + esc(r.seo.slice(0, 40)) + (r.seo.length > 40 ? '…' : '') + '</td>';
-      html += '<td><button class="row-btn" onclick="editRow(\'' + r.id + '\',\'anuncio\')">Editar</button> <button class="row-btn row-btn-danger" onclick="deleteRow(\'' + r.id + '\',\'anuncio\')">×</button></td>';
+      html += '<td class="actions"><button class="row-btn" onclick="editRow(\'' + r.id + '\',\'anuncio\')">Editar</button> <button class="row-btn row-btn-danger" onclick="deleteRow(\'' + r.id + '\',\'anuncio\')">×</button></td>';
     }
     html += '</tr>';
   });
