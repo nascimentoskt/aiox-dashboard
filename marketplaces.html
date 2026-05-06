@@ -1147,6 +1147,7 @@ async function deleteDaily(pageId) {
 // ===== EXCEL DIARIO + DASHBOARD =====
 var excelData = null;
 var excelLoading = false;
+var excelSort = { key: 'dataIso', dir: 'desc' };
 var EXCEL_MKTS = [
   { key: 'Shoppee (LUZZOO)', label: 'Shopee Luzzoo', color: '#FF6F3D', cls: 'mkt-luzzoo' },
   { key: 'Mercado livre', label: 'Mercado Livre', color: '#FFD400', cls: 'mkt-mercadolivre' },
@@ -1282,11 +1283,17 @@ function renderExcelTable() {
   });
   html += '</tr><tr class="sub">';
   subs.forEach(function(s, i) {
-    html += '<th class="' + (groupStarts[i] && i > 0 ? 'col-divider' : '') + '">' + esc(s.metric) + '</th>';
+    var col = cols[i];
+    var sortable = i > 0; // tudo menos a coluna data se ordena por valor numérico
+    var sortKey = i === 0 ? 'dataIso' : col.key;
+    var divider = (groupStarts[i] && i > 0 ? 'col-divider' : '');
+    var sortable_cls = sortable || i === 0 ? 'th-sort' : '';
+    html += '<th class="' + divider + ' ' + sortable_cls + '" onclick="setExcelSort(\'' + sortKey + '\')" title="Ordenar por ' + esc(s.metric) + '">' + esc(s.metric) + ' ' + excelSortIcon(sortKey) + '</th>';
   });
   html += '</tr></thead><tbody>';
 
-  var rows = filtered.slice().reverse();
+  // Ordenar pelo sort atual
+  var rows = sortExcelRows(filtered.slice());
   rows.forEach(function(r) {
     html += '<tr>';
     cols.forEach(function(c, i) {
@@ -1309,6 +1316,28 @@ function renderExcelTable() {
   wrap.innerHTML = html;
 }
 
+function setExcelSort(key) {
+  if (excelSort.key === key) excelSort.dir = excelSort.dir === 'asc' ? 'desc' : 'asc';
+  else { excelSort.key = key; excelSort.dir = key === 'dataIso' || key.indexOf('|') > 0 ? 'desc' : 'asc'; }
+  renderExcelTable();
+}
+function excelSortIcon(key) {
+  if (excelSort.key !== key) return '<span class="sort-i muted">↕</span>';
+  return excelSort.dir === 'asc' ? '<span class="sort-i active">▲</span>' : '<span class="sort-i active">▼</span>';
+}
+function sortExcelRows(rows) {
+  var k = excelSort.key, dir = excelSort.dir === 'asc' ? 1 : -1;
+  return rows.sort(function(a, b) {
+    if (k === 'dataIso') return ((a.dataIso || '').localeCompare(b.dataIso || '')) * dir;
+    var va = a[k], vb = b[k];
+    var na = (va && typeof va.value === 'number') ? va.value : (va && va.value === 0 ? 0 : -Infinity);
+    var nb = (vb && typeof vb.value === 'number') ? vb.value : (vb && vb.value === 0 ? 0 : -Infinity);
+    if (na === -Infinity && nb === -Infinity) return 0;
+    if (na === -Infinity) return 1; // empties at end
+    if (nb === -Infinity) return -1;
+    return (na - nb) * dir;
+  });
+}
 function renderExcelKpisOf(rows) {
   var k = excelKpis(rows);
   var el = document.getElementById('excelKpiRow');
