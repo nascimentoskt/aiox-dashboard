@@ -1188,11 +1188,19 @@ async function loadExcel(force) {
 function brl0(n) { return 'R$ ' + (n || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 }); }
 function pct(n, digits) { return ((n || 0) * 100).toFixed(digits == null ? 1 : digits) + '%'; }
 
+function rowFatMkt(r, mktKey) {
+  // ML tem Faturamento + Faturamento Full (Mercado Envios Full). Resto soh Faturamento.
+  return ((r[mktKey + '|Faturamento'] || {}).value || 0)
+       + ((r[mktKey + '|Faturamento Full'] || {}).value || 0);
+}
+function rowInvMkt(r, mktKey) {
+  return (r[mktKey + '|Investimento'] || {}).value || 0;
+}
 function rowSums(r) {
   var inv = 0, fat = 0;
   EXCEL_MKTS.forEach(function(m) {
-    inv += (r[m.key + '|Investimento'] || {}).value || 0;
-    fat += (r[m.key + '|Faturamento'] || {}).value || 0;
+    inv += rowInvMkt(r, m.key);
+    fat += rowFatMkt(r, m.key);
   });
   return { inv: inv, fat: fat, midia: fat > 0 ? inv / fat : 0 };
 }
@@ -1432,8 +1440,8 @@ function renderEdLine(rows) {
   // Build series per marketplace (Faturamento)
   var series = EXCEL_MKTS.map(function(m) {
     var values = rows.map(function(r) {
-      var v = (r[m.key + '|Faturamento'] || {}).value;
-      return typeof v === 'number' ? v : null;
+      var v = rowFatMkt(r, m.key);
+      return v > 0 ? v : null;
     });
     return { mkt: m, values: values };
   });
@@ -1514,8 +1522,8 @@ function renderEdPies(rows) {
   EXCEL_MKTS.forEach(function(m) { sumsInv[m.key] = 0; sumsFat[m.key] = 0; });
   rows.forEach(function(r) {
     EXCEL_MKTS.forEach(function(m) {
-      sumsInv[m.key] += (r[m.key + '|Investimento'] || {}).value || 0;
-      sumsFat[m.key] += (r[m.key + '|Faturamento'] || {}).value || 0;
+      sumsInv[m.key] += rowInvMkt(r, m.key);
+      sumsFat[m.key] += rowFatMkt(r, m.key);
     });
   });
   document.getElementById('edPieInvest').innerHTML = pieHtml(sumsInv);
@@ -1546,8 +1554,8 @@ function renderEdBars(rows) {
   EXCEL_MKTS.forEach(function(m) { sumsInv[m.key] = 0; sumsFat[m.key] = 0; sumsMidia[m.key] = 0; });
   rows.forEach(function(r) {
     EXCEL_MKTS.forEach(function(m) {
-      sumsInv[m.key] += (r[m.key + '|Investimento'] || {}).value || 0;
-      sumsFat[m.key] += (r[m.key + '|Faturamento'] || {}).value || 0;
+      sumsInv[m.key] += rowInvMkt(r, m.key);
+      sumsFat[m.key] += rowFatMkt(r, m.key);
       var midiaPct = (r[m.key + '|Mídia'] || {}).value || 0;
       sumsMidia[m.key] += midiaPct;
     });
