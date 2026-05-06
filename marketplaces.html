@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impulso · Marketplaces</title>
+<title>Luzzoo HUB</title>
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -269,8 +269,8 @@ tr:hover td { background: var(--card-hover); }
 <!-- LOGIN -->
 <div id="loginOverlay">
   <div class="login-card">
-    <div class="login-logo">IMPULSO</div>
-    <div class="login-title">Marketplaces</div>
+    <div class="login-logo">LUZZOO</div>
+    <div class="login-title">HUB</div>
     <div id="dashDots" class="login-dots">
       <div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div>
     </div>
@@ -295,9 +295,9 @@ tr:hover td { background: var(--card-hover); }
 <div id="app">
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="brand-mark">M</div>
+      <div class="brand-mark">L</div>
       <div>
-        <div class="brand-name">Marketplaces</div>
+        <div class="brand-name">Luzzoo HUB</div>
         <div class="brand-sub">Impulso</div>
       </div>
     </div>
@@ -319,6 +319,10 @@ tr:hover td { background: var(--card-hover); }
       <a class="tab" data-section="dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
         Dashboard
+      </a>
+      <a class="tab" data-section="excel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+        Excel Diário
       </a>
     </nav>
     <div class="sidebar-footer">
@@ -512,6 +516,24 @@ tr:hover td { background: var(--card-hover); }
       <div id="dailyFeed"></div>
     </section>
 
+    <!-- EXCEL DIARIO -->
+    <section class="section" id="sec-excel">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap;">
+        <div>
+          <h2 style="font-size:22px;font-weight:600;">Excel Diário</h2>
+          <div class="section-sub">Histórico completo de evolução por marketplace desde 2025 · sincronizado com a planilha do Google.</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <a href="https://docs.google.com/spreadsheets/d/1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4/edit?gid=764456387" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">abrir no Google Sheets <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+          <button class="btn-ghost" onclick="document.getElementById('excelFrame').src=document.getElementById('excelFrame').src">recarregar</button>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:calc(100vh - 220px);min-height:520px;">
+        <iframe id="excelFrame" src="https://docs.google.com/spreadsheets/d/1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4/preview?gid=764456387&widget=true&headers=false&rm=embedded" style="width:100%;height:100%;border:0;background:#fff;" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <div class="section-sub" style="margin-top:12px;">Se a planilha não aparecer, verifique se o compartilhamento está como <b>"Qualquer pessoa com o link · Leitor"</b>.</div>
+    </section>
+
     <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:300;display:none;"></canvas>
   </main>
 </div>
@@ -525,7 +547,7 @@ var pin = '';
 var mktPin = '';
 var STORAGE_KEY = 'mkt_authed';
 var MKT_LOCK_KEY = 'mkt_marketplaces_unlocked';
-var MKT_SECTIONS = ['lancar', 'tabela', 'dashboard'];
+var MKT_SECTIONS = ['lancar', 'tabela', 'dashboard', 'excel'];
 var pendingMktSection = null;
 var currentKind = 'campanha';
 var dataCache = { campanhas: [], anuncios: [] };
