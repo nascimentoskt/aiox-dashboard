@@ -31,19 +31,129 @@ module.exports = async function handler(req, res) {
 };
 
 async function handleExcel(res, url) {
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=900');
+  res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=1800');
   var sheetId = url.searchParams.get('sheetId') || '1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4';
-  var gid = url.searchParams.get('gid') || '764456387';
-  var csvUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv&gid=' + gid;
   try {
-    var r = await fetch(csvUrl, { redirect: 'follow' });
-    if (!r.ok) return res.status(502).json({ error: 'Falha ao baixar planilha (' + r.status + '). Verifique se está compartilhada como público leitor.' });
-    var csv = await r.text();
-    var parsed = parseExcelCsv(csv);
-    return res.status(200).json({ ok: true, rows: parsed.rows, columns: parsed.columns, lastSync: new Date().toISOString() });
+    // 1. Descobrir abas via htmlview
+    var hv = await fetch('https://docs.google.com/spreadsheets/d/' + sheetId + '/htmlview', { redirect: 'follow' });
+    if (!hv.ok) return res.status(502).json({ error: 'Falha ao listar abas (' + hv.status + ').' });
+    var html = await hv.text();
+    var tabs = extractTabs(html);
+    if (!tabs.length) return res.status(502).json({ error: 'Nenhuma aba encontrada na planilha.' });
+
+    // 2. Filtrar apenas tabs com formato MM/AA (ignora outras se houver)
+    var monthly = tabs.map(function(t) {
+      var m = t.name.match(/(\d{2})\/(\d{2})/);
+      if (!m) return null;
+      var mm = parseInt(m[1], 10), yy = 2000 + parseInt(m[2], 10);
+      return { gid: t.gid, name: t.name, mm: mm, yy: yy };
+    }).filter(Boolean);
+
+    // 3. Fetch CSV de cada aba em paralelo
+    var results = await Promise.all(monthly.map(function(t) {
+      return fetch('https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv&gid=' + t.gid, { redirect: 'follow' })
+        .then(function(r) { return r.ok ? r.text() : ''; })
+        .then(function(csv) { return { tab: t, parsed: csv ? parseExcelCsv(csv) : { rows: [], columns: [] } }; })
+        .catch(function() { return { tab: t, parsed: { rows: [], columns: [] } }; });
+    }));
+
+    // 4. Normalizar e mergir
+    var allRows = [];
+    var allCols = {}; // key -> { group, metric }
+    results.forEach(function(R) {
+      var t = R.tab;
+      R.parsed.rows.forEach(function(row) {
+        var dd = (row.data || '').slice(0, 2);
+        var ddNum = parseInt(dd, 10); if (!ddNum || ddNum < 1 || ddNum > 31) return;
+        var iso = t.yy + '-' + pad2(t.mm) + '-' + pad2(ddNum);
+        var rec = { data: dd + '/' + pad2(t.mm), dataIso: iso, mes: pad2(t.mm) + '/' + t.yy, tab: t.name };
+        // Normalize keys (legacy "Shoppee" → "Shoppee (LUZZOO)", "Valor Gasto" → "Investimento", "Shopee (NOBRAND)" → "Shoppee (NO Brand)")
+        Object.keys(row).forEach(function(k) {
+          if (k === 'data') return;
+          var v = row[k];
+          var nk = normalizeKey(k);
+          if (nk) {
+            rec[nk] = v;
+            if (!allCols[nk]) {
+              var parts = nk.split('|');
+              allCols[nk] = { key: nk, group: parts[0], metric: parts[1] || '' };
+            }
+          }
+        });
+        allRows.push(rec);
+      });
+    });
+
+    // 5. Ordenar cronologicamente
+    allRows.sort(function(a, b) { return (a.dataIso || '').localeCompare(b.dataIso || ''); });
+
+    // Build columns array in canonical order
+    var canonical = canonicalColumns(allCols);
+
+    return res.status(200).json({
+      ok: true,
+      rows: allRows,
+      columns: canonical,
+      tabs: monthly.map(function(t) { return { gid: t.gid, name: t.name, mes: pad2(t.mm) + '/' + t.yy }; }),
+      lastSync: new Date().toISOString()
+    });
   } catch (e) {
     return res.status(500).json({ error: e.message || 'Erro fetching CSV' });
   }
+}
+
+function pad2(n) { n = String(n); return n.length < 2 ? '0' + n : n; }
+
+function extractTabs(html) {
+  // Find all "name: \"...\"" + later "gid: \"...\"" pairs
+  var GIDS = [];
+  var rx = /gid:\s*"(\d+)"/g; var m;
+  while ((m = rx.exec(html))) GIDS.push(m[1]);
+  GIDS = Array.from(new Set(GIDS));
+  var tabs = [];
+  GIDS.forEach(function(gid) {
+    var idx = html.indexOf('gid: "' + gid + '"');
+    if (idx < 0) return;
+    var slice = html.slice(Math.max(0, idx - 400), idx);
+    var nms = slice.match(/name:\s*"([^"]+)"/g);
+    if (!nms || !nms.length) return;
+    var nm = nms[nms.length - 1];
+    var name = nm.replace(/^name:\s*"/, '').replace(/"$/, '').replace(/\\\//g, '/');
+    tabs.push({ gid: gid, name: name });
+  });
+  return tabs;
+}
+
+function normalizeKey(k) {
+  // Drop "Resumo|*" — recalculamos no front a partir das partes
+  if (/^Resumo\|/.test(k)) return null;
+  // "Shoppee" sem (LUZZOO) → assume LUZZOO
+  k = k.replace(/^Shoppee\|/, 'Shoppee (LUZZOO)|');
+  k = k.replace(/^Shopee \(NOBRAND\)\|/, 'Shoppee (NO Brand)|');
+  // "Valor Gasto" → "Investimento"
+  k = k.replace(/\|Valor Gasto$/, '|Investimento');
+  k = k.replace(/\|ADS$/, '|Investimento');
+  k = k.replace(/\|Comissão$/, '|Comissão');
+  // Espaços extras
+  k = k.replace(/\s+\|/, '|').replace(/\|\s+/, '|');
+  return k;
+}
+
+function canonicalColumns(map) {
+  var ORDER = ['Shoppee (LUZZOO)', 'Shoppee (NO Brand)', 'Mercado livre', 'Shein', 'Netshoes', 'Tiktok Shop'];
+  var METRIC_ORDER = ['Investimento', 'Faturamento', 'Faturamento Full', 'Mídia', 'Comissão'];
+  var cols = [{ key: 'data', group: '', metric: 'DATA' }];
+  ORDER.forEach(function(g) {
+    METRIC_ORDER.forEach(function(m) {
+      var key = g + '|' + m;
+      if (map[key]) cols.push(map[key]);
+    });
+  });
+  // Anything else
+  Object.keys(map).forEach(function(k) {
+    if (!cols.find(function(c) { return c.key === k; })) cols.push(map[k]);
+  });
+  return cols;
 }
 
 function parseExcelCsv(text) {

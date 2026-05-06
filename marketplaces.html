@@ -1185,22 +1185,27 @@ async function loadExcel(force) {
 function brl0(n) { return 'R$ ' + (n || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 }); }
 function pct(n, digits) { return ((n || 0) * 100).toFixed(digits == null ? 1 : digits) + '%'; }
 
-function excelKpis() {
-  if (!excelData) return null;
-  var totInv = 0, totFat = 0, totMidia = 0, days = 0;
-  excelData.rows.forEach(function(r) {
-    var inv = (r['Resumo|Investimento'] || {}).value || 0;
-    var fat = (r['Resumo|Faturamento'] || {}).value || 0;
-    var mid = (r['Resumo|Mídia'] || {}).value || 0;
-    if (inv || fat) days++;
-    totInv += inv;
-    totFat += fat;
-    totMidia += mid;
+function rowSums(r) {
+  var inv = 0, fat = 0;
+  EXCEL_MKTS.forEach(function(m) {
+    inv += (r[m.key + '|Investimento'] || {}).value || 0;
+    fat += (r[m.key + '|Faturamento'] || {}).value || 0;
+  });
+  return { inv: inv, fat: fat };
+}
+function excelKpis(rows) {
+  rows = rows || (excelData && excelData.rows) || [];
+  var totInv = 0, totFat = 0, days = 0;
+  rows.forEach(function(r) {
+    var s = rowSums(r);
+    if (s.inv || s.fat) days++;
+    totInv += s.inv;
+    totFat += s.fat;
   });
   var avgFatDay = days > 0 ? totFat / days : 0;
   var roi = totInv > 0 ? totFat / totInv : 0;
   var midiaPct = totFat > 0 ? totInv / totFat : 0;
-  return { totInv: totInv, totFat: totFat, totMidia: totMidia / Math.max(days, 1), days: days, avgFatDay: avgFatDay, roi: roi, midiaPct: midiaPct };
+  return { totInv: totInv, totFat: totFat, days: days, avgFatDay: avgFatDay, roi: roi, midiaPct: midiaPct };
 }
 
 function renderExcelKpis() {
@@ -1220,29 +1225,53 @@ function kpiCard(label, val, sub, klass) {
 }
 
 function renderExcelTable() {
-  renderExcelKpis();
+  if (!excelData) return;
+  // Filtro de mês (default = mes mais recente)
+  var fltSel = document.getElementById('excel-mes-filter');
+  if (!fltSel) {
+    // criar dropdown se não existe
+    var hero = document.querySelector('#sec-excel .excel-hero-actions');
+    if (hero) {
+      var sel = document.createElement('select');
+      sel.id = 'excel-mes-filter';
+      sel.style.cssText = 'background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;';
+      sel.onchange = renderExcelTable;
+      hero.insertBefore(sel, hero.firstChild);
+    }
+    fltSel = document.getElementById('excel-mes-filter');
+  }
+  // Popular options
+  var meses = Array.from(new Set(excelData.rows.map(function(r) { return r.mes; }))).sort(function(a, b) {
+    var pa = a.split('/'); var pb = b.split('/');
+    if (pa[1] !== pb[1]) return parseInt(pb[1], 10) - parseInt(pa[1], 10);
+    return parseInt(pb[0], 10) - parseInt(pa[0], 10);
+  });
+  var prevValue = fltSel.value;
+  fltSel.innerHTML = '<option value="">Tudo (' + excelData.rows.length + ' dias)</option>' + meses.map(function(m) { return '<option>' + m + '</option>'; }).join('');
+  fltSel.value = prevValue || meses[0] || '';
+
+  var filtered = fltSel.value ? excelData.rows.filter(function(r) { return r.mes === fltSel.value; }) : excelData.rows;
+
+  // KPIs do filtro
+  renderExcelKpisOf(filtered);
+
   var wrap = document.getElementById('excelTableWrap');
-  if (!excelData || !excelData.rows.length) { wrap.innerHTML = '<div class="empty">Sem dados na planilha.</div>'; return; }
-  // Build header from columns. Group "DATA" column as first.
-  var groups = []; // { label, span, cls }
-  var subs = []; // { metric, group }
-  var seenGroups = {};
-  excelData.columns.forEach(function(c, idx) {
+  if (!filtered.length) { wrap.innerHTML = '<div class="empty">Sem dados pra ' + (fltSel.value || 'esse filtro') + '.</div>'; return; }
+
+  var cols = excelData.columns;
+  var groups = [];
+  var subs = [];
+  cols.forEach(function(c, idx) {
     if (idx === 0) {
-      groups.push({ label: '', span: 1, cls: 'mkt-data' });
+      groups.push({ label: '', span: 1, cls: '' });
       subs.push({ metric: 'DATA', group: '' });
       return;
     }
     var existing = groups[groups.length - 1];
-    if (existing && existing.label === c.group && !seenGroups['_' + (groups.length - 1)]) {
-      existing.span += 1;
-    } else {
-      seenGroups['_' + groups.length] = false;
-      groups.push({ label: c.group || '—', span: 1, cls: groupCls(c.group) });
-    }
+    if (existing && existing.label === c.group) existing.span += 1;
+    else groups.push({ label: c.group || '—', span: 1, cls: groupCls(c.group) });
     subs.push({ metric: c.metric || '', group: c.group });
   });
-  // Mark first column of each group for divider
   var groupStarts = {};
   var idxAcc = 0;
   groups.forEach(function(g) { groupStarts[idxAcc] = true; idxAcc += g.span; });
@@ -1257,12 +1286,11 @@ function renderExcelTable() {
   });
   html += '</tr></thead><tbody>';
 
-  // Render rows newest-first (the CSV is chronological → reverse)
-  var rows = excelData.rows.slice().reverse();
+  var rows = filtered.slice().reverse();
   rows.forEach(function(r) {
     html += '<tr>';
-    excelData.columns.forEach(function(c, i) {
-      if (i === 0) { html += '<td class="date">' + esc(r.data) + '</td>'; return; }
+    cols.forEach(function(c, i) {
+      if (i === 0) { html += '<td class="date">' + esc(r.data) + (fltSel.value ? '' : '/' + (r.mes ? r.mes.split('/')[1].slice(2) : '')) + '</td>'; return; }
       var val = r[c.key];
       var cls = 'num';
       if (groupStarts[i]) cls += ' col-divider';
@@ -1279,6 +1307,19 @@ function renderExcelTable() {
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
+}
+
+function renderExcelKpisOf(rows) {
+  var k = excelKpis(rows);
+  var el = document.getElementById('excelKpiRow');
+  if (!el) return;
+  if (!k || !k.days) { el.innerHTML = ''; return; }
+  el.innerHTML = [
+    kpiCard('Faturamento', brl0(k.totFat), k.days + ' dias com vendas'),
+    kpiCard('Investimento', brl0(k.totInv), 'mídia + comissão'),
+    kpiCard('ROI', k.roi.toFixed(2) + 'x', k.roi >= 5 ? 'saudável (≥5x)' : k.roi >= 3 ? 'ok' : 'baixo', k.roi >= 5 ? 'up' : k.roi < 3 ? 'down' : ''),
+    kpiCard('Faturamento médio/dia', brl0(k.avgFatDay), '')
+  ].join('');
 }
 function brlShort(n) {
   if (!n) return 'R$ 0';
@@ -1368,11 +1409,13 @@ function renderEdLine(rows) {
     svg += '<line x1="' + pad.l + '" x2="' + (W - pad.r) + '" y1="' + yy + '" y2="' + yy + '" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2,4"/>';
     svg += '<text x="' + (pad.l - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.4)" font-family="Sora">' + abbrCurrency(label) + '</text>';
   }
-  // X labels (every Nth)
+  // X labels (every Nth) — mostra mês quando período cruza
   var stepX = Math.max(1, Math.ceil(rows.length / 8));
+  var multiMonth = new Set(rows.map(function(r){return r.mes;})).size > 1;
   rows.forEach(function(r, i) {
     if (i % stepX !== 0 && i !== rows.length - 1) return;
-    svg += '<text x="' + x(i) + '" y="' + (H - pad.b + 18) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="Sora">' + esc(r.data) + '</text>';
+    var label = multiMonth ? (r.data || '') + '/' + ((r.mes || '').split('/')[1] || '').slice(2) : (r.data || '');
+    svg += '<text x="' + x(i) + '" y="' + (H - pad.b + 18) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="Sora">' + esc(label) + '</text>';
   });
 
   // Lines
