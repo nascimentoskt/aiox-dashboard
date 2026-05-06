@@ -13,9 +13,12 @@ module.exports = async function handler(req, res) {
 
   // Daily Feedback collection routes via ?type=daily or body.kind=daily
   var url = new URL(req.url, 'http://x');
-  var isDaily = url.searchParams.get('type') === 'daily';
+  var typ = url.searchParams.get('type');
+  var isDaily = typ === 'daily';
+  var isExcel = typ === 'excel';
 
   try {
+    if (req.method === 'GET' && isExcel) return await handleExcel(res, url);
     if (req.method === 'GET' && isDaily) return await handleListDaily(res, NOTION_TOKEN, DB_DAILY);
     if (req.method === 'GET') return await handleList(res, NOTION_TOKEN, DB_CAMP, DB_ADS);
     if (req.method === 'POST') return await handleAdd(req, res, NOTION_TOKEN, DB_CAMP, DB_ADS, DB_DAILY);
@@ -26,6 +29,94 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 };
+
+async function handleExcel(res, url) {
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=900');
+  var sheetId = url.searchParams.get('sheetId') || '1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4';
+  var gid = url.searchParams.get('gid') || '764456387';
+  var csvUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv&gid=' + gid;
+  try {
+    var r = await fetch(csvUrl, { redirect: 'follow' });
+    if (!r.ok) return res.status(502).json({ error: 'Falha ao baixar planilha (' + r.status + '). Verifique se está compartilhada como público leitor.' });
+    var csv = await r.text();
+    var parsed = parseExcelCsv(csv);
+    return res.status(200).json({ ok: true, rows: parsed.rows, columns: parsed.columns, lastSync: new Date().toISOString() });
+  } catch (e) {
+    return res.status(500).json({ error: e.message || 'Erro fetching CSV' });
+  }
+}
+
+function parseExcelCsv(text) {
+  // Robust CSV parse supporting quoted fields with embedded commas/newlines
+  var rows = [];
+  var cur = [], field = '', inQ = false;
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i + 1] === '"') { field += '"'; i++; }
+      else if (ch === '"') { inQ = false; }
+      else { field += ch; }
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { cur.push(field); field = ''; }
+      else if (ch === '\n') { cur.push(field); rows.push(cur); cur = []; field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else field += ch;
+    }
+  }
+  if (field || cur.length) { cur.push(field); rows.push(cur); }
+
+  // First two rows are headers (group + metric). Forward-fill the group.
+  if (rows.length < 3) return { columns: [], rows: [] };
+  var groupRow = rows[0];
+  var metricRow = rows[1];
+  var lastGroup = '';
+  var columns = [];
+  var maxCols = Math.max(groupRow.length, metricRow.length);
+  for (var c = 0; c < maxCols; c++) {
+    var g = (groupRow[c] || '').trim();
+    if (g) lastGroup = g;
+    var m = (metricRow[c] || '').trim();
+    columns.push({ index: c, group: c === 0 ? '' : lastGroup, metric: m, key: c === 0 ? 'data' : (lastGroup + '|' + m) });
+  }
+
+  function parseValue(s) {
+    if (!s) return null;
+    s = String(s).trim();
+    if (!s) return null;
+    if (/^R\$\s*-?[\d.,]+$/.test(s)) {
+      var n = s.replace(/^R\$\s*/, '').replace(/\./g, '').replace(',', '.');
+      var v = parseFloat(n);
+      return isNaN(v) ? null : { type: 'money', value: v, raw: s };
+    }
+    if (/^-?[\d.,]+%$/.test(s)) {
+      var p = s.replace('%', '').replace(/\./g, '').replace(',', '.');
+      var pv = parseFloat(p);
+      return isNaN(pv) ? null : { type: 'percent', value: pv / 100, raw: s };
+    }
+    if (/^-?[\d.,]+$/.test(s)) {
+      var nn = s.replace(/\./g, '').replace(',', '.');
+      var v2 = parseFloat(nn);
+      return isNaN(v2) ? null : { type: 'number', value: v2, raw: s };
+    }
+    return { type: 'text', value: s, raw: s };
+  }
+
+  var out = [];
+  for (var r2 = 2; r2 < rows.length; r2++) {
+    var rr = rows[r2];
+    var dataCell = (rr[0] || '').trim();
+    if (!dataCell || !/\d/.test(dataCell)) continue; // skip empty / footer rows
+    var rec = { data: dataCell };
+    for (var k = 1; k < columns.length; k++) {
+      var col = columns[k];
+      var val = parseValue(rr[k]);
+      if (val) rec[col.key] = val;
+    }
+    out.push(rec);
+  }
+  return { columns: columns, rows: out };
+}
 
 async function handleListDaily(res, token, dbDaily) {
   res.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate=20');

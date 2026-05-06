@@ -240,6 +240,71 @@ tr:hover td { background: var(--card-hover); }
 .sort-i.muted { color: rgba(255,255,255,0.25); }
 .sort-i.active { color: var(--blue); }
 
+/* Excel Diario + Dashboard Diario */
+.excel-hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+.excel-hero-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.excel-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.excel-kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.excel-kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.excel-kpi-value { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text); }
+.excel-kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.excel-kpi-sub.up { color: var(--green); }
+.excel-kpi-sub.down { color: var(--red); }
+
+.excel-table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: auto; max-height: 70vh; }
+.excel-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 1100px; }
+.excel-table thead tr.top th { background: var(--navy-2); color: var(--text); padding: 10px 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 2; }
+.excel-table thead tr.top th.mkt-luzzoo { color: #4DA9FF; }
+.excel-table thead tr.top th.mkt-mercadolivre { color: #FFC107; }
+.excel-table thead tr.top th.mkt-shein { color: #E91E63; }
+.excel-table thead tr.top th.mkt-netshoes { color: #FF7043; }
+.excel-table thead tr.top th.mkt-tiktokshop { color: #B388FF; }
+.excel-table thead tr.top th.mkt-nobrand { color: #C570D9; }
+.excel-table thead tr.top th.mkt-resumo { color: var(--green); }
+.excel-table thead tr.sub th { background: var(--navy); padding: 8px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; position: sticky; top: 38px; z-index: 1; border-bottom: 1px solid var(--border); }
+.excel-table tbody td { padding: 8px 10px; border-top: 1px solid var(--border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.excel-table tbody td.date { background: var(--navy-2); color: var(--text); font-weight: 600; position: sticky; left: 0; z-index: 1; }
+.excel-table tbody td.num { text-align: right; }
+.excel-table tbody td.zero { color: rgba(242,242,242,0.25); }
+.excel-table tbody tr:hover td { background: var(--card-hover); }
+.excel-table tbody tr:hover td.date { background: rgba(0,136,255,0.1); }
+.excel-table .col-divider { border-left: 2px solid rgba(255,255,255,0.06); }
+.excel-table .pill-good { color: var(--green); }
+.excel-table .pill-bad { color: var(--red); }
+
+/* Dashboard Diario */
+.ed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ed-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.ed-card.ed-wide { grid-column: 1 / -1; }
+.ed-card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 14px; }
+.ed-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.ed-card-head h3 { margin: 0; }
+.ed-legend { display: flex; gap: 12px; flex-wrap: wrap; }
+.ed-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); cursor: pointer; user-select: none; }
+.ed-legend-item:hover { color: var(--text); }
+.ed-legend-item.off { opacity: 0.35; }
+.ed-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+.ed-line-wrap { position: relative; height: 320px; }
+.ed-pie-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ed-pie-svg { width: 160px; height: 160px; flex-shrink: 0; }
+.ed-pie-legend { flex: 1; min-width: 140px; font-size: 12px; }
+.ed-pie-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+.ed-pie-row:last-child { border-bottom: 0; }
+.ed-pie-row .ed-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ed-pie-name { color: var(--muted); flex: 1; }
+.ed-pie-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.ed-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+.ed-bar-label { width: 150px; color: var(--text); font-weight: 500; }
+.ed-bar-track { flex: 1; height: 24px; background: transparent; border-radius: 6px; overflow: hidden; position: relative; }
+.ed-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 11px; font-weight: 600; color: #fff; }
+.ed-bar-val { width: 110px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 900px) {
+  .ed-grid { grid-template-columns: 1fr; }
+}
+
 /* ============ DASHBOARD ============ */
 .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
 .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
@@ -323,6 +388,10 @@ tr:hover td { background: var(--card-hover); }
       <a class="tab" data-section="excel">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
         Excel Diário
+      </a>
+      <a class="tab" data-section="excel-dash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v10l7 4"/></svg>
+        Dashboard Diário
       </a>
     </nav>
     <div class="sidebar-footer">
@@ -518,20 +587,67 @@ tr:hover td { background: var(--card-hover); }
 
     <!-- EXCEL DIARIO -->
     <section class="section" id="sec-excel">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap;">
+      <div class="excel-hero">
         <div>
           <h2 style="font-size:22px;font-weight:600;">Excel Diário</h2>
-          <div class="section-sub">Histórico completo de evolução por marketplace desde 2025 · sincronizado com a planilha do Google.</div>
+          <div class="section-sub">Histórico de evolução por marketplace · sincronizado com a planilha do Google.</div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <a href="https://docs.google.com/spreadsheets/d/1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4/edit?gid=764456387" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">abrir no Google Sheets <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
-          <button class="btn-ghost" onclick="document.getElementById('excelFrame').src=document.getElementById('excelFrame').src">recarregar</button>
+        <div class="excel-hero-actions">
+          <a href="https://docs.google.com/spreadsheets/d/1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4/edit?gid=764456387" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">editar no Google Sheets ↗</a>
+          <button class="btn-ghost" onclick="loadExcel(true)">atualizar</button>
         </div>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:calc(100vh - 220px);min-height:520px;">
-        <iframe id="excelFrame" src="https://docs.google.com/spreadsheets/d/1iqGdEGWyYLUNUvGBvZXDdAaGJZ7lPAvRI2QzZsa5la4/preview?gid=764456387&widget=true&headers=false&rm=embedded" style="width:100%;height:100%;border:0;background:#fff;" loading="lazy" allowfullscreen></iframe>
+
+      <div class="excel-kpi-row" id="excelKpiRow"></div>
+      <div class="excel-table-wrap" id="excelTableWrap"><div class="empty">Carregando…</div></div>
+      <div class="section-sub" id="excelSync" style="margin-top:10px;"></div>
+    </section>
+
+    <!-- DASHBOARD DIARIO -->
+    <section class="section" id="sec-excel-dash">
+      <div class="excel-hero">
+        <div>
+          <h2 style="font-size:22px;font-weight:600;">Dashboard Diário</h2>
+          <div class="section-sub">Análise visual do histórico · marketplaces, investimento, faturamento, ROI.</div>
+        </div>
+        <div class="excel-hero-actions">
+          <select id="ed-period" onchange="renderExcelDash()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;">
+            <option value="7">últimos 7 dias</option>
+            <option value="30" selected>últimos 30 dias</option>
+            <option value="90">últimos 90 dias</option>
+            <option value="tudo">tudo</option>
+          </select>
+          <button class="btn-ghost" onclick="loadExcel(true)">atualizar</button>
+        </div>
       </div>
-      <div class="section-sub" style="margin-top:12px;">Se a planilha não aparecer, verifique se o compartilhamento está como <b>"Qualquer pessoa com o link · Leitor"</b>.</div>
+
+      <div class="excel-kpi-row" id="edKpiRow"></div>
+
+      <div class="ed-grid">
+        <div class="ed-card ed-wide">
+          <div class="ed-card-head">
+            <h3>Faturamento por marketplace · diário</h3>
+            <div class="ed-legend" id="edLegend"></div>
+          </div>
+          <div id="edChartLine" class="ed-line-wrap"></div>
+        </div>
+        <div class="ed-card">
+          <h3>Investimento total por marketplace</h3>
+          <div id="edPieInvest" class="ed-pie-wrap"></div>
+        </div>
+        <div class="ed-card">
+          <h3>Faturamento total por marketplace</h3>
+          <div id="edPieFat" class="ed-pie-wrap"></div>
+        </div>
+        <div class="ed-card ed-wide">
+          <h3>ROI por marketplace (faturamento / investimento)</h3>
+          <div id="edBarRoi"></div>
+        </div>
+        <div class="ed-card ed-wide">
+          <h3>% Mídia médio por marketplace (gasto / receita)</h3>
+          <div id="edBarMidia"></div>
+        </div>
+      </div>
     </section>
 
     <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:300;display:none;"></canvas>
@@ -614,6 +730,7 @@ function activateSection(s) {
   if (s === 'tabela') renderTable();
   if (s === 'dashboard') renderDashboard();
   if (s === 'daily') loadDaily();
+  if (s === 'excel' || s === 'excel-dash') loadExcel();
 }
 
 document.addEventListener('click', function(e) {
@@ -1025,6 +1142,355 @@ async function deleteDaily(pageId) {
     toast('daily excluído', 'success');
     setTimeout(loadDaily, 1000);
   } catch (e) { toast(e.message, 'error'); }
+}
+
+// ===== EXCEL DIARIO + DASHBOARD =====
+var excelData = null;
+var excelLoading = false;
+var EXCEL_MKTS = [
+  { key: 'Shoppee (LUZZOO)', label: 'Shopee Luzzoo', color: '#FF6F3D', cls: 'mkt-luzzoo' },
+  { key: 'Mercado livre', label: 'Mercado Livre', color: '#FFD400', cls: 'mkt-mercadolivre' },
+  { key: 'Shein', label: 'Shein', color: '#E91E63', cls: 'mkt-shein' },
+  { key: 'Netshoes', label: 'Netshoes', color: '#FF7043', cls: 'mkt-netshoes' },
+  { key: 'Tiktok Shop', label: 'TikTok Shop', color: '#B388FF', cls: 'mkt-tiktokshop' },
+  { key: 'Shoppee (NO Brand)', label: 'Shopee No Brand', color: '#C570D9', cls: 'mkt-nobrand' }
+];
+var edHidden = {}; // legend toggles
+
+async function loadExcel(force) {
+  if (excelLoading) return;
+  if (excelData && !force) {
+    renderExcelTable();
+    renderExcelDash();
+    return;
+  }
+  excelLoading = true;
+  document.getElementById('excelTableWrap').innerHTML = '<div class="empty">Carregando planilha…</div>';
+  try {
+    var r = await fetch('/api/marketplaces?type=excel&_=' + Date.now());
+    var d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.error || 'Erro ao carregar');
+    excelData = d;
+    document.getElementById('excelSync').textContent = 'última sincronia: ' + new Date(d.lastSync).toLocaleString('pt-BR');
+    renderExcelTable();
+    renderExcelDash();
+  } catch (e) {
+    document.getElementById('excelTableWrap').innerHTML = '<div class="empty">Erro: ' + esc(e.message) + '. Verifique se a planilha está como "Qualquer pessoa com link · Leitor".</div>';
+    toast(e.message, 'error');
+  } finally {
+    excelLoading = false;
+  }
+}
+
+function brl0(n) { return 'R$ ' + (n || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 }); }
+function pct(n, digits) { return ((n || 0) * 100).toFixed(digits == null ? 1 : digits) + '%'; }
+
+function excelKpis() {
+  if (!excelData) return null;
+  var totInv = 0, totFat = 0, totMidia = 0, days = 0;
+  excelData.rows.forEach(function(r) {
+    var inv = (r['Resumo|Investimento'] || {}).value || 0;
+    var fat = (r['Resumo|Faturamento'] || {}).value || 0;
+    var mid = (r['Resumo|Mídia'] || {}).value || 0;
+    if (inv || fat) days++;
+    totInv += inv;
+    totFat += fat;
+    totMidia += mid;
+  });
+  var avgFatDay = days > 0 ? totFat / days : 0;
+  var roi = totInv > 0 ? totFat / totInv : 0;
+  var midiaPct = totFat > 0 ? totInv / totFat : 0;
+  return { totInv: totInv, totFat: totFat, totMidia: totMidia / Math.max(days, 1), days: days, avgFatDay: avgFatDay, roi: roi, midiaPct: midiaPct };
+}
+
+function renderExcelKpis() {
+  var k = excelKpis();
+  var el = document.getElementById('excelKpiRow');
+  if (!el) return;
+  if (!k || !k.days) { el.innerHTML = ''; return; }
+  el.innerHTML = [
+    kpiCard('Faturamento total', brl0(k.totFat), k.days + ' dias com vendas'),
+    kpiCard('Investimento total', brl0(k.totInv), 'em mídia + comissão'),
+    kpiCard('ROI médio', k.roi.toFixed(2) + 'x', k.roi >= 5 ? 'saudável (≥5x)' : k.roi >= 3 ? 'ok' : 'baixo', k.roi >= 5 ? 'up' : k.roi < 3 ? 'down' : ''),
+    kpiCard('Faturamento médio/dia', brl0(k.avgFatDay), '')
+  ].join('');
+}
+function kpiCard(label, val, sub, klass) {
+  return '<div class="excel-kpi"><div class="excel-kpi-label">' + label + '</div><div class="excel-kpi-value">' + val + '</div>' + (sub ? '<div class="excel-kpi-sub ' + (klass || '') + '">' + sub + '</div>' : '') + '</div>';
+}
+
+function renderExcelTable() {
+  renderExcelKpis();
+  var wrap = document.getElementById('excelTableWrap');
+  if (!excelData || !excelData.rows.length) { wrap.innerHTML = '<div class="empty">Sem dados na planilha.</div>'; return; }
+  // Build header from columns. Group "DATA" column as first.
+  var groups = []; // { label, span, cls }
+  var subs = []; // { metric, group }
+  var seenGroups = {};
+  excelData.columns.forEach(function(c, idx) {
+    if (idx === 0) {
+      groups.push({ label: '', span: 1, cls: 'mkt-data' });
+      subs.push({ metric: 'DATA', group: '' });
+      return;
+    }
+    var existing = groups[groups.length - 1];
+    if (existing && existing.label === c.group && !seenGroups['_' + (groups.length - 1)]) {
+      existing.span += 1;
+    } else {
+      seenGroups['_' + groups.length] = false;
+      groups.push({ label: c.group || '—', span: 1, cls: groupCls(c.group) });
+    }
+    subs.push({ metric: c.metric || '', group: c.group });
+  });
+  // Mark first column of each group for divider
+  var groupStarts = {};
+  var idxAcc = 0;
+  groups.forEach(function(g) { groupStarts[idxAcc] = true; idxAcc += g.span; });
+
+  var html = '<table class="excel-table"><thead><tr class="top">';
+  groups.forEach(function(g) {
+    html += '<th class="' + (g.cls || '') + '" colspan="' + g.span + '">' + esc(g.label) + '</th>';
+  });
+  html += '</tr><tr class="sub">';
+  subs.forEach(function(s, i) {
+    html += '<th class="' + (groupStarts[i] && i > 0 ? 'col-divider' : '') + '">' + esc(s.metric) + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  // Render rows newest-first (the CSV is chronological → reverse)
+  var rows = excelData.rows.slice().reverse();
+  rows.forEach(function(r) {
+    html += '<tr>';
+    excelData.columns.forEach(function(c, i) {
+      if (i === 0) { html += '<td class="date">' + esc(r.data) + '</td>'; return; }
+      var val = r[c.key];
+      var cls = 'num';
+      if (groupStarts[i]) cls += ' col-divider';
+      if (!val || (val.value === 0 && val.type !== 'percent')) cls += ' zero';
+      var disp = '—';
+      if (val) {
+        if (val.type === 'money') disp = brlShort(val.value);
+        else if (val.type === 'percent') disp = pct(val.value, val.value < 0.01 ? 2 : 1);
+        else disp = val.raw;
+      }
+      html += '<td class="' + cls + '">' + disp + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+function brlShort(n) {
+  if (!n) return 'R$ 0';
+  if (Math.abs(n) >= 1000) return 'R$ ' + (n).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function groupCls(g) {
+  var s = (g || '').toLowerCase();
+  if (s.indexOf('luzzoo') >= 0) return 'mkt-luzzoo';
+  if (s.indexOf('mercado') >= 0) return 'mkt-mercadolivre';
+  if (s.indexOf('shein') >= 0) return 'mkt-shein';
+  if (s.indexOf('netshoes') >= 0) return 'mkt-netshoes';
+  if (s.indexOf('tiktok') >= 0) return 'mkt-tiktokshop';
+  if (s.indexOf('no brand') >= 0) return 'mkt-nobrand';
+  if (s.indexOf('resumo') >= 0) return 'mkt-resumo';
+  return '';
+}
+
+// ===== DASHBOARD DIARIO =====
+function filterByPeriod(rows) {
+  var sel = (document.getElementById('ed-period') || {}).value || '30';
+  if (sel === 'tudo') return rows;
+  var n = parseInt(sel, 10);
+  return rows.slice(-n);
+}
+
+function renderExcelDash() {
+  if (!excelData) return;
+  var rows = filterByPeriod(excelData.rows);
+
+  // KPIs
+  var totInv = 0, totFat = 0;
+  rows.forEach(function(r) {
+    totInv += (r['Resumo|Investimento'] || {}).value || 0;
+    totFat += (r['Resumo|Faturamento'] || {}).value || 0;
+  });
+  var roi = totInv > 0 ? totFat / totInv : 0;
+  var midia = totFat > 0 ? totInv / totFat : 0;
+  document.getElementById('edKpiRow').innerHTML = [
+    kpiCard('Faturamento (período)', brl0(totFat), rows.length + ' dias'),
+    kpiCard('Investimento (período)', brl0(totInv), 'mídia + comissão'),
+    kpiCard('ROI', roi.toFixed(2) + 'x', roi >= 5 ? 'saudável' : roi >= 3 ? 'ok' : 'baixo', roi >= 5 ? 'up' : roi < 3 ? 'down' : ''),
+    kpiCard('Mídia / Faturamento', pct(midia), midia <= 0.07 ? 'ótimo' : midia <= 0.12 ? 'ok' : 'alto', midia <= 0.07 ? 'up' : midia > 0.12 ? 'down' : '')
+  ].join('');
+
+  renderEdLine(rows);
+  renderEdPies(rows);
+  renderEdBars(rows);
+}
+
+function renderEdLine(rows) {
+  var box = document.getElementById('edChartLine');
+  if (!box) return;
+  if (!rows.length) { box.innerHTML = '<div class="empty">Sem dados.</div>'; return; }
+
+  var W = box.clientWidth || 720, H = 320;
+  var pad = { l: 56, r: 16, t: 18, b: 36 };
+
+  // Build series per marketplace (Faturamento)
+  var series = EXCEL_MKTS.map(function(m) {
+    var values = rows.map(function(r) {
+      var v = (r[m.key + '|Faturamento'] || {}).value;
+      return typeof v === 'number' ? v : null;
+    });
+    return { mkt: m, values: values };
+  });
+
+  var maxY = 1;
+  series.forEach(function(s) {
+    if (edHidden[s.mkt.key]) return;
+    s.values.forEach(function(v) { if (v && v > maxY) maxY = v; });
+  });
+  // round up to nice axis
+  var step = niceStep(maxY / 4);
+  var niceMax = Math.ceil(maxY / step) * step;
+  if (niceMax === 0) niceMax = 1;
+
+  var x = function(i) { return pad.l + (i / Math.max(rows.length - 1, 1)) * (W - pad.l - pad.r); };
+  var y = function(v) { return pad.t + (1 - (v / niceMax)) * (H - pad.t - pad.b); };
+
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">';
+
+  // Grid + Y labels
+  for (var g = 0; g <= 4; g++) {
+    var yy = pad.t + (g / 4) * (H - pad.t - pad.b);
+    var label = niceMax * (1 - g / 4);
+    svg += '<line x1="' + pad.l + '" x2="' + (W - pad.r) + '" y1="' + yy + '" y2="' + yy + '" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2,4"/>';
+    svg += '<text x="' + (pad.l - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.4)" font-family="Sora">' + abbrCurrency(label) + '</text>';
+  }
+  // X labels (every Nth)
+  var stepX = Math.max(1, Math.ceil(rows.length / 8));
+  rows.forEach(function(r, i) {
+    if (i % stepX !== 0 && i !== rows.length - 1) return;
+    svg += '<text x="' + x(i) + '" y="' + (H - pad.b + 18) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="Sora">' + esc(r.data) + '</text>';
+  });
+
+  // Lines
+  series.forEach(function(s) {
+    if (edHidden[s.mkt.key]) return;
+    var pts = [];
+    s.values.forEach(function(v, i) {
+      if (v == null || v === 0) return;
+      pts.push(x(i) + ',' + y(v));
+    });
+    if (pts.length < 2) return;
+    svg += '<polyline fill="none" stroke="' + s.mkt.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="' + pts.join(' ') + '"/>';
+    s.values.forEach(function(v, i) {
+      if (v == null || v === 0) return;
+      svg += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="2.5" fill="' + s.mkt.color + '"/>';
+    });
+  });
+  svg += '</svg>';
+  box.innerHTML = svg;
+
+  // Legend with toggles
+  var leg = document.getElementById('edLegend');
+  leg.innerHTML = EXCEL_MKTS.map(function(m) {
+    return '<span class="ed-legend-item ' + (edHidden[m.key] ? 'off' : '') + '" onclick="toggleEdSerie(\'' + m.key.replace(/'/g, "\\'") + '\')"><span class="ed-legend-dot" style="background:' + m.color + ';"></span>' + esc(m.label) + '</span>';
+  }).join('');
+}
+function toggleEdSerie(key) { edHidden[key] = !edHidden[key]; renderExcelDash(); }
+function niceStep(raw) {
+  if (raw <= 0) return 1;
+  var pow = Math.pow(10, Math.floor(Math.log10(raw)));
+  var f = raw / pow;
+  if (f < 1.5) return pow;
+  if (f < 3) return 2 * pow;
+  if (f < 7) return 5 * pow;
+  return 10 * pow;
+}
+function abbrCurrency(n) {
+  if (Math.abs(n) >= 1e6) return 'R$ ' + (n / 1e6).toFixed(1) + 'M';
+  if (Math.abs(n) >= 1e3) return 'R$ ' + (n / 1e3).toFixed(0) + 'k';
+  return 'R$ ' + Math.round(n);
+}
+
+function renderEdPies(rows) {
+  var sumsInv = {}; var sumsFat = {};
+  EXCEL_MKTS.forEach(function(m) { sumsInv[m.key] = 0; sumsFat[m.key] = 0; });
+  rows.forEach(function(r) {
+    EXCEL_MKTS.forEach(function(m) {
+      sumsInv[m.key] += (r[m.key + '|Investimento'] || {}).value || 0;
+      sumsFat[m.key] += (r[m.key + '|Faturamento'] || {}).value || 0;
+    });
+  });
+  document.getElementById('edPieInvest').innerHTML = pieHtml(sumsInv);
+  document.getElementById('edPieFat').innerHTML = pieHtml(sumsFat);
+}
+function pieHtml(sums) {
+  var total = 0; for (var k in sums) total += sums[k];
+  if (!total) return '<div class="empty" style="padding:18px;">Sem dados no período.</div>';
+  var size = 160, r = 60, cx = size / 2, cy = size / 2;
+  var circ = 2 * Math.PI * r;
+  var offset = 0;
+  var segs = '';
+  var legend = '';
+  EXCEL_MKTS.forEach(function(m) {
+    var v = sums[m.key] || 0; if (!v) return;
+    var pct = v / total;
+    var dash = pct * circ;
+    segs += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + m.color + '" stroke-width="22" stroke-dasharray="' + dash.toFixed(2) + ' ' + (circ - dash).toFixed(2) + '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+    offset += dash;
+    legend += '<div class="ed-pie-row"><span class="ed-legend-dot" style="background:' + m.color + ';"></span><span class="ed-pie-name">' + esc(m.label) + '</span><span class="ed-pie-val">' + (pct * 100).toFixed(1) + '%</span></div>';
+  });
+  var svg = '<svg class="ed-pie-svg" viewBox="0 0 ' + size + ' ' + size + '">' + segs + '<text x="' + cx + '" y="' + (cy - 2) + '" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)" font-family="Sora">Total</text><text x="' + cx + '" y="' + (cy + 14) + '" text-anchor="middle" font-size="14" font-weight="700" fill="#F2F2F2" font-family="Sora">' + abbrCurrency(total) + '</text></svg>';
+  return svg + '<div class="ed-pie-legend">' + legend + '</div>';
+}
+
+function renderEdBars(rows) {
+  var sumsInv = {}, sumsFat = {}, sumsMidia = {};
+  EXCEL_MKTS.forEach(function(m) { sumsInv[m.key] = 0; sumsFat[m.key] = 0; sumsMidia[m.key] = 0; });
+  rows.forEach(function(r) {
+    EXCEL_MKTS.forEach(function(m) {
+      sumsInv[m.key] += (r[m.key + '|Investimento'] || {}).value || 0;
+      sumsFat[m.key] += (r[m.key + '|Faturamento'] || {}).value || 0;
+      var midiaPct = (r[m.key + '|Mídia'] || {}).value || 0;
+      sumsMidia[m.key] += midiaPct;
+    });
+  });
+  var roiData = EXCEL_MKTS.map(function(m) {
+    var roi = sumsInv[m.key] > 0 ? sumsFat[m.key] / sumsInv[m.key] : 0;
+    return { mkt: m, val: roi };
+  }).filter(function(x) { return x.val > 0; }).sort(function(a, b) { return b.val - a.val; });
+
+  var maxRoi = roiData.length ? roiData[0].val : 1;
+  document.getElementById('edBarRoi').innerHTML = roiData.length
+    ? roiData.map(function(d) {
+        var w = (d.val / maxRoi) * 100;
+        return '<div class="ed-bar-row"><div class="ed-bar-label">' + esc(d.mkt.label) + '</div><div class="ed-bar-track"><div class="ed-bar-fill" style="width:' + w + '%;background:' + d.mkt.color + ';">' + d.val.toFixed(2) + 'x</div></div><div class="ed-bar-val">' + brl0(sumsFat[d.mkt.key]) + '</div></div>';
+      }).join('')
+    : '<div class="empty">Sem investimento no período.</div>';
+
+  // % Mídia médio: usa o valor de % média (evita dividir por receita zero)
+  var midiaRows = rows.filter(function(r) {
+    return EXCEL_MKTS.some(function(m) { return (r[m.key + '|Faturamento'] || {}).value > 0; });
+  });
+  var midiaAvg = EXCEL_MKTS.map(function(m) {
+    var sumPct = 0, n = 0;
+    midiaRows.forEach(function(r) {
+      var p = (r[m.key + '|Mídia'] || {}).value;
+      if (p && p > 0) { sumPct += p; n++; }
+    });
+    return { mkt: m, val: n > 0 ? sumPct / n : 0 };
+  }).filter(function(x) { return x.val > 0; }).sort(function(a, b) { return a.val - b.val; });
+
+  var maxM = midiaAvg.length ? midiaAvg[midiaAvg.length - 1].val : 0.1;
+  document.getElementById('edBarMidia').innerHTML = midiaAvg.length
+    ? midiaAvg.map(function(d) {
+        var w = (d.val / maxM) * 100;
+        return '<div class="ed-bar-row"><div class="ed-bar-label">' + esc(d.mkt.label) + '</div><div class="ed-bar-track"><div class="ed-bar-fill" style="width:' + w + '%;background:' + d.mkt.color + ';">' + (d.val * 100).toFixed(2) + '%</div></div><div class="ed-bar-val">' + (d.val <= 0.07 ? '✓ saudável' : d.val <= 0.12 ? 'ok' : 'alto') + '</div></div>';
+      }).join('')
+    : '<div class="empty">Sem dados de mídia.</div>';
 }
 
 // ===== CONFETTI (lightweight, only on milestones) =====
