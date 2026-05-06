@@ -289,6 +289,17 @@ tr:hover td { background: var(--card-hover); }
 .ed-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
 .ed-line-wrap { position: relative; height: 320px; }
+.ed-line-wrap svg { cursor: crosshair; }
+.ed-tooltip { position: absolute; pointer-events: none; background: rgba(15,22,38,0.96); border: 1px solid rgba(0,136,255,0.35); border-radius: 8px; padding: 10px 12px; font-size: 11px; min-width: 180px; max-width: 240px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 50; backdrop-filter: blur(8px); transform: translate(12px, -50%); display: none; }
+.ed-tooltip.visible { display: block; }
+.ed-tooltip-date { font-size: 11px; font-weight: 600; color: var(--text); padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.ed-tooltip-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; font-variant-numeric: tabular-nums; }
+.ed-tooltip-row .ed-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ed-tooltip-name { flex: 1; color: rgba(242,242,242,0.7); }
+.ed-tooltip-val { font-weight: 600; color: var(--text); }
+.ed-tooltip-total { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); font-weight: 600; color: var(--green); display: flex; justify-content: space-between; }
+.ed-cursor-line { stroke: rgba(0,136,255,0.4); stroke-width: 1; stroke-dasharray: 3,3; pointer-events: none; }
+.ed-cursor-dot { stroke: #0F1830; stroke-width: 2; pointer-events: none; }
 .ed-pie-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .ed-pie-svg { width: 160px; height: 160px; flex-shrink: 0; }
 .ed-pie-legend { flex: 1; min-width: 140px; font-size: 12px; }
@@ -1501,8 +1512,82 @@ function drawLineChart(boxId, legendId, rows, toggleFn) {
       svg += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="2.5" fill="' + s.mkt.color + '"/>';
     });
   });
+  // Cursor + dots elementos vazios; populados por mousemove
+  svg += '<g id="' + boxId + '-cursor" style="display:none;"><line class="ed-cursor-line" x1="0" x2="0" y1="' + pad.t + '" y2="' + (H - pad.b) + '"/></g>';
+  // Overlay invisivel pra capturar hover
+  svg += '<rect id="' + boxId + '-overlay" x="' + pad.l + '" y="' + pad.t + '" width="' + (W - pad.l - pad.r) + '" height="' + (H - pad.t - pad.b) + '" fill="transparent" style="pointer-events:all;"/>';
   svg += '</svg>';
-  box.innerHTML = svg;
+
+  // Posiciona o box em relative pra o tooltip absoluto funcionar
+  if (getComputedStyle(box).position === 'static') box.style.position = 'relative';
+  box.innerHTML = svg + '<div id="' + boxId + '-tooltip" class="ed-tooltip"></div>';
+
+  // Wire hover handlers
+  var overlay = document.getElementById(boxId + '-overlay');
+  var tooltip = document.getElementById(boxId + '-tooltip');
+  var cursor = document.getElementById(boxId + '-cursor');
+  if (overlay && tooltip && cursor) {
+    overlay.addEventListener('mousemove', function(e) {
+      var rect = box.getBoundingClientRect();
+      var relX = e.clientX - rect.left;
+      // Mapeia para coordenada SVG (viewBox W)
+      var svgX = (relX / rect.width) * W;
+      // index mais proximo no array de rows
+      var ratio = (svgX - pad.l) / (W - pad.l - pad.r);
+      ratio = Math.max(0, Math.min(1, ratio));
+      var i = Math.round(ratio * (rows.length - 1));
+      if (i < 0 || i >= rows.length) return;
+      var r = rows[i];
+      // posicao do cursor svg
+      var cx = x(i);
+      var lineEl = cursor.querySelector('line');
+      lineEl.setAttribute('x1', cx);
+      lineEl.setAttribute('x2', cx);
+      // remove old dots
+      Array.prototype.slice.call(cursor.querySelectorAll('circle')).forEach(function(c) { c.remove(); });
+      // adiciona dots por serie visivel
+      series.forEach(function(s) {
+        if (edHidden[s.mkt.key]) return;
+        var v = s.values[i];
+        if (v == null || v === 0) return;
+        var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', cx);
+        c.setAttribute('cy', y(v));
+        c.setAttribute('r', 5);
+        c.setAttribute('fill', s.mkt.color);
+        c.setAttribute('class', 'ed-cursor-dot');
+        cursor.appendChild(c);
+      });
+      cursor.style.display = '';
+
+      // tooltip content
+      var rows_html = '';
+      var visibleSeries = series.filter(function(s) { return !edHidden[s.mkt.key]; });
+      var dayData = visibleSeries.map(function(s) {
+        return { mkt: s.mkt, val: s.values[i] || 0 };
+      }).filter(function(d) { return d.val > 0; }).sort(function(a, b) { return b.val - a.val; });
+      var total = dayData.reduce(function(sum, d) { return sum + d.val; }, 0);
+      dayData.forEach(function(d) {
+        rows_html += '<div class="ed-tooltip-row"><span class="ed-legend-dot" style="background:' + d.mkt.color + ';"></span><span class="ed-tooltip-name">' + esc(d.mkt.label) + '</span><span class="ed-tooltip-val">' + abbrCurrency(d.val) + '</span></div>';
+      });
+      var dateLabel = (r.data || '') + (r.mes ? '/' + (r.mes.split('/')[1] || '').slice(2) : '');
+      tooltip.innerHTML = '<div class="ed-tooltip-date">' + esc(dateLabel) + '</div>' + (rows_html || '<div class="ed-tooltip-row"><span class="ed-tooltip-name">sem vendas</span></div>') + (total > 0 ? '<div class="ed-tooltip-total"><span>total</span><span>' + abbrCurrency(total) + '</span></div>' : '');
+
+      // posicao do tooltip — converte cx svg para px da box
+      var pxX = (cx / W) * rect.width;
+      var pxY = ((y(dayData[0] ? dayData[0].val : niceMax / 2)) / H) * rect.height;
+      // se cursor passou da metade, mostra tooltip à esquerda
+      var leftSide = pxX > rect.width * 0.55;
+      tooltip.style.left = leftSide ? (pxX - 12) + 'px' : (pxX + 12) + 'px';
+      tooltip.style.transform = leftSide ? 'translate(-100%, -50%)' : 'translate(0, -50%)';
+      tooltip.style.top = pxY + 'px';
+      tooltip.classList.add('visible');
+    });
+    overlay.addEventListener('mouseleave', function() {
+      tooltip.classList.remove('visible');
+      cursor.style.display = 'none';
+    });
+  }
 
   var leg = document.getElementById(legendId);
   if (leg) {
