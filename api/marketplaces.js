@@ -67,17 +67,35 @@ async function handleExcel(res, url) {
         var ddNum = parseInt(dd, 10); if (!ddNum || ddNum < 1 || ddNum > 31) return;
         var iso = t.yy + '-' + pad2(t.mm) + '-' + pad2(ddNum);
         var rec = { data: dd + '/' + pad2(t.mm), dataIso: iso, mes: pad2(t.mm) + '/' + t.yy, tab: t.name };
-        // Normalize keys (legacy "Shoppee" → "Shoppee (LUZZOO)", "Valor Gasto" → "Investimento", "Shopee (NOBRAND)" → "Shoppee (NO Brand)")
         Object.keys(row).forEach(function(k) {
           if (k === 'data') return;
           var v = row[k];
           var nk = normalizeKey(k);
-          if (nk) {
-            rec[nk] = v;
-            if (!allCols[nk]) {
-              var parts = nk.split('|');
-              allCols[nk] = { key: nk, group: parts[0], metric: parts[1] || '' };
-            }
+          if (nk) rec[nk] = v;
+        });
+
+        // TikTok Shop: Investimento sempre = ADS + Comissão
+        var tkInv = rec['Tiktok Shop|Investimento'];
+        var tkCom = rec['Tiktok Shop|Comissão'];
+        if (tkInv || tkCom) {
+          var combined = ((tkInv && tkInv.value) || 0) + ((tkCom && tkCom.value) || 0);
+          rec['Tiktok Shop|Investimento'] = { type: 'money', value: combined, raw: 'R$ ' + combined.toFixed(2) };
+        }
+        delete rec['Tiktok Shop|Comissão']; // drop coluna após somar
+
+        // Recalcula Tiktok Shop|Mídia se tem investimento e faturamento
+        var tkFat = rec['Tiktok Shop|Faturamento'];
+        if (rec['Tiktok Shop|Investimento'] && tkFat && tkFat.value > 0) {
+          var pctMidia = rec['Tiktok Shop|Investimento'].value / tkFat.value;
+          rec['Tiktok Shop|Mídia'] = { type: 'percent', value: pctMidia, raw: (pctMidia * 100).toFixed(2) + '%' };
+        }
+
+        // Anota colunas finais
+        Object.keys(rec).forEach(function(k) {
+          if (['data', 'dataIso', 'mes', 'tab'].indexOf(k) >= 0) return;
+          if (!allCols[k]) {
+            var parts = k.split('|');
+            allCols[k] = { key: k, group: parts[0], metric: parts[1] || '' };
           }
         });
         allRows.push(rec);
@@ -145,7 +163,7 @@ function normalizeKey(k) {
 
 function canonicalColumns(map) {
   var ORDER = ['Shoppee (LUZZOO)', 'Shoppee (NO Brand)', 'Mercado livre', 'Shein', 'Netshoes', 'Tiktok Shop'];
-  var METRIC_ORDER = ['Investimento', 'Faturamento', 'Faturamento Full', 'Mídia', 'Comissão'];
+  var METRIC_ORDER = ['Investimento', 'Faturamento', 'Faturamento Full', 'Mídia'];
   var cols = [{ key: 'data', group: '', metric: 'DATA' }];
   ORDER.forEach(function(g) {
     METRIC_ORDER.forEach(function(m) {
